@@ -7,7 +7,7 @@
 using namespace seqan;
 
 /*
-g++ countKmers_open_adressing.cpp -o countK
+g++ countKmers.cpp -o countK
 */
 unsigned hashkMer(const DnaString & kmer, const unsigned & k);
 unsigned rollinghashkMer(unsigned & oldHash, const Dna & newnuc, const unsigned & k);
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 // reading the FastQ file
 
   StringSet<CharString> ids;
-  StringSet<DnaString> seqs;
+  StringSet<Dna5String> seqs;
 
   try {
     SeqFileIn file(argv[1]);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 
   // concatination of all sequences
 
-  DnaString seq=concat(seqs);
+  Dna5String seq=concat(seqs);
 
   // building index storage
 
@@ -65,12 +65,20 @@ int main(int argc, char *argv[]){
   // counting k-mers
 
   unsigned hash=hashkMer(infix(seq,0,k),k);
+
   unsigned c;
 
   for (unsigned i = 0;i<length(seq)-k+1;++i){
     c=ReqBkt(hash,C,bucket_number);
     dir[c+1]+=1;
-    hash=rollinghashkMer(hash,seq[i+k],k);
+    if (seq[i+k]!='N'){
+      hash=rollinghashkMer(hash,seq[i+k],k);
+    }
+    else {
+      i+=k+1;
+      hash=hashkMer(infix(seq,i,i+k),k);
+
+    }
   }
   unsigned sum=length(seq)-k+1;
 
@@ -84,11 +92,19 @@ int main(int argc, char *argv[]){
   // filling pos
 
   hash=hashkMer(infix(seq,0,k),k);
+
   for (unsigned i = 0;i<length(seq)-k+1;++i){
     c=GetBkt(hash,C,bucket_number);
     pos[dir[c+1]]=i;
     dir[c+1]++;
-    hash=rollinghashkMer(hash,seq[i+k],k);
+    if (seq[i+k]!='N'){
+      hash=rollinghashkMer(hash,seq[i+k],k);
+    }
+    else {
+      i+=k+1;
+      hash=hashkMer(infix(seq,i,i+k),k);
+
+    }
   }
 
   // write index to file
@@ -120,12 +136,12 @@ int main(int argc, char *argv[]){
   // Kontrollausgabe
 
 
-  // DnaString testDNA="TGAAGTGTGTCA";
-  // std::vector<unsigned> positions=RetPos(testDNA,C,dir,pos,bucket_number);
-  // for (itrv=positions.begin();itrv!=positions.end();itrv++){
-  //   std::cout << *itrv <<" ";
-  // }
-  // std::cout << "\n";
+  DnaString testDNA="TGAAGTGT";
+  std::vector<unsigned> positions=RetPos(testDNA,C,dir,pos,bucket_number);
+  for (itrv=positions.begin();itrv!=positions.end();itrv++){
+    std::cout << *itrv <<" ";
+  }
+  std::cout << "\n";
 
 // }
 
