@@ -10,6 +10,7 @@ g++ test.cpp -o testit
 std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k);
 std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned & k);
 
+// TEST
 
 int main(int argc, char *argv[]){
 
