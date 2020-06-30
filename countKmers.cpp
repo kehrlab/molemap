@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
 
   std::vector<unsigned> dir(bucket_number,0);       // pow(4,k) depending on k-mer size
   std::vector<unsigned> pos(length(seq),0);         // length(seq)-k+1 runns into error
-  std::vector<unsigned> C(pow(4,k)+1,-1);
+  std::vector<unsigned> C(bucket_number,-1);
   std::vector<unsigned>::iterator itrv;
   std::vector<unsigned>::reverse_iterator itrvr;
 
