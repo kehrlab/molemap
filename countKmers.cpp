@@ -7,7 +7,7 @@
 using namespace seqan;
 
 /*
-g++ countKmers.cpp -o countK
+g++ countKmers.cpp -o countK -DSEQAN_HAS_ZLIB=1 -lz
 */
 std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k);
 std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned & k);
