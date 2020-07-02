@@ -64,20 +64,19 @@ int main(int argc, char *argv[]){
 
   // counting k-mers
 
-  std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k),k);
+  std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k-1),k-1);
   unsigned c;
 
-  for (unsigned i = 0;i<length(seq)-k+1;++i){
-    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);
-    dir[c+1]+=1;
+  for (unsigned i = 0;i<length(seq)-k;++i){
     if (seq[i+k]!='N'){
       hash=rollinghashkMer(hash.first,hash.second,seq[i+k],k);
     }
     else {
       i+=k+1;
       hash=hashkMer(infix(seq,i,i+k),k);
-
     }
+    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);
+    dir[c+1]+=1;
   }
   unsigned sum=length(seq)-k+1;
 
@@ -90,20 +89,19 @@ int main(int argc, char *argv[]){
 
   // filling pos
 
-  hash=hashkMer(infix(seq,0,k),k);
+  hash=hashkMer(infix(seq,0,k-1),k-1);
 
-  for (unsigned i = 0;i<length(seq)-k+1;++i){
-    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
-    pos[dir[c+1]]=i;
-    dir[c+1]++;
+  for (unsigned i = 0;i<length(seq)-k;++i){
     if (seq[i+k]!='N'){
       hash=rollinghashkMer(hash.first,hash.second,seq[i+k],k);
     }
     else {
       i+=k+1;
       hash=hashkMer(infix(seq,i,i+k),k);
-
     }
+    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
+    pos[dir[c+1]]=i+1;
+    dir[c+1]++;
   }
 
   // write index to file
@@ -135,7 +133,7 @@ int main(int argc, char *argv[]){
   // Kontrollausgabe
 
 
-  DnaString testDNA="TGAAGTGT";
+  DnaString testDNA="AAAATGTC";
   std::vector<unsigned> positions=RetPos(testDNA,C,dir,pos,bucket_number);
   for (itrv=positions.begin();itrv!=positions.end();itrv++){
     std::cout << *itrv <<" ";
