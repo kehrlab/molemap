@@ -7,7 +7,7 @@
 using namespace seqan;
 
 /*
-g++ countKmers.cpp -o countK -DSEQAN_HAS_ZLIB=1 -lz
+g++ countKmers.cpp -o countK
 */
 std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k);
 std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned & k);
@@ -56,9 +56,9 @@ int main(int argc, char *argv[]){
 
   // building index storage
 
-  std::vector<unsigned> dir(bucket_number,0);       // pow(4,k) depending on k-mer size
+  std::vector<unsigned> dir(bucket_number+1,0);       // pow(4,k) depending on k-mer size
   std::vector<unsigned> pos(length(seq),0);         // length(seq)-k+1 runns into error
-  std::vector<unsigned> C(bucket_number,-1);
+  std::vector<unsigned> C(bucket_number+1,-1);
   std::vector<unsigned>::iterator itrv;
   std::vector<unsigned>::reverse_iterator itrvr;
 
@@ -162,8 +162,11 @@ std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned>
 
 // Find correct Bucket
 unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number){
+  int testo=0;
+  unsigned i=0;
+  try{
   std::srand(hash);
-  unsigned i=std::rand()%bucket_number;
+  i=std::rand()%bucket_number;
   unsigned d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
@@ -174,6 +177,11 @@ unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const u
       std::cerr<<"\nERROR: Bucket number to small.\n";
       break;}
   }
+  testo=1;
+
+}
+catch(const int exception){} //try bracket
+if (testo==0){std::cerr<<"error in GetBkt  ";}
   return i;
 }
 
@@ -190,9 +198,7 @@ std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & 
   unsigned hash2=0;
   for (int i=0;i<k;++i){
     hash= hash << 2 | ordValue(kmer[i]);
-  }
-  for (int i=k-1;i>-1;--i){
-    hash2= hash2 << 2 | (3-ordValue(kmer[i]));
+    hash2= hash2 << 2 | (3-ordValue(kmer[k-1-i]));
   }
   return std::make_pair(hash,hash2);
 }
