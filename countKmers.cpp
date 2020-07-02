@@ -162,11 +162,8 @@ std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned>
 
 // Find correct Bucket
 unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number){
-  int testo=0;
-  unsigned i=0;
-  try{
   std::srand(hash);
-  i=std::rand()%bucket_number;
+  unsigned i=std::rand()%bucket_number;
   unsigned d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
@@ -177,11 +174,6 @@ unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const u
       std::cerr<<"\nERROR: Bucket number to small.\n";
       break;}
   }
-  testo=1;
-
-}
-catch(const int exception){} //try bracket
-if (testo==0){std::cerr<<"error in GetBkt  ";}
   return i;
 }
 
