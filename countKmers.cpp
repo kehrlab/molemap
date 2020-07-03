@@ -46,20 +46,30 @@ int main(int argc, char *argv[]){
   }
 
   // defining key parameters
+  std::cerr << 1;
 
   unsigned k=std::stoi(argv[2]); // length of k-mer
+
+  std::cerr << 2;
+
   unsigned bucket_number=std::stoi(argv[3]); // should depend on k and the length of the indexed sequence
 
+  std::cerr << 3;
   // concatination of all sequences
 
   Dna5String seq=concat(seqs);
 
+  std::cerr << 4;
   // building index storage
 
   std::vector<unsigned> dir(bucket_number+1,0);       // pow(4,k) depending on k-mer size
+  std::cerr << 5;
   std::vector<unsigned> pos(length(seq),0);         // length(seq)-k+1 runns into error
+  std::cerr << 6;
   std::vector<unsigned> C(bucket_number+1,-1);
+  std::cerr << 7;
   std::vector<unsigned>::iterator itrv;
+  std::cerr << 8;
   std::vector<unsigned>::reverse_iterator itrvr;
 
   // counting k-mers
@@ -139,7 +149,7 @@ int main(int argc, char *argv[]){
 
   // Kontrollausgabe
 
-  // 
+  //
   // DnaString testDNA=argv[4];
   // std::vector<unsigned> positions=RetPos(testDNA,C,dir,pos,bucket_number);
   // for (itrv=positions.begin();itrv!=positions.end();itrv++){
