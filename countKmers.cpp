@@ -11,9 +11,9 @@ g++ countKmers.cpp -o countK
 */
 std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned k);
 std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned k);
-unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number);
-unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigned bucket_number);
-std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned bucket_number);
+unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned long long bucket_number);
+unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigned long long bucket_number);
+std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned long long bucket_number);
 
 int main(int argc, char *argv[]){
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 
   std::cerr << 2;
 
-  unsigned bucket_number=std::stoi(argv[3]); // should depend on k and the length of the indexed sequence
+  unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
 
   std::cerr << 3;
   // concatination of all sequences
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]){
   // counting k-mers
 
   std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k),k);    // calculation of the hash value for the first k-mer
-  unsigned c;
+  unsigned long long c;
 
   for (unsigned i = 0;i<length(seq)-k;++i){
     c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]){
 }
 
 // return k-mer positions
-std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned bucket_number){
+std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned long long bucket_number){
       std::vector<unsigned> positions;
       std::pair <unsigned,unsigned> hash=hashkMer(kmer,length(kmer));
       int c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
@@ -176,9 +176,9 @@ std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned>
 }
 
 // Find correct Bucket
-unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number){
+unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned long long bucket_number){
   std::srand(hash);
-  unsigned i=std::rand()%bucket_number;
+  unsigned long long i=std::rand()%bucket_number;
   unsigned d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
@@ -193,8 +193,8 @@ unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const u
 }
 
 // Request a Bucket
-unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigned bucket_number){
-  unsigned i = GetBkt(hash,C,bucket_number);
+unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigned long long bucket_number){
+  unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
