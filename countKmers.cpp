@@ -9,8 +9,8 @@ using namespace seqan;
 /*
 g++ countKmers.cpp -o countK
 */
-std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k);
-std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned & k);
+std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned k);
+std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned k);
 unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number);
 unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigned bucket_number);
 std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned bucket_number);
@@ -21,8 +21,8 @@ int main(int argc, char *argv[]){
 
   // for (int a=0;a<100;a++){
 
-  if(argc!=4){
-    std::cerr << "Usage: ./countK InputFILE k bucket_number \n\n";
+  if(argc!=5){
+    std::cerr << "Usage: ./countK InputFILE k bucket_number k-mer \n\n";
     exit(-1);
   }
 
@@ -64,20 +64,24 @@ int main(int argc, char *argv[]){
 
   // counting k-mers
 
-  std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k-1),k-1);
+  std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k),k);    // calculation of the hash value for the first k-mer
   unsigned c;
 
   for (unsigned i = 0;i<length(seq)-k;++i){
-    if (seq[i+k]!='N'){
+    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
+    dir[c+1]+=1;
+    if (seq[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
       hash=rollinghashkMer(hash.first,hash.second,seq[i+k],k);
     }
-    else {
+    else {                                                          // reinitialization of the hashvalue after encountering an "N"
       i+=k+1;
       hash=hashkMer(infix(seq,i,i+k),k);
     }
-    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);
-    dir[c+1]+=1;
   }
+  c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);       // indexing of the last element
+  dir[c+1]+=1;
+
+
   unsigned sum=length(seq)-k+1;
 
   // cumulative sum
@@ -89,20 +93,23 @@ int main(int argc, char *argv[]){
 
   // filling pos
 
-  hash=hashkMer(infix(seq,0,k-1),k-1);
+  hash=hashkMer(infix(seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
   for (unsigned i = 0;i<length(seq)-k;++i){
-    if (seq[i+k]!='N'){
+    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);   // filling of the position table
+    pos[dir[c+1]]=i;
+    dir[c+1]++;
+    if (seq[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
       hash=rollinghashkMer(hash.first,hash.second,seq[i+k],k);
     }
-    else {
+    else {                                                        // reinitialization of the hashvalue after encountering an "N"
       i+=k+1;
       hash=hashkMer(infix(seq,i,i+k),k);
     }
-    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
-    pos[dir[c+1]]=i+1;
-    dir[c+1]++;
   }
+  c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);     // filling the position table for the last element
+  pos[dir[c+1]]=length(seq)-k;
+  dir[c+1]++;
 
   // write index to file
   std::ofstream index;
@@ -133,7 +140,7 @@ int main(int argc, char *argv[]){
   // Kontrollausgabe
 
 
-  DnaString testDNA="AAAATGTC";
+  DnaString testDNA=argv[4];
   std::vector<unsigned> positions=RetPos(testDNA,C,dir,pos,bucket_number);
   for (itrv=positions.begin();itrv!=positions.end();itrv++){
     std::cout << *itrv <<" ";
@@ -168,7 +175,7 @@ unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const u
     counter+=1;
     i=(i+2*d+1)%bucket_number;
     d++;
-    if (counter > bucket_number){   // error if bucket_number not high enough
+    if (counter > 1000){   // error if bucket_number not high enough
       std::cerr<<"\nERROR: Bucket number to small.\n";
       break;}
   }
@@ -183,7 +190,7 @@ unsigned  ReqBkt(const unsigned & hash, std::vector<unsigned> & C, const unsigne
 }
 
 //  Hashfunction for k-mer
-std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k){
+std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned k){
   unsigned hash=0;
   unsigned hash2=0;
   for (int i=0;i<k;++i){
@@ -194,7 +201,7 @@ std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & 
 }
 
 // Rolling hashfunction for k-mer
-std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned & k){
+std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned k){
   oldHash=((oldHash << 2) | ordValue(newnuc)) % ((unsigned long)2 << (k*2-1));
   oldHash2=(oldHash2 >> 2) | (3-ordValue(newnuc)) << (k*2-2);
   return std::make_pair(oldHash,oldHash2);
