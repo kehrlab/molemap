@@ -45,6 +45,8 @@ int main(int argc, char *argv[]){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
+  std::cerr << "Genome read in. \n";
+
   // defining key parameters
 
   unsigned k=std::stoi(argv[2]); // length of k-mer
@@ -55,6 +57,8 @@ int main(int argc, char *argv[]){
 
   Dna5String seq=seqs[16];
 
+  std::cerr << "Genome lengths: " << length(seq) << "\n";
+
   // building index storage
 
   std::vector<unsigned> dir(bucket_number,0);       // pow(4,k) depending on k-mer size
@@ -63,12 +67,16 @@ int main(int argc, char *argv[]){
   std::vector<unsigned>::iterator itrv;
   std::vector<unsigned>::reverse_iterator itrvr;
 
+  std::cerr << "Index prepared. \n";
   // counting k-mers
 
   std::pair<unsigned, unsigned> hash=hashkMer(infix(seq,0,k),k);    // calculation of the hash value for the first k-mer
   unsigned long long c;
 
   for (unsigned i = 0;i<length(seq)-k;++i){
+    if (i%10000==0){
+        std::cerr << i << "\n";
+    }
     c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
     dir[c+1]+=1;
     if (seq[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
@@ -97,6 +105,9 @@ int main(int argc, char *argv[]){
   hash=hashkMer(infix(seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
   for (unsigned i = 0;i<length(seq)-k;++i){
+    if (i%10000==0){
+        std::cerr << i << "\n";
+    }
     c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);   // filling of the position table
     pos[dir[c+1]]=i;
     dir[c+1]++;
@@ -111,6 +122,9 @@ int main(int argc, char *argv[]){
   c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);     // filling the position table for the last element
   pos[dir[c+1]]=length(seq)-k;
   dir[c+1]++;
+
+
+  std::cerr << "Index build. \n";
 
   // write index to file
   // std::ofstream index;
@@ -147,6 +161,8 @@ int main(int argc, char *argv[]){
 
   std::sort(abundance.rbegin(),abundance.rend());
 
+  std::cerr <<  "abundances calculated.\n";
+
   // for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
   //   std::cout<<*itrv<<" ";
   // }
@@ -176,6 +192,7 @@ int main(int argc, char *argv[]){
 
     abund.close();
 
+  std::cerr <<  "abundances writen to file.\n";
 
   // Kontrollausgabe
 
