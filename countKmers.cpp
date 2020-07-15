@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
 
   Dna5String seq=seqs[16];
 
-  std::cerr << "Genome lengths: " << length(seq) << "\n";
+  std::cerr << "Chromosome lengths: " << length(seq) << "\n";
 
   // building index storage
 
@@ -158,10 +158,10 @@ int main(int argc, char *argv[]){
   for (itrv=dir.begin(),itrv2=abundance.begin();itrv!=dir.end()-1;itrv++,itrv2++){
     *itrv2=*(itrv+1)-*itrv;
   }
-
+  std::cerr <<  "abundances calculated.\n";
   std::sort(abundance.rbegin(),abundance.rend());
 
-  std::cerr <<  "abundances calculated.\n";
+  std::cerr <<  "abundances sorted.\n";
 
   // for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
   //   std::cout<<*itrv<<" ";
