@@ -153,15 +153,28 @@ int main(int argc, char *argv[]){
 
   // writing abundances to file
 
+  String<Dna, External<> > myLargeGenome;
+  // if (!open(extAbundance, "abundances.txt", OPEN_WRONLY | OPEN_CREATE)){
+  //   throw std::runtime_error("Could not open index counts file." );
+  // }
+  // assign(extAbundance, abundance, Exact());
 
-    std::ofstream abund;
-    abund.open("abundances.txt");
 
-    for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
-      abund<<*itrv<<" ";
-    }
 
-    abund.close();
+
+
+
+
+//
+    //
+    // std::ofstream abund;
+    // abund.open("abundances.txt");
+    //
+    // for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
+    //   abund<<*itrv<<" ";
+    // }
+    //
+    // abund.close();
 
 
   // Kontrollausgabe
