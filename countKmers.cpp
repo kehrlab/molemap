@@ -53,13 +53,13 @@ int main(int argc, char *argv[]){
 
   // concatination of all sequences
 
-  Dna5String seq=concat(seqs);
+  Dna5String seq=seqs[16];
 
   // building index storage
 
-  std::vector<unsigned> dir(bucket_number+1,0);       // pow(4,k) depending on k-mer size
+  std::vector<unsigned> dir(bucket_number,0);       // pow(4,k) depending on k-mer size
   std::vector<unsigned> pos(length(seq),0);         // length(seq)-k+1 runns into error
-  std::vector<unsigned> C(bucket_number+1,-1);
+  std::vector<unsigned> C(bucket_number,-1);
   std::vector<unsigned>::iterator itrv;
   std::vector<unsigned>::reverse_iterator itrvr;
 
@@ -69,7 +69,6 @@ int main(int argc, char *argv[]){
   unsigned long long c;
 
   for (unsigned i = 0;i<length(seq)-k;++i){
-    if (i%100000==0){std::cerr << i << "\n";}
     c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
     dir[c+1]+=1;
     if (seq[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
@@ -114,29 +113,55 @@ int main(int argc, char *argv[]){
   dir[c+1]++;
 
   // write index to file
-  std::ofstream index;
-  index.open("index.txt");
+  // std::ofstream index;
+  // index.open("index.txt");
+  //
+  // index << bucket_number << " " << k << " " << length(seq) << "\n";
+  //
+  // index << "\n";
+  // for (itrv=C.begin();itrv!=C.end();itrv++){
+  //   index << *itrv << " ";
+  // }
+  // index << "\n";
+  //
+  // index << "\n";
+  // for (itrv=dir.begin();itrv!=dir.end();itrv++){
+  //   index << *itrv << " ";
+  // }
+  // index << "\n";
+  //
+  // index << "\n";
+  // for (itrv=pos.begin();itrv!=pos.end();itrv++){
+  //   index << *itrv << " ";
+  // }
+  // index << "\n";
+  // index.close();
 
-  index << bucket_number << " " << k << " " << length(seq) << "\n";
+  // calculating abundances of k-k_mers
 
-  index << "\n";
-  for (itrv=C.begin();itrv!=C.end();itrv++){
-    index << *itrv << " ";
+  std::vector<unsigned>::iterator itrv2;
+  std::vector<unsigned> abundance(bucket_number-1,0);
+  for (itrv=dir.begin(),itrv2=abundance.begin();itrv!=dir.end()-1;itrv++,itrv2++){
+    *itrv2=*(itrv+1)-*itrv;
   }
-  index << "\n";
 
-  index << "\n";
-  for (itrv=dir.begin();itrv!=dir.end();itrv++){
-    index << *itrv << " ";
-  }
-  index << "\n";
+  std::sort(abundance.rbegin(),abundance.rend());
 
-  index << "\n";
-  for (itrv=pos.begin();itrv!=pos.end();itrv++){
-    index << *itrv << " ";
-  }
-  index << "\n";
-  index.close();
+  // for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
+  //   std::cout<<*itrv<<" ";
+  // }
+
+  // writing abundances to file
+
+
+    std::ofstream abund;
+    abund.open("abundances.txt");
+
+    for (itrv=abundance.begin();itrv!=abundance.end();itrv++){
+      abund<<*itrv<<" ";
+    }
+
+    abund.close();
 
 
   // Kontrollausgabe
