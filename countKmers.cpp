@@ -90,15 +90,22 @@ int main(int argc, char *argv[]){
   c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);       // indexing of the last element
   dir[c+1]+=1;
 
+  std::cerr << "Index initially filled. \n";
 
   unsigned sum=length(seq)-k+1;
 
+
   // cumulative sum
+  std::vector<unsigned> abundance; //tracking k-mer abundances
 
   for (itrvr=dir.rbegin();itrvr!=dir.rend();++itrvr){
+    if (*itrvr!=0){   //tracking k-mer abundances
     sum-=*itrvr;
+    abundance.push_back(*itrvr);} //tracking k-mer abundances
     *itrvr=sum;
   }
+
+  std::cerr << "cumulated sum culculation finished. \n";
 
   // filling pos
 
@@ -153,12 +160,6 @@ int main(int argc, char *argv[]){
 
   // calculating abundances of k-k_mers
 
-  std::vector<unsigned>::iterator itrv2;
-  std::vector<unsigned> abundance(bucket_number-1,0);
-  for (itrv=dir.begin(),itrv2=abundance.begin();itrv!=dir.end()-1;itrv++,itrv2++){
-    *itrv2=*(itrv+1)-*itrv;
-  }
-  std::cerr <<  "abundances calculated.\n";
   std::sort(abundance.rbegin(),abundance.rend());
 
   std::cerr <<  "abundances sorted.\n";
