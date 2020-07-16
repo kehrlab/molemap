@@ -55,7 +55,9 @@ int main(int argc, char *argv[]){
 
   // concatination of all sequences
 
-  Dna5String seq=seqs[16];
+  Dna5String seq=seqs[36];
+
+  std::cerr << "ID: " << ids[36] << "\n";
 
   std::cerr << "Chromosome lengths: " << length(seq) << "\n";
 
