@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
 
   // for (int a=0;a<100;a++){
 
-  if(argc!=5){
+  if(argc!=4){
     std::cerr << "Usage: ./countK InputFILE k bucket_number \n\n";
     exit(-1);
   }
@@ -176,13 +176,13 @@ int main(int argc, char *argv[]){
   // Kontrollausgabe
 
 
-  DnaString testDNA=argv[4];
-  std::vector<std::pair <unsigned,unsigned>> positions=RetPos(testDNA,C,dir,pos,bucket_number);
-  std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
-  for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
-    std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
-  }
-  std::cout << "\n";
+  // DnaString testDNA=argv[4];
+  // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(testDNA,C,dir,pos,bucket_number);
+  // std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
+  // for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
+  //   std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
+  // }
+  // std::cout << "\n";
 
 // }
 
