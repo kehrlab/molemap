@@ -134,23 +134,23 @@ while (!atEnd(file))
 
     unsigned run=0;
     std::vector<unsigned> run_lengths;
-    if (Master_list.empty()!=1){
-      for (itrM=Master_list.begin();itrM!=(Master_list.end()-1);itrM++){
-          if (std::get<0>(*itrM)==std::get<0>(*(itrM+1))){
-            if (std::get<1>(*itrM)==std::get<1>(*(itrM+1))){
-              run++;
-            }
-          }
-          else {
-            run_lengths.push_back(run);
-            all_run_lengths.push_back(run);
-            if (run>=2){
-              std::cout << "run lenght: " << run << "\nposition: (" << std::get<0>(*itrM) << ") " << std::get<2>(*itrM)-run << " - "<< std::get<2>(*itrM)+k << "\n";
-            }
-            run=0;}
 
-      }
+    for (itrM=Master_list.begin();itrM!=(Master_list.end());itrM++){
+        if (std::get<0>(*itrM)==std::get<0>(*(itrM+1))){
+          if (std::get<1>(*itrM)==std::get<1>(*(itrM+1))){
+            run++;
+          }
+        }
+        else {
+          run_lengths.push_back(run);
+          all_run_lengths.push_back(run);
+          if (run>=2){
+            std::cout << "run lenght: " << run << "\nposition: (" << std::get<0>(*itrM) << ") " << std::get<2>(*itrM)-run << " - "<< std::get<2>(*itrM)+k << "\n";
+          }
+          run=0;}
+
     }
+  
 
     if (run_lengths.empty()!=1){
       best_run_lengths.push_back(*max_element(run_lengths.begin(),run_lengths.end()));
