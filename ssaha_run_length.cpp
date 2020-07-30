@@ -4,98 +4,127 @@
 # include <iostream>
 # include <time.h>
 # include <fstream>
+# include "./src/functions.h"
 using namespace seqan;
 
 /*
 g++ ssaha_run_length.cpp -o ssaha
 */
 
-std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k);
-std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned bucket_number);
-unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number);
-
-
 
 
 int main(int argc, char *argv[]){
 
 if(argc!=3){
-  std::cerr << "Usage: ./ssaha IndexFILE kmerFile \n\n";
+  std::cerr << "Usage: ./ssaha readFile k \n\n";
   exit(-1);
 }
 
-unsigned k; // length of k-mers in index
-unsigned bucket_number;
-unsigned pos_length;
 
-
-// reading the k-mers
+/*
+loading in the reads
+*/
 
 StringSet<CharString> ids;
-
 StringSet<Dna5String> k_mers;
 
-try {
-  SeqFileIn file(argv[2]);
+// // reading from fastq/fasta files:
+//
+// try {
+//   SeqFileIn file(argv[1]);
+//
+//   readRecords(ids, k_mers, file);
+//
+//   close(file);
+// }
+// catch (ParseError const & e){
+//   std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
+// }
+// catch (IOError const & e){
+//   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
+// }
 
-  readRecords(ids, k_mers, file);
+// reading in from BAM/SAM files
 
-  close(file);
+BamFileIn file;
+if (!open(file, toCString(argv[1])))
+{
+    std::cerr << "ERROR: Could not open " << toCString(argv[1]) << std::endl;
+    return 1;
 }
-catch (ParseError const & e){
-  std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
-}
-catch (IOError const & e){
-  std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
-}
+BamHeader header;
+readHeader(header,file);
 
-// reading the Index
+/*
+reading the Index
+*/
 
-std::ifstream index;
-index.open(argv[1]);
-index>>bucket_number>>k>>pos_length;
+String<unsigned> dir;
+String<std::pair <unsigned,unsigned>> pos;
+String<unsigned> C;
 
-std::vector<unsigned> dir(bucket_number,0);       // pow(4,k) depending on k-mer size
-std::vector<unsigned> pos(pos_length,0);         // length(seq)-k+1 runns into error
-std::vector<unsigned> C(pow(4,k)+1,0);
-std::vector<unsigned>::iterator itrv;
 
-//reading C
-for (itrv=C.begin();itrv!=C.end();itrv++){
-    index >> *itrv;
+String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
+if (!open(extpos, "index_pos.txt", OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
 }
-// reading dir
-for (itrv=dir.begin();itrv!=dir.end();itrv++){
-    index >> *itrv;
+assign(pos, extpos, Exact());
+close(extpos);
+
+String<unsigned, External<> > extdir;
+if (!open(extdir, "index_dir.txt", OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
 }
-// reading pos
-for (itrv=pos.begin();itrv!=pos.end();itrv++){
-    index >> *itrv;
+assign(dir, extdir, Exact());
+close(extdir);
+
+String<unsigned, External<> > extC;
+if (!open(extC, "index_C.txt", OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
 }
-index.close();
+assign(C, extC, Exact());
+close(extC);
+
+unsigned k=std::stoi(argv[2]); // length of k-mers in index
+unsigned bucket_number=length(C);
 
 std::vector<unsigned> all_run_lengths;
 std::vector<unsigned> best_run_lengths;
 
-typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-for (TStringSetIterator it = begin(k_mers); it!=end(k_mers); ++it){
 
+// // reading from fastq/fasta files:
+//
+// typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
+// for (TStringSetIterator it = begin(k_mers); it!=end(k_mers); ++it){ // iTERATING OVER THE reads
+//   std::cerr << *it << "\n";
 
-  // Searching for the kmer
+// reading in from BAM/SAM files
+
+while (!atEnd(file))
+{
+  BamAlignmentRecord record;
+  readRecord(record, file);
+  Dna5String seq=record.seq;
+  Dna5String * it=&seq;
+
+/*
+ Searching for the kmer
+*/
 
     // building the Master_list
+  std::vector<std::tuple<unsigned,int,unsigned>> Master_list;
+  std::vector<std::tuple<unsigned,int,unsigned>>::iterator itrM;
+  std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
 
-  std::vector<std::tuple<unsigned,unsigned>> Master_list;
-  std::vector<std::tuple<unsigned,unsigned>>::iterator itrM; // better to declare this in the for loops?
-
-
-  for (int t=0;t<(length(*it)-k);t++){
-    std::vector<unsigned> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
-
-    for (itrv=positions.begin();itrv!=positions.end();itrv++){
-      Master_list.push_back(std::make_tuple(*itrv-t,*itrv));
+  if(int(length(*it)-k)>0){
+    for (int t=0;t<(length(*it)-k);t++){
+      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
+      for (itrp=positions.begin();itrp!=positions.end();itrp++){
+        Master_list.push_back(std::make_tuple((*itrp).first,(*itrp).second-t,(*itrp).second));
+      }
     }
   }
+  else {continue;}
 
     // sort the Master_list
 
@@ -104,42 +133,44 @@ for (TStringSetIterator it = begin(k_mers); it!=end(k_mers); ++it){
     // search for runs in the Master_list
 
     unsigned run=0;
-
     std::vector<unsigned> run_lengths;
-    for (itrM=Master_list.begin();itrM!=(Master_list.end()-1);itrM++){
-        std::cerr << "itrM:" << std::get<0>(*itrM) << "\n";
-        std::cerr << "(itrM+1):" << std::get<0>(*(itrM+1))<< "\n";
-        if (std::get<0>(*itrM)==std::get<0>(*(itrM+1))){
-          run++;
-        }
-        else {
-          run_lengths.push_back(run);
-          all_run_lengths.push_back(run);
-          if (run>=2){
-            std::cout << "run lenght: " << run << "\nposition: " << std::get<0>(*itrM) << " - "<< std::get<1>(*itrM)+k << "\n";
+    if (Master_list.empty()!=1){
+      for (itrM=Master_list.begin();itrM!=(Master_list.end()-1);itrM++){
+          if (std::get<0>(*itrM)==std::get<0>(*(itrM+1))){
+            if (std::get<1>(*itrM)==std::get<1>(*(itrM+1))){
+              run++;
+            }
           }
-          run=0;}
+          else {
+            run_lengths.push_back(run);
+            all_run_lengths.push_back(run);
+            if (run>=2){
+              std::cout << "run lenght: " << run << "\nposition: (" << std::get<0>(*itrM) << ") " << std::get<2>(*itrM)-run << " - "<< std::get<2>(*itrM)+k << "\n";
+            }
+            run=0;}
 
+      }
     }
 
-
-    best_run_lengths.push_back(*max_element(run_lengths.begin(),run_lengths.end()));
-
+    if (run_lengths.empty()!=1){
+      best_run_lengths.push_back(*max_element(run_lengths.begin(),run_lengths.end()));
+    }
 
 }
 
 // saving run information to file
 
+std::vector<unsigned>::iterator itrv;
 std::ofstream all_runs;
 all_runs.open("all_run_lengths.txt");
 for (itrv=all_run_lengths.begin();itrv!=all_run_lengths.end();++itrv){
-  all_runs << *itrv;
+  all_runs << *itrv << " ";
 }
 
 std::ofstream best_runs;
 best_runs.open("best_run_lengths.txt");
 for (itrv=best_run_lengths.begin();itrv!=best_run_lengths.end();++itrv){
-  best_runs << *itrv;
+  best_runs << *itrv << " ";
 }
 
 // Kontrollausgabe
@@ -153,44 +184,4 @@ for (itrv=best_run_lengths.begin();itrv!=best_run_lengths.end();++itrv){
 // }
 // std::cout << "\n";
 
-
-}
-
-
-// Functions
-
-unsigned  GetBkt(const unsigned & hash, const std::vector<unsigned> & C, const unsigned bucket_number){
-  std::srand(hash);
-  unsigned i=std::rand()%bucket_number;
-  unsigned d=0;
-  unsigned counter=0;
-  while(C[i]!=hash and C[i]!=-1){
-    counter+=1;
-    i=(i+2*d+1)%bucket_number;
-    d++;
-    if (counter > bucket_number){   // error if bucket_number not high enough
-      std::cerr<<"\nERROR: Bucket number to small.\n";
-      break;}
-  }
-  return i;
-}
-
-std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned & k){
-  unsigned hash=0;
-  unsigned hash2=0;
-  for (int i=0;i<k;++i){
-    hash= hash << 2 | ordValue(kmer[i]);
-    hash2= hash2 << 2 | (3-ordValue(kmer[k-1-i]));
-  }
-  return std::make_pair(hash,hash2);
-}
-
-std::vector<unsigned> RetPos(const DnaString & kmer, const std::vector<unsigned> & C,const std::vector<unsigned> & dir,const std::vector<unsigned> & pos, const unsigned bucket_number){
-      std::vector<unsigned> positions;
-      std::pair <unsigned,unsigned> hash=hashkMer(kmer,length(kmer));
-      int c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
-      for (unsigned i = dir[c];i!=dir[c+1];i++){
-        positions.push_back(pos[i]);
-      }
-      return positions;
 }
