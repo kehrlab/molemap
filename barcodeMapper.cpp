@@ -89,24 +89,30 @@ std::vector<std::tuple<unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a)   i=
 std::vector<std::tuple<unsigned,unsigned,unsigned>>::iterator itrk;
 std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
 
+std::cerr << "Index and reads loaded.\n";
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
-  /*temp*/ std::cerr << *it << "\n";
-
+  std::cerr << 0;
   // find k-mers and append positions to kmer_list
 
   if(int(length(*it)-k)>0){
+    std::cerr <<1;
     for (int t=0;t<(length(*it)-k);t++){
+      std::cerr <<2;
       std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
+      std::cerr <<3;
       for (itrp=positions.begin();itrp!=positions.end();itrp++){
+        std::cerr <<4;
         kmer_list.push_back(std::make_tuple((*itrp).first,(*itrp).second,positions.size()));
+        std::cerr << "5\n";
       }
     }
   }
   else {continue;}
 }
 
+std::cerr << "k-mers listed.\n"
 // std::cerr<<"kmer_list is build. \n";
 //sorting k-mers by position in reference
 
