@@ -20,7 +20,7 @@ if(argc!=3){
 defining Parameters
 */
 
-int window_size=20;   // size of the genomic windows to wich the reads are matched
+int window_size=200;   // size of the genomic windows to wich the reads are matched
 int window_count=1000;   // amount of saved candidate windows
 
 /*
