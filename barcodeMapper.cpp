@@ -124,7 +124,7 @@ sort(kmer_list.begin(),kmer_list.end());
 unsigned slider=1;
 double window_quality=0;
 if (ABU(kmer_list.begin())!=1){
-  window_quality+=1/log(ABU(kmer_list.begin()));
+  window_quality+=1/lookLog(ABU(kmer_list.begin()));
 } else {window_quality+=2;}
 
 
@@ -141,12 +141,12 @@ std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw;
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over kmer_list
     // trimm the begining of the window
     if (ABU(itrk-1)!=1){
-      window_quality-=1/log(ABU(itrk-1));
+      window_quality-=1/lookLog(ABU(itrk-1));
     } else {window_quality-=2;}
     // expanding window to maximum length
     while(REF(itrk)==REF(itrk+slider) && POS(itrk+slider)-POS(itrk)<=window_size){ // while k-mers inside sliding window
         if (ABU(itrk+slider)!=1){                                 // updating window quality
-          window_quality+=1/log(ABU(itrk+slider));
+          window_quality+=1/lookLog(ABU(itrk+slider));
         } else {window_quality+=2;}
         slider++;
     }
@@ -197,7 +197,6 @@ for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
 float lookLog(unsigned num){
   switch(num){
-    case 1: return 0;
     case 2: return 0.693147;
     case 3: return 1.09861;
     case 4: return 1.38629;
@@ -296,5 +295,6 @@ float lookLog(unsigned num){
     case 97: return 4.57471;
     case 98: return 4.58497;
     case 99: return 4.59512;
+    default: return 5;
   }
 }
