@@ -34,7 +34,7 @@ unsigned long long  GetBkt(const unsigned & hash, const String<unsigned> & C, co
 }
 
 // Request a Bucket
-unsigned  ReqBkt(const unsigned & hash, String<unsigned> & C, const unsigned long long bucket_number){
+unsigned  long long ReqBkt(const unsigned & hash, String<unsigned> & C, const unsigned long long bucket_number){
   unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
