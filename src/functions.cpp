@@ -17,7 +17,7 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const DnaString & kmer, const 
 }
 
 // Find correct Bucket
-unsigned  GetBkt(const unsigned & hash, const String<unsigned> & C, const unsigned long long bucket_number){
+unsigned long long  GetBkt(const unsigned & hash, const String<unsigned> & C, const unsigned long long bucket_number){
   std::srand(hash);
   unsigned long long i=std::rand()%bucket_number;
   unsigned d=0;
