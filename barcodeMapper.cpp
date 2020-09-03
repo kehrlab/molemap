@@ -57,21 +57,21 @@ String<unsigned> C;
 
 
 String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, "index_pos.txt", OPEN_RDONLY)){
+if (!open(extpos, "index_pos_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(pos, extpos, Exact());
 close(extpos);
 
 String<unsigned, External<> > extdir;
-if (!open(extdir, "index_dir.txt", OPEN_RDONLY)){
+if (!open(extdir, "index_dir_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
 String<unsigned, External<> > extC;
-if (!open(extC, "index_C.txt", OPEN_RDONLY)){
+if (!open(extC, "index_C_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(C, extC, Exact());
