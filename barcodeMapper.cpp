@@ -125,10 +125,12 @@ std::cerr << "\n array size: " << sizeof(lookLog)/sizeof(lookLog[0]);
 
 unsigned slider=1;
 double window_quality=0;
-if (ABU(itrk+slider)==1){                                 // updating window quality
+if (ABU(kmer_list.begin())==1){                                 // updating window quality
   window_quality+=2;}
-else if(ABU(itrk+slider)>99){window_quality+=0.2;}
-else {window_quality+=1/lookLog[ABU(itrk+slider)];}
+else if(ABU(kmer_list.begin())>99){
+  window_quality+=0.2;}
+else{
+  window_quality+=1/lookLog[ABU(kmer_list.begin())];}
 
 std::cerr << "\nafter first log usage.\n";
 
@@ -145,9 +147,12 @@ std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw;
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over kmer_list
     // trimm the begining of the window
     if (ABU(itrk-1)==1){                                 // updating window quality
-      window_quality-=2;}
-    else if(ABU(itrk-1)>99){window_quality-=0.2;}
-    else {window_quality-=1/lookLog[ABU(itrk-1)];}
+      window_quality-=2;
+    }else if(ABU(itrk-1)>99){
+      window_quality-=0.2;
+    }else{
+      window_quality-=1/lookLog[ABU(itrk-1)];
+    }
     // expanding window to maximum length
     while(REF(itrk)==REF(itrk+slider) && POS(itrk+slider)-POS(itrk)<=window_size){ // while k-mers inside sliding window
         if (ABU(itrk+slider)==1){                                 // updating window quality
