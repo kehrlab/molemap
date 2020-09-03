@@ -1,5 +1,5 @@
 TARGET1 = countK
-TARGET2 = ssaha
+TARGET2 = bcmap
 BUILD_DIR = ./build
 SRC_DIR = ./src
 
@@ -7,13 +7,13 @@ SRCS := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRCS:.cpp=.o))
 
 # Compiler
-CXX = g++
+CXX = ~/work/miniconda/bin/x86_64-conda_cos6-linux-gnu-g++
 CC = $(CXX)
 
 # Set this to include SeqAn libraries, either system wide
 # or download into current folder and set to .
-# SEQAN_LIB = ./src
-# CXXFLAGS += -I $(SEQAN_LIB) #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
+SEQAN_LIB = ../../miniconda/include -L ../../miniconda/lib/
+CXXFLAGS += -I $(SEQAN_LIB) #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
 # DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
@@ -29,7 +29,7 @@ CC = $(CXX)
 # RELEASE build
 # CXXFLAGS += -O3 -DSEQAN_ENABLE_TESTING=0 -DSEQAN_ENABLE_DEBUG=0
 
-LDLIBS = -lz -lpthread -lrt
+LDLIBS = -lpthread -lrt #-lz
 
 all: $(TARGET1) $(TARGET2)
 # $(TARGET): countKmers.cpp $(BUILD_DIR)/functions.o #$(SRC_DIR)/functions.h
@@ -42,7 +42,7 @@ $(TARGET1): $(OBJS)
 	$(CC) countKmers.cpp $(OBJS) -o $@ $(LDLIBS)
 
 $(TARGET2): $(OBJS)
-	$(CC) ssaha.cpp $(OBJS) -o $@ $(LDLIBS)
+	$(CC) barcodeMapper.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
