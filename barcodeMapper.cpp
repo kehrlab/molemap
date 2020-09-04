@@ -57,21 +57,21 @@ String<unsigned> C;
 
 
 String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, "index_pos_21.txt", OPEN_RDONLY)){
+if (!open(extpos, "index_pos.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(pos, extpos, Exact());
 close(extpos);
 
 String<unsigned, External<> > extdir;
-if (!open(extdir, "index_dir_21.txt", OPEN_RDONLY)){
+if (!open(extdir, "index_dir.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
 String<unsigned, External<> > extC;
-if (!open(extC, "index_C_21.txt", OPEN_RDONLY)){
+if (!open(extC, "index_C.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(C, extC, Exact());
@@ -99,8 +99,9 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
   if(int(length(*it)-k)>0){
     for (int t=0;t<(length(*it)-k);t++){
       std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
+      unsigned abundance=positions.size();
       for (itrp=positions.begin();itrp!=positions.end();itrp++){
-        kmer_list.push_back(std::make_tuple((*itrp).first,(*itrp).second,positions.size()));
+        kmer_list.push_back(std::make_tuple((*itrp).first,(*itrp).second,abundance));
       }
     }
   }
@@ -126,11 +127,12 @@ std::cerr << "\n array size: " << sizeof(lookLog)/sizeof(lookLog[0]);
 unsigned slider=1;
 double window_quality=0;
 if (ABU(kmer_list.begin())==1){                                 // updating window quality
-  window_quality+=2;}
-else if(ABU(kmer_list.begin())>99){
-  window_quality+=0.2;}
-else{
-  window_quality+=1/lookLog[ABU(kmer_list.begin())];}
+  window_quality+=2;
+}else if(ABU(kmer_list.begin())>99){
+  window_quality+=0.2;
+}else{
+  window_quality+=1/lookLog[ABU(kmer_list.begin())];
+}
 
 std::cerr << "\nafter first log usage.\n";
 
@@ -156,9 +158,12 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
     // expanding window to maximum length
     while(REF(itrk)==REF(itrk+slider) && POS(itrk+slider)-POS(itrk)<=window_size){ // while k-mers inside sliding window
         if (ABU(itrk+slider)==1){                                 // updating window quality
-          window_quality+=2;}
-        else if(ABU(itrk+slider)>99){window_quality+=0.2;}
-        else {window_quality+=1/lookLog[ABU(itrk+slider)];}
+          window_quality+=2;
+        }else if(ABU(itrk+slider)>99){
+          window_quality+=0.2;
+        }else {
+          window_quality+=1/lookLog[ABU(itrk+slider)];
+        }
         slider++;
     }
     slider--;
@@ -169,8 +174,18 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
        for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
          if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
            if (window_quality > std::get<0>(*itrbw)){
-             *itrbw=std::make_tuple(window_quality, REF(itrk), POS(itrk));
-             sort(best_windows.begin(),best_windows.end());
+             best_windows.erase(itrbw);
+             for (itrbw=best_windows.begin()+1;itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
+                if(window_quality < std::get<0>(*itrbw)){                                                       // if (as soon as) quality is worse than quality in best_windows
+                best_windows.insert(itrbw,std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // insert new window there
+                inserted=1;
+                break;
+                }
+              }
+              if(inserted==0){
+                best_windows.push_back(std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // if no better window in best_windows insert new window at the end
+              }
+
            }
            inserted=1;
            break;
