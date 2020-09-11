@@ -22,7 +22,7 @@ defining Parameters
 */
 
 int window_size=10000;   // size of the genomic windows to wich the reads are matched
-int window_count=1000;   // amount of saved candidate windows
+int window_count=100;   // amount of saved candidate windows
 
 /*
 loading in the reads
@@ -127,7 +127,7 @@ double window_quality=0;
 if (ABU(kmer_list.begin())==1){                                 // updating window quality
   window_quality+=2;
 }else if(ABU(kmer_list.begin())>99){
-  window_quality+=0.2;
+  window_quality+=0.01;
 }else{
   window_quality+=1/lookLog[ABU(kmer_list.begin())];
 }
