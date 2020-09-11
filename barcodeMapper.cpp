@@ -167,7 +167,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
 
     // checking if current window qualifies
     int inserted=0;
-    if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)<POS(itrk-1)) { // if current window better than worst window:
+    if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)!=POS(itrk-1)) { // if current window better than worst window:
        for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
          if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
            if (window_quality > std::get<0>(*itrbw)){
@@ -175,7 +175,6 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
                std::cerr << "before: "<< std::get<2>(*itrbw);
              }
              *itrbw=std::make_tuple(window_quality, REF(itrk), POS(itrk));
-             sort(best_windows.begin(),best_windows.end());
              if(POS(itrk)<2000){
                std::cerr << " after: "<< std::get<2>(*itrbw) << "\n";
              }
@@ -197,6 +196,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
            break;
          }
        }
+       sort(best_windows.begin(),best_windows.end());
        if(inserted==0){                                                                                     // if no overlapping window was found:
          for (itrbw=best_windows.begin()+1;itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
             if(window_quality < std::get<0>(*itrbw)){                                                       // if (as soon as) quality is worse than quality in best_windows
