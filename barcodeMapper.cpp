@@ -21,7 +21,7 @@ if(argc!=3){
 defining Parameters
 */
 
-int window_size=100000;   // size of the genomic windows to wich the reads are matched
+int window_size=10000;   // size of the genomic windows to wich the reads are matched
 int window_count=100;   // amount of saved candidate windows
 
 /*
@@ -57,21 +57,21 @@ String<unsigned> C;
 
 
 String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, "index_pos.txt", OPEN_RDONLY)){
+if (!open(extpos, "index_pos_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(pos, extpos, Exact());
 close(extpos);
 
 String<unsigned, External<> > extdir;
-if (!open(extdir, "index_dir.txt", OPEN_RDONLY)){
+if (!open(extdir, "index_dir_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
 String<unsigned, External<> > extC;
-if (!open(extC, "index_C.txt", OPEN_RDONLY)){
+if (!open(extC, "index_C_21.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(C, extC, Exact());
@@ -174,17 +174,19 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
        for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
          if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
            if (window_quality > std::get<0>(*itrbw)){
-             best_windows.erase(itrbw);
-             for (itrbw2=best_windows.begin()+1;itrbw2!=best_windows.end();itrbw2++){                             // iterate over best_windows
-                if(window_quality < std::get<0>(*itrbw2)){                                                       // if (as soon as) quality is worse than quality in best_windows
-                    best_windows.insert(itrbw2,std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // insert new window there
-                    inserted=1;
-                    break;
-                }
-              }
-              if(inserted==0){
-                best_windows.push_back(std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // if no better window in best_windows insert new window at the end
-              }
+             *itrbw=std::make_tuple(window_quality, REF(itrk), POS(itrk));
+             sort(best_windows.begin(),best_windows.end());
+             // best_windows.erase(itrbw);
+             // for (itrbw2=best_windows.begin()+1;itrbw2!=best_windows.end();itrbw2++){                             // iterate over best_windows
+             //    if(window_quality < std::get<0>(*itrbw2)){                                                       // if (as soon as) quality is worse than quality in best_windows
+             //        best_windows.insert(itrbw2,std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // insert new window there
+             //        inserted=1;
+             //        break;
+             //    }
+             //  }
+             //  if(inserted==0){
+             //    best_windows.push_back(std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // if no better window in best_windows insert new window at the end
+             //  }
 
 
            }
