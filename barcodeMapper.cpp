@@ -133,9 +133,9 @@ if (ABU(kmer_list.begin())==1){                                 // updating wind
 }
 
 
-std::vector<std::tuple<double,unsigned,unsigned>> best_windows(window_count,std::make_tuple(0,0,0)); //(maping_quality, reference, position in referende)
-std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw;
-std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw2;
+std::vector<std::tuple<double,unsigned,int>> best_windows(window_count,std::make_tuple(0,0,-(window_size+10))); //(maping_quality, reference, position in referende)
+std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
+std::vector<std::tuple<double,unsigned,int>>::iterator itrbw2;
 // std::cerr<<"iteration prepared. \n";
 
 // for(itrk=kmer_list.begin();itrk!=kmer_list.end(); itrk++){
@@ -169,7 +169,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
     int inserted=0;
     if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)!=POS(itrk-1)) { // if current window better than worst window:
        for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
-         if (std::get<0>(*itrbw)=!0 && std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
+         if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
            if (window_quality > std::get<0>(*itrbw)){
              if(POS(itrk)<2000){
                std::cerr << "before: "<< std::get<2>(*itrbw);
