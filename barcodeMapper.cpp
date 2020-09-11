@@ -138,7 +138,7 @@ std::cerr << "\nafter first log usage.\n";
 
 std::vector<std::tuple<double,unsigned,unsigned>> best_windows(window_count,std::make_tuple(0,0,0)); //(maping_quality, reference, position in referende)
 std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw;
-
+std::vector<std::tuple<double,unsigned,unsigned>>::iterator itrbw2;
 // std::cerr<<"iteration prepared. \n";
 
 // for(itrk=kmer_list.begin();itrk!=kmer_list.end(); itrk++){
@@ -175,16 +175,17 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
          if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
            if (window_quality > std::get<0>(*itrbw)){
              best_windows.erase(itrbw);
-             for (itrbw=best_windows.begin()+1;itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
-                if(window_quality < std::get<0>(*itrbw)){                                                       // if (as soon as) quality is worse than quality in best_windows
-                best_windows.insert(itrbw,std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // insert new window there
-                inserted=1;
-                break;
+             for (itrbw2=best_windows.begin()+1;itrbw2!=best_windows.end();itrbw2++){                             // iterate over best_windows
+                if(window_quality < std::get<0>(*itrbw2)){                                                       // if (as soon as) quality is worse than quality in best_windows
+                    best_windows.insert(itrbw2,std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // insert new window there
+                    inserted=1;
+                    break;
                 }
               }
               if(inserted==0){
                 best_windows.push_back(std::make_tuple(window_quality, REF(itrk), POS(itrk)));      // if no better window in best_windows insert new window at the end
               }
+
 
            }
            inserted=1;
