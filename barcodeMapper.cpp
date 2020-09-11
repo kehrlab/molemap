@@ -22,7 +22,7 @@ defining Parameters
 */
 
 int window_size=10000;   // size of the genomic windows to wich the reads are matched
-int window_count=100;   // amount of saved candidate windows
+int window_count=1000;   // amount of saved candidate windows
 
 /*
 loading in the reads
@@ -208,7 +208,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
 // trimm unused parts of best_windows
 
 while(std::get<0>(*best_windows.begin())==0){
-  best_windows.erase(best_windows.begin())
+  best_windows.erase(best_windows.begin());
 }
 
 // std::cerr<<"best_windows found. \n";
