@@ -125,9 +125,9 @@ float lookLog[100]= {0,1,0.693147,1.09861,1.38629,1.60944,1.79176,1.94591,2.0794
 unsigned slider=1;
 double window_quality=0;
 if (ABU(kmer_list.begin())==1){                                 // updating window quality
-  window_quality+=2;
+  window_quality+=3;
 }else if(ABU(kmer_list.begin())>99){
-  window_quality+=0.01;
+  window_quality+=0.2;
 }else{
   window_quality+=1/lookLog[ABU(kmer_list.begin())];
 }
