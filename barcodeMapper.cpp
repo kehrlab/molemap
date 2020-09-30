@@ -114,7 +114,7 @@ std::cerr << "k-mers listed.  ";
 
 auto tend = std::chrono::high_resolution_clock::now();
 std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
-
+tbegin = std::chrono::high_resolution_clock::now();
 // std::cerr<<"kmer_list is build. \n";
 //sorting k-mers by position in reference
 
@@ -216,8 +216,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
 while(std::get<0>(*best_windows.begin())==0){
   best_windows.erase(best_windows.begin());
 }
-
-// std::cerr<<"best_windows found. \n";
+std::cerr<<"best_windows found. ";
+auto tend = std::chrono::high_resolution_clock::now();
+std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
 
 // Konttrollausgabe
 
