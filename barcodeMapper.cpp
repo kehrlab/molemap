@@ -3,6 +3,7 @@
 # include <seqan/sequence.h>
 # include <fstream>
 # include "./src/functions.h"
+# include <time.h>
 using namespace seqan;
 
 /*
@@ -92,6 +93,8 @@ std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
 
+auto begin = std::chrono::high_resolution_clock::now();
+
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
   // find k-mers and append positions to kmer_list
@@ -107,8 +110,11 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
   }
   else {continue;}
 }
+std::cerr << "k-mers listed.  ";
 
-std::cerr << "k-mers listed.\n";
+auto end = std::chrono::high_resolution_clock::now();
+std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "\n";// << "ns" << std::endl;
+
 // std::cerr<<"kmer_list is build. \n";
 //sorting k-mers by position in reference
 
@@ -125,7 +131,7 @@ float lookLog[100]= {0,1,0.693147,1.09861,1.38629,1.60944,1.79176,1.94591,2.0794
 unsigned slider=1;
 double window_quality=0;
 if (ABU(kmer_list.begin())==1){                                 // updating window quality
-  window_quality+=3;
+  window_quality+=2;
 }else if(ABU(kmer_list.begin())>99){
   window_quality+=0.2;
 }else{
