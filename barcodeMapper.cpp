@@ -93,7 +93,7 @@ std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
 
-auto begin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
@@ -112,8 +112,8 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 }
 std::cerr << "k-mers listed.  ";
 
-auto end = std::chrono::high_resolution_clock::now();
-std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << "\n";// << "ns" << std::endl;
+auto tend = std::chrono::high_resolution_clock::now();
+std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
 
 // std::cerr<<"kmer_list is build. \n";
 //sorting k-mers by position in reference
