@@ -22,7 +22,7 @@ if(argc!=3){
 defining Parameters
 */
 
-int window_size=10000;   // size of the genomic windows to wich the reads are matched
+int window_size=5000;   // size of the genomic windows to wich the reads are matched
 int window_count=100;   // amount of saved candidate windows
 
 /*
@@ -48,6 +48,8 @@ catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
 
+std::cerr << "reads loaded.\n";
+
 /*
 reading the Index
 */
@@ -56,23 +58,28 @@ String<unsigned> dir;
 String<std::pair <unsigned,unsigned>> pos;
 String<unsigned> C;
 
+std::cerr <<1;
 
 String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, "index_pos_21.txt", OPEN_RDONLY)){
+std::cerr << 2;
+if (!open(extpos, "index31_pos.txt", OPEN_RDONLY)){
+  std::cerr << 3;
   throw std::runtime_error("Could not open index counts file." );
 }
+std::cerr <<4;
 assign(pos, extpos, Exact());
+std::cerr << 5;
 close(extpos);
 
 String<unsigned, External<> > extdir;
-if (!open(extdir, "index_dir_21.txt", OPEN_RDONLY)){
+if (!open(extdir, "index31_dir.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
 String<unsigned, External<> > extC;
-if (!open(extC, "index_C_21.txt", OPEN_RDONLY)){
+if (!open(extC, "index31_C.txt", OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(C, extC, Exact());
@@ -93,7 +100,7 @@ std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
 
-auto tbegin = std::chrono::high_resolution_clock::now();
+//auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
@@ -112,10 +119,9 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 }
 std::cerr << "k-mers listed.  ";
 
-auto tend = std::chrono::high_resolution_clock::now();
-std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
-tbegin = std::chrono::high_resolution_clock::now();
-// std::cerr<<"kmer_list is build. \n";
+//auto tend = std::chrono::high_resolution_clock::now();
+//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
+//tbegin = std::chrono::high_resolution_clock::now();
 //sorting k-mers by position in reference
 
 sort(kmer_list.begin(),kmer_list.end());
@@ -131,11 +137,11 @@ float lookLog[100]= {0,1,0.693147,1.09861,1.38629,1.60944,1.79176,1.94591,2.0794
 unsigned slider=1;
 double window_quality=0;
 if (ABU(kmer_list.begin())==1){                                 // updating window quality
-  window_quality+=2;
+  window_quality+=1024;
 }else if(ABU(kmer_list.begin())>99){
-  window_quality+=0.2;
+  window_quality+=0.00032;
 }else{
-  window_quality+=1/lookLog[ABU(kmer_list.begin())];
+  window_quality+=pow(1/lookLog[ABU(kmer_list.begin())],5);
 }
 
 
@@ -151,20 +157,20 @@ std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over kmer_list
     // trimm the begining of the window
     if (ABU(itrk-1)==1){                                 // updating window quality
-      window_quality-=2;
+      window_quality-=1024;
     }else if(ABU(itrk-1)>99){
-      window_quality-=0.2;
+      window_quality-=0.00032;
     }else{
-      window_quality-=1/lookLog[ABU(itrk-1)];
+      window_quality-=pow(1/lookLog[ABU(itrk-1)],5);
     }
     // expanding window to maximum length
     while(REF(itrk)==REF(itrk+slider) && POS(itrk+slider)-POS(itrk)<=window_size){ // while k-mers inside sliding window
         if (ABU(itrk+slider)==1){                                 // updating window quality
-          window_quality+=2;
+          window_quality+=1024;
         }else if(ABU(itrk+slider)>99){
-          window_quality+=0.2;
+          window_quality+=0.00032;
         }else {
-          window_quality+=1/lookLog[ABU(itrk+slider)];
+          window_quality+=pow(1/lookLog[ABU(itrk+slider)],5);
         }
         slider++;
     }
@@ -217,8 +223,8 @@ while(std::get<0>(*best_windows.begin())==0){
   best_windows.erase(best_windows.begin());
 }
 std::cerr<<"best_windows found. ";
-auto tend = std::chrono::high_resolution_clock::now();
-std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
+//tend = std::chrono::high_resolution_clock::now();
+//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
 
 // Konttrollausgabe
 
