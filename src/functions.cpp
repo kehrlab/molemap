@@ -6,9 +6,9 @@
 using namespace seqan;
 
 // return k-mer positions
-std::vector<std::pair <unsigned,unsigned>> RetPos(const std::pair <unsigned,unsigned> & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
+std::vector<std::pair <unsigned,unsigned>> RetPos(const unsigned & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       std::vector<std::pair <unsigned,unsigned>> positions;
-      int c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);
+      int c=GetBkt(hash,C,bucket_number);
       for (unsigned i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
       }
