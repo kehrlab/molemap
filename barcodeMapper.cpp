@@ -13,8 +13,8 @@ g++ BarcodeMapper.cpp -o bcmap
 
 int main(int argc, char *argv[]){
 
-if(argc!=3){
-  std::cerr << "Usage: ./bcmap readFile k \n\n";
+if(argc!=4){
+  std::cerr << "Usage: ./bcmap readFile k Index_name\n\n";
   exit(-1);
 }
 
@@ -57,29 +57,30 @@ reading the Index
 String<unsigned> dir;
 String<std::pair <unsigned,unsigned>> pos;
 String<unsigned> C;
-
-std::cerr <<1;
+//
+std::string IndPos=argv[3];
+IndPos.append("_pos.txt");
+std::string IndDir=argv[3];
+IndDir.append("_dir.txt");
+std::string IndC=argv[3];
+IndC.append("_C.txt");
 
 String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-std::cerr << 2;
-if (!open(extpos, "index31_pos.txt", OPEN_RDONLY)){
-  std::cerr << 3;
+if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
-std::cerr <<4;
 assign(pos, extpos, Exact());
-std::cerr << 5;
 close(extpos);
 
 String<unsigned, External<> > extdir;
-if (!open(extdir, "index31_dir.txt", OPEN_RDONLY)){
+if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
 String<unsigned, External<> > extC;
-if (!open(extC, "index31_C.txt", OPEN_RDONLY)){
+if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(C, extC, Exact());
@@ -95,20 +96,23 @@ Searching for all kmers of reads with the same Barcode
 
 // building the kmer_list for a specific Barcode (maybe exclude very frequent k-mers?)
 std::vector<std::tuple<unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
-std::vector<std::tuple<unsigned,unsigned,unsigned>>::iterator itrk;
-std::vector<std::pair<unsigned,unsigned>>::iterator itrp;
+std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrk;
+std::vector<std::pair<unsigned,unsigned>>::const_iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
 
-//auto tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
   // find k-mers and append positions to kmer_list
+  std::pair <unsigned,unsigned> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
 
   if(int(length(*it)-k)>0){
     for (int t=0;t<(length(*it)-k);t++){
-      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
+      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(hash, C, dir, pos, bucket_number);
+      hash=rollinghashkMer(hash.first,hash.second,(*it)[t+k],k);
+      // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
       unsigned abundance=positions.size();
       for (itrp=positions.begin();itrp!=positions.end();itrp++){
         kmer_list.push_back(std::make_tuple((*itrp).first,(*itrp).second,abundance));
@@ -119,16 +123,16 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 }
 std::cerr << "k-mers listed.  ";
 
-//auto tend = std::chrono::high_resolution_clock::now();
-//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
-//tbegin = std::chrono::high_resolution_clock::now();
+auto tend = std::chrono::high_resolution_clock::now();
+std::cout << "\ntime: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
+tbegin = std::chrono::high_resolution_clock::now();
 //sorting k-mers by position in reference
 
 sort(kmer_list.begin(),kmer_list.end());
 
 // iterate over k-mers (sliding window)
 
-float lookLog[100]= {0,1,0.693147,1.09861,1.38629,1.60944,1.79176,1.94591,2.07944,2.19722,2.30259,2.3979,2.48491,2.56495,2.63906,2.70805,2.77259,2.83321,2.89037,2.94444,2.99573,3.04452,3.09104,3.13549,3.17805,3.21888,3.2581,3.29584,3.3322,3.3673,3.4012,3.43399,3.46574,3.49651,3.52636,3.55535,3.58352,3.61092,3.63759,3.66356,3.68888,3.71357,3.73767,3.7612,3.78419,3.80666,3.82864,3.85015,3.8712,3.89182,3.91202,3.93183,3.95124,3.97029,3.98898,4.00733,4.02535,4.04305,4.06044,4.07754,4.09434,4.11087,4.12713,4.14313,4.15888,4.17439,4.18965,4.20469,4.21951,4.23411,4.2485,4.26268,4.27667,4.29046,4.30407,4.31749,4.33073,4.34381,4.35671,4.36945,4.38203,4.39445,4.40672,4.41884,4.43082,4.44265,4.45435,4.46591,4.47734,4.48864,4.49981,4.51086,4.52179,4.5326,4.54329,4.55388,4.56435,4.57471,4.58497,4.59512};
+float lookQual[100]= {0,1,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
 #define REF(X) std::get<0>(*(X))
 #define POS(X) std::get<1>(*(X))
@@ -141,7 +145,7 @@ if (ABU(kmer_list.begin())==1){                                 // updating wind
 }else if(ABU(kmer_list.begin())>99){
   window_quality+=0.00032;
 }else{
-  window_quality+=pow(1/lookLog[ABU(kmer_list.begin())],5);
+  window_quality+=lookQual[ABU(kmer_list.begin())];
 }
 
 
@@ -161,7 +165,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
     }else if(ABU(itrk-1)>99){
       window_quality-=0.00032;
     }else{
-      window_quality-=pow(1/lookLog[ABU(itrk-1)],5);
+      window_quality-=lookQual[ABU(itrk-1)];
     }
     // expanding window to maximum length
     while(REF(itrk)==REF(itrk+slider) && POS(itrk+slider)-POS(itrk)<=window_size){ // while k-mers inside sliding window
@@ -170,7 +174,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
         }else if(ABU(itrk+slider)>99){
           window_quality+=0.00032;
         }else {
-          window_quality+=pow(1/lookLog[ABU(itrk+slider)],5);
+          window_quality+=lookQual[ABU(itrk+slider)];
         }
         slider++;
     }
@@ -223,8 +227,8 @@ while(std::get<0>(*best_windows.begin())==0){
   best_windows.erase(best_windows.begin());
 }
 std::cerr<<"best_windows found. ";
-//tend = std::chrono::high_resolution_clock::now();
-//std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count() << "\n";// << "ns" << std::endl;
+tend = std::chrono::high_resolution_clock::now();
+std::cout <<"\ntime: "<< (float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
 
 // Konttrollausgabe
 
