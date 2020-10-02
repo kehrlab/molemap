@@ -110,7 +110,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 
   if(int(length(*it)-k)>0){
     for (int t=0;t<(length(*it)-k);t++){
-      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(hash, C, dir, pos, bucket_number);
+      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       hash=rollinghashkMer(hash.first,hash.second,(*it)[t+k],k);
       // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
       unsigned abundance=positions.size();

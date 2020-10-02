@@ -173,7 +173,7 @@ int main(int argc, char *argv[]){
 
 
   DnaString testDNA="TTTGGCCT";
-  std::vector<std::pair <unsigned,unsigned>> positions=RetPos(hashkMer(testDNA,k),C,dir,pos,bucket_number);
+  std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hashkMer(testDNA,k).first,hashkMer(testDNA,k).second),C,dir,pos,bucket_number);
   std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
   for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
     std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
