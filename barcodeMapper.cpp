@@ -106,10 +106,10 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
   // find k-mers and append positions to kmer_list
-  std::pair <unsigned,unsigned> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
+  std::pair <unsigned long long,unsigned long loading> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
 
   if(int(length(*it)-k)>0){
-    for (int t=0;t<(length(*it)-k);t++){
+    for (unsigned t=0;t<(length(*it)-k);t++){
       std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       hash=rollinghashkMer(hash.first,hash.second,(*it)[t+k],k);
       // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
