@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
 
     // counting k-mers
 
-    std::pair<unsigned long long, unsigned long long> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
+    std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
 
     for (unsigned i = 0;i<length(*seq)-k;++i){
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]){
 
     // filling pos
 
-    std::pair<unsigned long long, unsigned long long> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
+    std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
     for (unsigned i = 0;i<length(*seq)-k;++i){
       c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);   // filling of the position table
