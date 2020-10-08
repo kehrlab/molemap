@@ -6,7 +6,7 @@
 using namespace seqan;
 
 // return k-mer positions
-std::vector<std::pair <unsigned,unsigned>> RetPos(const unsigned & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
+std::vector<std::pair <unsigned,unsigned>> RetPos(const unsigned long long & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       std::vector<std::pair <unsigned,unsigned>> positions;
       int c=GetBkt(hash,C,bucket_number);
       for (unsigned i = dir[c];i!=dir[c+1];i++){
@@ -16,7 +16,7 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const unsigned & hash, const S
 }
 
 // Find correct Bucket
-unsigned long long  GetBkt(const unsigned & hash, const String<unsigned> & C, const unsigned long long bucket_number){
+unsigned long long  GetBkt(const unsigned long long & hash, const String<unsigned> & C, const unsigned long long bucket_number){
   std::srand(hash);
   unsigned long long i=std::rand()%bucket_number;
   unsigned d=0;
@@ -33,17 +33,17 @@ unsigned long long  GetBkt(const unsigned & hash, const String<unsigned> & C, co
 }
 
 // Request a Bucket
-unsigned  long long ReqBkt(const unsigned & hash, String<unsigned> & C, const unsigned long long bucket_number){
+unsigned  long long ReqBkt(const unsigned long long & hash, String<unsigned> & C, const unsigned long long bucket_number){
   unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
 
 //  Hashfunction for k-mer
-std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned k){
-  unsigned hash=0;
-  unsigned hash2=0;
-  for (int i=0;i<k;++i){
+std::pair <unsigned long long, unsigned long long> hashkMer(const DnaString & kmer, const unsigned k){
+  long long int hash=0;
+  long long int hash2=0;
+  for (unsigned i=0;i<k;++i){
     hash= hash << 2 | ordValue(kmer[i]);
     hash2= hash2 << 2 | (3-ordValue(kmer[k-1-i]));
   }
@@ -51,7 +51,7 @@ std::pair <unsigned,unsigned> hashkMer(const DnaString & kmer, const unsigned k)
 }
 
 // Rolling hashfunction for k-mer
-std::pair <unsigned,unsigned> rollinghashkMer(unsigned & oldHash, unsigned & oldHash2, const Dna & newnuc, const unsigned k){
+std::pair <unsigned long long, unsigned long long> rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna & newnuc, const unsigned k){
   oldHash=((oldHash << 2) | ordValue(newnuc)) % ((unsigned long)2 << (k*2-1));
   oldHash2=(oldHash2 >> 2) | (3-ordValue(newnuc)) << (k*2-2);
   return std::make_pair(oldHash,oldHash2);
