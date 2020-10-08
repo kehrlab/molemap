@@ -51,8 +51,8 @@ std::pair <long long int, long long int> hashkMer(const DnaString & kmer, const 
 }
 
 // Rolling hashfunction for k-mer
-std::pair <long long int, long long int> rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna & newnuc, const unsigned k){
-  oldHash=((oldHash << 2) | ordValue(newnuc)) % ((unsigned long)2 << (k*2-1));
+void rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna & newnuc, const unsigned k, const long long int & maxhash){
+  oldHash=((oldHash << 2) | ordValue(newnuc)) & maxhash;
   oldHash2=(oldHash2 >> 2) | (3-ordValue(newnuc)) << (k*2-2);
   return std::make_pair(oldHash,oldHash2);
 }
