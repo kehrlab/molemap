@@ -45,7 +45,7 @@ int main(int argc, char *argv[]){
   // defining key parameters
 
   unsigned k=std::stoi(argv[2]); // length of k-mer
-
+  long long int maxhash=pow(2,k*2)-1;
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
 
   // choosing Chromosome
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
       c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
-        hash=rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k);
+        rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
       }
       else {                                                          // reinitialization of the hashvalue after encountering an "N"
         i+=k+1;
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]){
       pos[dir[c+1]]=std::make_pair(CHROM,i);
       dir[c+1]++;
       if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
-        hash=rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k);
+        rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
       }
       else {                                                        // reinitialization of the hashvalue after encountering an "N"
         i+=k+1;

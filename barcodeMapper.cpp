@@ -87,6 +87,7 @@ assign(C, extC, Exact());
 close(extC);
 
 unsigned k=std::stoi(argv[2]); // length of k-mers in index
+long long int maxhash=pow(2,k*2)-1;
 unsigned long long bucket_number=length(C);
 
 
@@ -111,7 +112,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){
       std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hash.first,hash.second), C, dir, pos, bucket_number);
-      hash=rollinghashkMer(hash.first,hash.second,(*it)[t+k],k);
+      rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
       // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
       unsigned abundance=positions.size();
       for (itrp=positions.begin();itrp!=positions.end();itrp++){
@@ -129,6 +130,10 @@ tbegin = std::chrono::high_resolution_clock::now();
 //sorting k-mers by position in reference
 
 sort(kmer_list.begin(),kmer_list.end());
+
+auto tend = std::chrono::high_resolution_clock::now();
+std::cout << "\nsorting time: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
+tbegin = std::chrono::high_resolution_clock::now();
 
 // iterate over k-mers (sliding window)
 
@@ -176,6 +181,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
 
     // checking if current window qualifies
     int inserted=0;
+
     if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)!=POS(itrk-1)) { // if current window better than worst window:
        for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){                             // iterate over best_windows
          if (std::get<1>(*itrbw)==REF(itrk) && abs((int)POS(itrk)-(int)std::get<2>(*itrbw))<=window_size){ // if overlapping window: keep better window and break loop.
