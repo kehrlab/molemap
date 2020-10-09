@@ -87,7 +87,10 @@ assign(C, extC, Exact());
 close(extC);
 
 unsigned k=std::stoi(argv[2]); // length of k-mers in index
-long long int maxhash=pow(2,k*2)-1;
+double maxhashd=pow(2,k*2)-1;
+std::cout << "maxhash double: " << maxhashd << "\n";
+int maxhash=maxhashd;
+std::cout << "maxhash int: " << maxhash << "\n";
 unsigned long long bucket_number=length(C);
 
 
@@ -131,7 +134,7 @@ tbegin = std::chrono::high_resolution_clock::now();
 
 sort(kmer_list.begin(),kmer_list.end());
 
-auto tend = std::chrono::high_resolution_clock::now();
+tend = std::chrono::high_resolution_clock::now();
 std::cout << "\nsorting time: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
 tbegin = std::chrono::high_resolution_clock::now();
 
