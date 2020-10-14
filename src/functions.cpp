@@ -10,6 +10,7 @@ void InsPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, co
       int c=GetBkt(hash,C,bucket_number);
       unsigned abundance=dir[c+1]-dir[c];
       std::cerr<<0;
+      std::cerr<< "maxsize: " << kmer_list.max_size()<< " abundance: " << abundance <<" ";
       kmer_list.resize(kmer_list.max_size()+abundance);
       std::cerr<<1;
       for (unsigned i = dir[c];i!=dir[c+1];i++){
