@@ -87,9 +87,10 @@ assign(C, extC, Exact());
 close(extC);
 
 unsigned k=std::stoi(argv[2]); // length of k-mers in index
-double maxhashd=pow(2,k*2)-1;
-std::cout << "maxhash double: " << maxhashd << "\n";
-int maxhash=maxhashd;
+long long int maxhash;
+for (int i=0;i<k;i++){
+  maxhash= maxhash << 2 | 3;
+}
 std::cout << "maxhash int: " << maxhash << "\n";
 unsigned long long bucket_number=length(C);
 
