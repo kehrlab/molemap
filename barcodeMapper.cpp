@@ -115,8 +115,11 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){
+      std::cerr << "im runing.\n";
       InsPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
+      std::cerr << "im still runing.\n";
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+      std::cerr << "im always runing.\n";
     }
   }
   else {continue;}
