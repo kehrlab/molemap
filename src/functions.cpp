@@ -9,10 +9,15 @@ using namespace seqan;
 void InsPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       int c=GetBkt(hash,C,bucket_number);
       unsigned abundance=dir[c+1]-dir[c];
+      std::cerr<<0;
       kmer_list.resize(kmer_list.max_size()+abundance);
+      std::cerr<<1;
       for (unsigned i = dir[c];i!=dir[c+1];i++){
+        std::cerr<<2;
         std::tuple <unsigned,unsigned,unsigned> newtuple=std::make_tuple(pos[i].first,pos[i].second,abundance);
+        std::cerr<<3;
         kmer_list.emplace(upper_bound(kmer_list.begin(), kmer_list.end(),newtuple), newtuple);
+        std::cerr<<4;
       }
       return;
 }
