@@ -115,13 +115,8 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
 
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){
-      std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hash.first,hash.second), C, dir, pos, bucket_number);
+      InsPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
-      // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(infix(*it,t,t+k), C, dir, pos, bucket_number);
-      unsigned abundance=positions.size();
-      for (itrp=positions.begin();itrp!=positions.end();itrp++){
-        kmer_list.push_back(std::make_tuple((*itrp).first,(*itrp).second,abundance));
-      }
     }
   }
   else {continue;}
