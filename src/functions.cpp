@@ -5,6 +5,17 @@
 
 using namespace seqan;
 
+//Insert k-mer positions into vector in sorted order
+void InsPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
+      int c=GetBkt(hash,C,bucket_number);
+      unsigned abundance=dir[c+1]-dir[c];
+      kmer_list.resize(kmer_list.max_size()+abundance);
+      for (unsigned i = dir[c];i!=dir[c+1];i++){
+        std::tuple <unsigned,unsigned,unsigned> newtuple=std::make_tuple(pos[i].first,pos[i].second,abundance);
+        kmer_list.emplace(upper_bound(kmer_list.begin(), kmer_list.end(),newtuple), newtuple);
+      }
+      return;
+}
 // return k-mer positions
 std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       std::vector<std::pair <unsigned,unsigned>> positions;
