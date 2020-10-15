@@ -91,7 +91,7 @@ long long int maxhash;
 for (int i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
 }
-std::cout << "maxhash int: " << maxhash << "\n";
+
 unsigned long long bucket_number=length(C);
 
 
@@ -112,7 +112,6 @@ typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
   // find k-mers and append positions to kmer_list
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
-
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){
       InsPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
