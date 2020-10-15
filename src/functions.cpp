@@ -15,6 +15,7 @@ void InsPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, co
       std::cerr<<3;
       std::vector<std::tuple<unsigned,unsigned,unsigned>>::iterator itrk = kmer_list.begin();
       std::cerr<<4;
+      std::cerr<< "dir[c]: " << dir[c] << " dir[c+1]: " << dir[c+1] << "  ";
       for (unsigned i = dir[c];i!=dir[c+1];i++){
         std::cerr<<5;
         std::tuple <unsigned,unsigned,unsigned> newtuple=std::make_tuple(pos[i].first,pos[i].second,abundance);
