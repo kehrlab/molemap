@@ -8,17 +8,21 @@ using namespace seqan;
 //Insert k-mer positions into vector in sorted order
 void InsPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<unsigned> & C,const String<unsigned> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       int c=GetBkt(hash,C,bucket_number);
-      unsigned abundance=dir[c+1]-dir[c];
-      std::cerr<<0;
-      std::cerr<< "maxsize: " << kmer_list.max_size()<< " abundance: " << abundance <<" ";
-      kmer_list.resize(kmer_list.max_size()+abundance);
       std::cerr<<1;
+      unsigned abundance=dir[c+1]-dir[c];
+      std::cerr<<2;
+      kmer_list.reserve(kmer_list.size()+abundance);
+      std::cerr<<3;
+      std::vector<std::tuple<unsigned,unsigned,unsigned>>::iterator itrk = kmer_list.begin();
+      std::cerr<<4;
       for (unsigned i = dir[c];i!=dir[c+1];i++){
-        std::cerr<<2;
+        std::cerr<<5;
         std::tuple <unsigned,unsigned,unsigned> newtuple=std::make_tuple(pos[i].first,pos[i].second,abundance);
-        std::cerr<<3;
-        kmer_list.emplace(upper_bound(kmer_list.begin(), kmer_list.end(),newtuple), newtuple);
-        std::cerr<<4;
+        std::cerr<<6;
+        itrk=upper_bound(itrk, kmer_list.end(),newtuple);
+        std::cerr<<7;
+        kmer_list.emplace(itrk, newtuple);
+        std::cerr<<8;
       }
       return;
 }
