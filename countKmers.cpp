@@ -147,27 +147,22 @@ int main(int argc, char *argv[]){
   std::cerr << "Index build. \n";
 
   // Deleting frequent k-mers
-  unsigned deleted=0;
+  long long unsigned deleted=0;
   unsigned diff1=dir[1]-dir[0]; // calculating initial distances
   unsigned diff2;
-  std::cerr << 1;
   for (Titrs itrs=begin(dir)+1;itrs!=end(dir)-1;itrs++){
-    std::cerr <<2
     diff2=diff1;                  // updating distances
     diff1=*(itrs+1)-*itrs;
-    std::cerr <<3;
     if(diff2<=maxfreq){           // rebuilding dir
-      std::cerr <<4;
       *itrs=*(itrs-1)+diff2;
     }else{                        // delete frequent k-mers
-      std::cerr<<5;
+      std::cerr<<5<<" diff2="<<diff2<<" ";
       erase(pos,*(itrs-1),(*itrs)-deleted);
       std::cerr<<6;
       *itrs=*(itrs-1);
       deleted+=diff2;
     }
   }
-  std::cerr<<7;
   if (diff1<=maxfreq){                // changing last element
     *(end(dir)-1)=*(end(dir)-2)+diff1;
   }else{
