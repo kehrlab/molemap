@@ -156,7 +156,7 @@ int main(int argc, char *argv[]){
     if(diff2<=maxfreq){           // rebuilding dir
       *itrs=*(itrs-1)+diff2;
     }else{                        // delete frequent k-mers
-      std::cerr<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
+      std::cerr<< "itrs-1:"<<*(itrs-1)<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
       std::cerr<<5<<" diff2="<<diff2<<" deleted: "<<deleted <<" ";
       erase(pos,*(itrs-1),(*itrs)-deleted);
       std::cerr<<6;
