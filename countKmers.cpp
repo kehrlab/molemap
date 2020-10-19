@@ -17,8 +17,8 @@ int main(int argc, char *argv[]){
 
   // for (int a=0;a<100;a++){
 
-  if(argc!=4){
-    std::cerr << "Usage: ./countK InputFILE k bucket_number \n\n";
+  if(argc!=6){
+    std::cerr << "Usage: ./countK InputFILE k bucket_number maxfreq Index_name \n\n";
     exit(-1);
   }
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
   unsigned k=std::stoi(argv[2]); // length of k-mer
   long long int maxhash=pow(2,k*2)-1;
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
-
+  unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome
 
   // Dna5String seq=seqs[36];
@@ -102,15 +102,17 @@ int main(int argc, char *argv[]){
 
   std::cerr << "Index initially filled. \n";
 
+
   // cumulative sum
 
   unsigned sum=length(concat(seqs))-k+1;
-  std::vector<unsigned> abundance; //tracking k-mer abundances
+  // std::vector<unsigned> abundance; //tracking k-mer abundances
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
       sum-=*itrs;
-    abundance.push_back(*itrs);} //tracking k-mer abundances
+    }
+    // abundance.push_back(*itrs);} //tracking k-mer abundances
     *itrs=sum;
   }
 
@@ -144,24 +146,56 @@ int main(int argc, char *argv[]){
 
   std::cerr << "Index build. \n";
 
+  // Deleting frequent k-mers
+  unsigned deleted=0;
+  unsigned diff1=dir[1]-dir[0]; // calculating initial distances
+  unsigned diff2;
+
+  for (Titrs itrs=begin(dir)+1;itrs!=end(dir)-1;itrs++){
+    diff2=diff1;                  // updating distances
+    diff1=*(itrs+1)-*itrs;
+    if(diff2<=maxfreq){           // rebuilding dir
+      *itrs=*(itrs-1)+diff2;
+    }else{                        // delete frequent k-mers
+      erase(pos,*(itrs-1),(*itrs)-deleted);
+      *itrs=*(itrs-1);
+      deleted+=diff2;
+    }
+  }
+  if (diff1<=maxfreq){                // changing last element
+    *(end(dir)-1)=*(end(dir)-2)+diff1;
+  }else{
+    erase(pos,*(end(dir)-2),*(end(dir)-1)-deleted);
+    *(end(dir)-1)=*(end(dir)-2);
+  }
+
+  std::cerr << "Frequent k-mers deleted. \n";
   // write index to file
 
+  std::string IndPos=argv[5];
+  IndPos.append("_pos.txt");
+  std::string IndDir=argv[5];
+  IndDir.append("_dir.txt");
+  std::string IndC=argv[5];
+  IndC.append("_C.txt");
+
+
   String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
-  if (!open(extpos, "index_pos.txt", OPEN_WRONLY | OPEN_CREATE)){
+  if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extpos, pos, Exact());
   close(extpos);
 
   String<unsigned, External<> > extdir;
-  if (!open(extdir, "index_dir.txt", OPEN_WRONLY | OPEN_CREATE)){
+  if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extdir, dir, Exact());
   close(extdir);
 
   String<unsigned, External<> > extC;
-  if (!open(extC, "index_C.txt", OPEN_WRONLY | OPEN_CREATE)){
+  if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extC, C, Exact());
@@ -172,7 +206,7 @@ int main(int argc, char *argv[]){
   // Kontrollausgabe
 
 
-  DnaString testDNA="TTTGGCCT";
+  DnaString testDNA="ATTTTTAA";
   std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hashkMer(testDNA,k).first,hashkMer(testDNA,k).second),C,dir,pos,bucket_number);
   std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
   for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){

@@ -113,8 +113,8 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
   // find k-mers and append positions to kmer_list
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
   if(int(length(*it)-k)>0){
-    for (unsigned t=0;t<(length(*it)-k);t++){
-      InsPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
+    for (unsigned t=0;t<(length(*it)-k);t++){         // iterating over all kmers
+      AppendPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
     }
   }
