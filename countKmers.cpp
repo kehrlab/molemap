@@ -58,17 +58,17 @@ int main(int argc, char *argv[]){
 
   // building index storage
 
-  String<unsigned> dir;
+  String<unsigned long long> dir;
   resize(dir,bucket_number+1,0);
   String<std::pair <unsigned,unsigned>> pos;
   resize(pos,length(concat(seqs)));
-  String<unsigned> C;
+  String<unsigned long long> C;
   resize(C,bucket_number,-1);
 
   typedef Iterator<String<unsigned>>::Type Titrs;
 
-  std::vector<unsigned>::iterator itrv;
-  std::vector<unsigned>::reverse_iterator itrvr;
+  std::vector<unsigned long long>::iterator itrv;
+  std::vector<unsigned long long>::reverse_iterator itrvr;
 
   unsigned long long c;
   unsigned CHROM =0;
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
 
-    for (unsigned i = 0;i<length(*seq)-k;++i){
+    for (long long unsigned i = 0;i<length(*seq)-k;++i){
       c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
@@ -105,7 +105,7 @@ int main(int argc, char *argv[]){
 
   // cumulative sum
 
-  unsigned sum=length(concat(seqs))-k+1;
+  long long unsigned sum=length(concat(seqs))-k+1;
   // std::vector<unsigned> abundance; //tracking k-mer abundances
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]){
 
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
-    for (unsigned i = 0;i<length(*seq)-k;++i){
+    for (long long unsigned i = 0;i<length(*seq)-k;++i){
       c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);   // filling of the position table
       pos[dir[c+1]]=std::make_pair(CHROM,i);
       dir[c+1]++;
@@ -191,14 +191,14 @@ int main(int argc, char *argv[]){
   assign(extpos, pos, Exact());
   close(extpos);
 
-  String<unsigned, External<> > extdir;
+  String<long long unsigned, External<> > extdir;
   if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extdir, dir, Exact());
   close(extdir);
 
-  String<unsigned, External<> > extC;
+  String<long long unsigned, External<> > extC;
   if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }

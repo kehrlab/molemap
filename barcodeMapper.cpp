@@ -72,14 +72,14 @@ if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
 assign(pos, extpos, Exact());
 close(extpos);
 
-String<unsigned, External<> > extdir;
+String<unsigned long long, External<> > extdir;
 if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
 
-String<unsigned, External<> > extC;
+String<unsigned long long, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
