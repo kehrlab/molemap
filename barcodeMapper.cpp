@@ -54,9 +54,9 @@ std::cerr << "reads loaded.\n";
 reading the Index
 */
 
-String<unsigned> dir;
+String<unsigned long long> dir;
 String<std::pair <unsigned,unsigned>> pos;
-String<unsigned> C;
+String<unsigned long long> C;
 //
 std::string IndPos=argv[3];
 IndPos.append("_pos.txt");
