@@ -65,7 +65,7 @@ int main(int argc, char *argv[]){
   String<unsigned long long> C;
   resize(C,bucket_number,-1);
 
-  typedef Iterator<String<unsigned>>::Type Titrs;
+  typedef Iterator<String<unsigned long long>>::Type Titrs;
 
   std::vector<unsigned long long>::iterator itrv;
   std::vector<unsigned long long>::reverse_iterator itrvr;
