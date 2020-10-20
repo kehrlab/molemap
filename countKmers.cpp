@@ -110,6 +110,7 @@ int main(int argc, char *argv[]){
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
+      if (*itrs<0){std::cout << "ERROR: negative abundance! itrs="<<*itrs; }
       sum-=*itrs;
     }
     // abundance.push_back(*itrs);} //tracking k-mer abundances
@@ -158,6 +159,7 @@ int main(int argc, char *argv[]){
     }else{                        // delete frequent k-mers
       std::cerr<< "itrs-1:"<<*(itrs-1)<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
       std::cerr<<5<<" diff2="<<diff2<<" deleted: "<<deleted <<" ";
+      std:: cerr<<"\nitrs-deleted: "<< (*itrs)-deleted <<" ";
       erase(pos,*(itrs-1),(*itrs)-deleted);
       std::cerr<<6;
       *itrs=*(itrs-1);
