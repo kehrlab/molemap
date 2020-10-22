@@ -1,5 +1,5 @@
 
-CXXFLAGS = -std=c++14  -pthread -O3
+CXXFLAGS = -std=c++14  -pthread -O3 #-lrt
 SEQAN = -I ~/work/software/seqan/include/ 
 
 bcmap: barcodeMapper.cpp functions.o
