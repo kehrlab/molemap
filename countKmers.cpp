@@ -62,7 +62,7 @@ int main(int argc, char *argv[]){
   resize(dir,bucket_number+1,0);
   String<std::pair <unsigned,unsigned>> pos;
   resize(pos,length(concat(seqs)));
-  String<unsigned long long> C;
+  String<int long long> C;
   resize(C,bucket_number,-1);
 
   typedef Iterator<String<unsigned long long>>::Type Titrs;
@@ -110,7 +110,6 @@ int main(int argc, char *argv[]){
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
-      if (*itrs<0){std::cout << "ERROR: negative abundance! itrs="<<*itrs; }
       sum-=*itrs;
     }
     // abundance.push_back(*itrs);} //tracking k-mer abundances
@@ -198,7 +197,7 @@ int main(int argc, char *argv[]){
   assign(extdir, dir, Exact());
   close(extdir);
 
-  String<long long unsigned, External<> > extC;
+  String<long long int, External<> > extC;
   if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
@@ -209,14 +208,14 @@ int main(int argc, char *argv[]){
 
   // Kontrollausgabe
 
-
-  DnaString testDNA="ATTTTTAA";
-  std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hashkMer(testDNA,k).first,hashkMer(testDNA,k).second),C,dir,pos,bucket_number);
-  std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
-  for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
-    std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
-  }
-  std::cout << "\n";
+  //
+  // DnaString testDNA="ATTTTTAA";
+  // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hashkMer(testDNA,k).first,hashkMer(testDNA,k).second),C,dir,pos,bucket_number);
+  // std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
+  // for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
+  //   std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
+  // }
+  // std::cout << "\n";
 
 // }
 

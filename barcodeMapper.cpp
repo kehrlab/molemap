@@ -79,7 +79,7 @@ if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
 assign(dir, extdir, Exact());
 close(extdir);
 
-String<unsigned long long, External<> > extC;
+String<int long long, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
