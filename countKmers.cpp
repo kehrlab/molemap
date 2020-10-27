@@ -17,8 +17,8 @@ int main(int argc, char *argv[]){
 
   // for (int a=0;a<100;a++){
 
-  if(argc!=6){
-    std::cerr << "Usage: ./countK InputFILE k bucket_number maxfreq Index_name \n\n";
+  if(argc!=5){
+    std::cerr << "Usage: ./countK InputFILE k bucket_number Index_name \n\n";
     exit(-1);
   }
 
@@ -47,7 +47,7 @@ int main(int argc, char *argv[]){
   unsigned k=std::stoi(argv[2]); // length of k-mer
   long long int maxhash=pow(2,k*2)-1;
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
-  unsigned maxfreq=std::stoll(argv[4]);
+  // unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome
 
   // Dna5String seq=seqs[36];
@@ -146,40 +146,40 @@ int main(int argc, char *argv[]){
 
   std::cerr << "Index build. \n";
 
-  // Deleting frequent k-mers
-  long long unsigned deleted=0;
-  unsigned diff1=dir[1]-dir[0]; // calculating initial distances
-  unsigned diff2;
-  for (Titrs itrs=begin(dir)+1;itrs!=end(dir)-1;itrs++){
-    diff2=diff1;                  // updating distances
-    diff1=*(itrs+1)-*itrs;
-    if(diff2<=maxfreq){           // rebuilding dir
-      *itrs=*(itrs-1)+diff2;
-    }else{                        // delete frequent k-mers
-      std::cerr<< "itrs-1:"<<*(itrs-1)<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
-      std::cerr<<5<<" diff2="<<diff2<<" deleted: "<<deleted <<" ";
-      std:: cerr<<"\nitrs-deleted: "<< (*itrs)-deleted <<" ";
-      erase(pos,*(itrs-1),(*itrs)-deleted);
-      std::cerr<<6;
-      *itrs=*(itrs-1);
-      deleted+=diff2;
-    }
-  }
-  if (diff1<=maxfreq){                // changing last element
-    *(end(dir)-1)=*(end(dir)-2)+diff1;
-  }else{
-    erase(pos,*(end(dir)-2),*(end(dir)-1)-deleted);
-    *(end(dir)-1)=*(end(dir)-2);
-  }
-
-  std::cerr << "Frequent k-mers deleted. \n";
+  // // Deleting frequent k-mers
+  // long long unsigned deleted=0;
+  // unsigned diff1=dir[1]-dir[0]; // calculating initial distances
+  // unsigned diff2;
+  // for (Titrs itrs=begin(dir)+1;itrs!=end(dir)-1;itrs++){
+  //   diff2=diff1;                  // updating distances
+  //   diff1=*(itrs+1)-*itrs;
+  //   if(diff2<=maxfreq){           // rebuilding dir
+  //     *itrs=*(itrs-1)+diff2;
+  //   }else{                        // delete frequent k-mers
+  //     std::cerr<< "itrs-1:"<<*(itrs-1)<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
+  //     std::cerr<<5<<" diff2="<<diff2<<" deleted: "<<deleted <<" ";
+  //     std:: cerr<<"\nitrs-deleted: "<< (*itrs)-deleted <<" ";
+  //     erase(pos,*(itrs-1),(*itrs)-deleted);
+  //     std::cerr<<6;
+  //     *itrs=*(itrs-1);
+  //     deleted+=diff2;
+  //   }
+  // }
+  // if (diff1<=maxfreq){                // changing last element
+  //   *(end(dir)-1)=*(end(dir)-2)+diff1;
+  // }else{
+  //   erase(pos,*(end(dir)-2),*(end(dir)-1)-deleted);
+  //   *(end(dir)-1)=*(end(dir)-2);
+  // }
+  //
+  // std::cerr << "Frequent k-mers deleted. \n";
   // write index to file
 
-  std::string IndPos=argv[5];
+  std::string IndPos=argv[4];
   IndPos.append("_pos.txt");
-  std::string IndDir=argv[5];
+  std::string IndDir=argv[4];
   IndDir.append("_dir.txt");
-  std::string IndC=argv[5];
+  std::string IndC=argv[4];
   IndC.append("_C.txt");
 
 
