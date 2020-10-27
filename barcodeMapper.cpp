@@ -121,7 +121,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
       AppendPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       std::cerr<<5;
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
-      STD::cerr<<6;
+      std::cerr<<6;
     }
   }
   else {continue;}
