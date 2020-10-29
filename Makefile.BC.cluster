@@ -1,0 +1,14 @@
+GXX = g++
+CXXFLAGS = -std=c++14  -pthread -O3 -g -lrt
+SEQAN = -I ~/work/software/seqan/include/ 
+
+all: bcmap countK
+
+bcmap: barcodeMapper.cpp functions.o
+	$(GXX) barcodeMapper.cpp -o bcmap $(CXXFLAGS) $(SEQAN) functions.o
+countK:	countKmers.cpp functions.o
+	$(GXX) countKmers.cpp -o countK $(CXXFLAGS) $(SEQAN) functions.o
+functions.o: src/functions.cpp
+	$(GXX) -c src/functions.cpp $(CXXFLAGS) $(SEQAN)
+clean:
+	rm functions.o bcmap
