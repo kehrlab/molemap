@@ -119,7 +119,8 @@ std::cerr<<"line: "<<__LINE__<<"\n";
       std::cerr<<"line: "<<__LINE__<<"\n";
       AppendPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
       std::cerr<<"line: "<<__LINE__<<"\n";
-      rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+      hash = hashkMer(infix(*it,t,t+k),k);
+      // rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
       std::cerr<<"line: "<<__LINE__<<"\n";
     }
   }
