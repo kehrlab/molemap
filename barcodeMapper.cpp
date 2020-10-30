@@ -127,9 +127,6 @@ std::cerr<<"line: "<<__LINE__<<"\n";
 }
 std::cerr << "k-mers listed.  \n";
 
-for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){
-  std::cerr << *itrk << " ";
-}
 
 auto tend = std::chrono::high_resolution_clock::now();
 std::cout << "\ntime: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
@@ -149,6 +146,10 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 #define REF(X) std::get<0>(*(X))
 #define POS(X) std::get<1>(*(X))
 #define ABU(X) std::get<2>(*(X))
+
+for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){
+  std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
+}
 
 unsigned slider=1;
 double window_quality=0;
