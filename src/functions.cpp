@@ -11,17 +11,17 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       int c=GetBkt(hash,C,bucket_number);
       std::cerr<<2;
       unsigned abundance=dir[c+1]-dir[c];
-      std::cerr<<3  ;
+      std::cerr<<3;
       kmer_list.reserve(kmer_list.size()+abundance);
       std::cerr<<4;
-      if (abundance<=10){
+      // if (abundance<=10){
         std::cerr<<5;
         for (unsigned i = dir[c];i!=dir[c+1];i++){
           std::cerr<<6;
           kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance));
           std::cerr<<7;
         }
-      }
+      // }
       return;
 }
 // return k-mer positions
