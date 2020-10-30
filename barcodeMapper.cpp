@@ -125,7 +125,11 @@ std::cerr<<"line: "<<__LINE__<<"\n";
   }
   else {continue;}
 }
-std::cerr << "k-mers listed.  ";
+std::cerr << "k-mers listed.  \n";
+
+for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){
+  std::cerr << *itrk << " ";
+}
 
 auto tend = std::chrono::high_resolution_clock::now();
 std::cout << "\ntime: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
