@@ -56,7 +56,7 @@ reading the Index
 
 String<unsigned long long> dir;
 String<std::pair <unsigned,unsigned>> pos;
-String<unsigned long long> C;
+String<int long long> C;
 //
 std::string IndPos=argv[3];
 IndPos.append("_pos.txt");
@@ -110,12 +110,17 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
+std::cerr<<"line: "<<__LINE__<<"\n";
   // find k-mers and append positions to kmer_list
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
+  std::cerr<<"line: "<<__LINE__<<"\n";
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){         // iterating over all kmers
+      std::cerr<<"line: "<<__LINE__<<"\n";
       AppendPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
+      std::cerr<<"line: "<<__LINE__<<"\n";
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+      std::cerr<<"line: "<<__LINE__<<"\n";
     }
   }
   else {continue;}
