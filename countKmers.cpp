@@ -45,7 +45,14 @@ int main(int argc, char *argv[]){
   // defining key parameters
 
   unsigned k=std::stoi(argv[2]); // length of k-mer
-  long long int maxhash=pow(2,k*2)-1;
+
+  // long long int maxhash=pow(2,k*2)-1;
+
+  long long int maxhash;
+  for (int i=0;i<k;i++){
+    maxhash= maxhash << 2 | 3;
+  }
+
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
   // unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome
@@ -173,7 +180,8 @@ int main(int argc, char *argv[]){
   // }
   //
   // std::cerr << "Frequent k-mers deleted. \n";
-  // write index to file
+
+  //write index to file
 
   std::string IndPos=argv[4];
   IndPos.append("_pos.txt");
