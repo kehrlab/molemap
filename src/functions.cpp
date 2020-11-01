@@ -10,7 +10,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       std::cerr<<1;
       int c=GetBkt(hash,C,bucket_number);
       std::cerr<<2;
-      unsigned abundance=dir[c+1]-dir[c];
+      unsigned long long abundance=dir[c+1]-dir[c];
       std::cerr<<3;
       kmer_list.reserve(kmer_list.size()+abundance);
       std::cerr<<4;
