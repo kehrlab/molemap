@@ -110,18 +110,17 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
-std::cerr<<"line: "<<__LINE__<<"\n";
+// std::cerr<<"line: "<<__LINE__<<"\n";
   // find k-mers and append positions to kmer_list
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
-  std::cerr<<"line: "<<__LINE__<<"\n";
+  // std::cerr<<"line: "<<__LINE__<<"\n";
   if(int(length(*it)-k)>0){
     for (unsigned t=0;t<(length(*it)-k);t++){         // iterating over all kmers
-      std::cerr<<"line: "<<__LINE__<<"\n";
+      // std::cerr<<"line: "<<__LINE__<<"\n";
       AppendPos(kmer_list, std::min(hash.first,hash.second), C, dir, pos, bucket_number);
-      std::cerr<<"line: "<<__LINE__<<"\n";
-      hash = hashkMer(infix(*it,t,t+k),k);
-      // rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
-      std::cerr<<"line: "<<__LINE__<<"\n";
+      // std::cerr<<"line: "<<__LINE__<<"\n";
+      rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+      // std::cerr<<"line: "<<__LINE__<<"\n";
     }
   }
   else {continue;}
@@ -148,7 +147,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 #define POS(X) std::get<1>(*(X))
 #define ABU(X) std::get<2>(*(X))
 
-for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){
+for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 }
 

@@ -11,6 +11,10 @@ using namespace seqan;
 g++ countKmers.cpp -o countK
 */
 
+/*
+k can be 31 at max because of the hash function
+*/
+
 int main(int argc, char *argv[]){
 
   // auto begin = std::chrono::high_resolution_clock::now();
