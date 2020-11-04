@@ -14,7 +14,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       // std::cerr<<3;
       kmer_list.reserve(kmer_list.size()+abundance);
       // std::cerr<<4;
-      if (abundance<=10){
+      if (abundance<=100){
         // std::cerr<<5;
         for (unsigned i = dir[c];i!=dir[c+1];i++){
           // std::cerr<<6;
