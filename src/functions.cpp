@@ -16,7 +16,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       // std::cerr<<4;
       if (abundance<=100){
         // std::cerr<<5;
-        for (unsigned i = dir[c];i!=dir[c+1];i++){
+        for (unsigned long long i = dir[c];i!=dir[c+1];i++){
           // std::cerr<<6;
           kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance));
           // std::cerr<<7;
@@ -28,7 +28,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
 std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       std::vector<std::pair <unsigned,unsigned>> positions;
       unsigned long long c=GetBkt(hash,C,bucket_number);
-      for (unsigned i = dir[c];i!=dir[c+1];i++){
+      for (unsigned long long i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
       }
       return positions;
@@ -38,7 +38,7 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, co
 unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
   std::srand(hash);
   unsigned long long i=std::rand()%bucket_number;
-  unsigned d=0;
+  unsigned long long d=0;
   // unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
     // counter+=1;
@@ -52,7 +52,7 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
 }
 
 // Request a Bucket
-unsigned  long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number){
+unsigned long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number){
   unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
