@@ -147,9 +147,9 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 #define POS(X) std::get<1>(*(X))
 #define ABU(X) std::get<2>(*(X))
 
-for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
-  std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
-}
+// for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
+//   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
+// }
 
 unsigned slider=1;
 double window_quality=0;
