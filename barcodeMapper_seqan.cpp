@@ -76,12 +76,16 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
   hashInit(indexShape(Index), begin(*it));
+  std::cerr<<__LINE__<<"\n";
   for (unsigned t = 0; t < length(*it) - length(indexShape(Index)) + 1; ++t){
+    std::cerr<<__LINE__<<"\n";
     hashNext(indexShape(Index), begin(*it) + t);
+    std::cerr<<__LINE__<<"\n";
     unsigned abundance=length(getOccurrences(Index, indexShape(Index)));
     for (unsigned i = 0; i < abundance; ++i){
-
+      std::cerr<<__LINE__<<"\n";
       kmer_list.push_back(std::make_tuple(getSeqNo(getOccurrences(Index, indexShape(Index))[i]),getSeqOffset(getOccurrences(Index, indexShape(Index))[i]),abundance));
+      std::cerr<<__LINE__<<"\n";
     }
   }
 }
