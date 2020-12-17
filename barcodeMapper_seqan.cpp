@@ -74,13 +74,21 @@ std::cerr << "Index and reads loaded.\n";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
+std::cerr << __LINE__ << " ";
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating over the reads
+  std::cerr << __LINE__ << " ";
   hashInit(indexShape(Index), begin(*it));
+  std::cerr << __LINE__ << " ";
   for (unsigned t = 0; t < length(*it) - length(indexShape(Index)) + 1; ++t){
+    std::cerr << __LINE__ << " ";
     hashNext(indexShape(Index), begin(*it) + t);
+    std::cerr << __LINE__ << " ";
     unsigned abundance=length(getOccurrences(Index, indexShape(Index)));
+    std::cerr << __LINE__ << " ";
     for (unsigned i = 0; i < abundance; ++i){
+      std::cerr << __LINE__ << " ";
       kmer_list.push_back(std::make_tuple((unsigned)getSeqNo(getOccurrences(Index, indexShape(Index))[i]),(unsigned)getSeqOffset(getOccurrences(Index, indexShape(Index))[i]),abundance));
+      std::cerr << __LINE__ << " ";
     }
   }
 }
