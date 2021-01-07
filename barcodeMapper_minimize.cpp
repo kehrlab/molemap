@@ -155,7 +155,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 // for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
-
+std::cerr << __LINE__ << " ";
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
@@ -163,7 +163,7 @@ if(ABU(kmer_list.begin())>99){
 }else{
   window_quality+=lookQual[ABU(kmer_list.begin())]; // lookQual = 1/(log(abund)^5)
 }
-
+std::cerr << __LINE__ << " ";
 
 std::vector<std::tuple<double,unsigned,int>> best_windows(window_count,std::make_tuple(0,0,-(window_size+10))); //(maping_quality, reference, position in referende)
 std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
@@ -173,7 +173,7 @@ std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
 //   std::cout<<"\nref: " << std::get<0>(*itrk) << "\tpos: " << std::get<1>(*itrk)<< "\tabu: "<< std::get<2>(*itrk);
 // }
 
-
+std::cerr << __LINE__ << " ";
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over kmer_list
     // trimm the begining of the window
     if(ABU(itrk-1)>99){
@@ -193,6 +193,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
     slider--;
 
     // checking if current window qualifies
+    std::cerr << __LINE__ << " ";
     int inserted=0;
 
     if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)!=POS(itrk-1)) { // if current window better than worst window:
@@ -232,8 +233,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
           }
         }
     }
+  std::cerr << __LINE__ << " ";
 }
-
+std::cerr << __LINE__ << " ";
 // trimm unused parts of best_windows
 
 while(std::get<0>(*best_windows.begin())==0){
