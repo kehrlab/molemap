@@ -5,21 +5,52 @@
 
 using namespace seqan;
 
+// randomizes the hashvalues order
+long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
+  if (hash1^random_seed < hash2^random_seed){
+    return hash1;
+  } else {
+    return hash2;
+  }
+}
+
+// initializes the minimizer
+long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
+  long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+  minimizer_position=0;
+  for (unsigned i=0;i<length(string)-k;i++){
+      rollinghashkMer(hash.first,hash.second,string[i+k],k,maxhash);
+      if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
+        minimizer=hash.first;
+        minimizer_position=i+1;
+      }
+      if (ReturnSmaller(minimizer,hash.second,random_seed)!=minimizer){
+        minimizer=hash.second;
+        minimizer_position=i+1;
+      }
+  }
+  return minimizer;
+}
+
+// calculates following minimizer and reports if it replaces the old minimizer
+int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed){
+  rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash);
+  if (ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed)!=minimizer){
+    minimizer=ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed);
+    return 1;
+  }
+  return 0;
+}
+
+
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
-      // std::cerr<<1;
       unsigned long long c=GetBkt(hash,C,bucket_number);
-      // std::cerr<<2;
       unsigned long long abundance=dir[c+1]-dir[c];
-      // std::cerr<<3;
       kmer_list.reserve(kmer_list.size()+abundance);
-      // std::cerr<<4;
-      if (abundance<=100){
-        // std::cerr<<5;
+      if (abundance<=10){
         for (unsigned long long i = dir[c];i!=dir[c+1];i++){
-          // std::cerr<<6;
           kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance));
-          // std::cerr<<7;
         }
       }
       return;
