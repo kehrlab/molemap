@@ -17,18 +17,19 @@ long long int ReturnSmaller(const long long int hash1,const long long int hash2,
 // initializes the minimizer
 long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
   long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-  minimizer_position=0;
+  long long int minimizer_pos=0
   for (unsigned i=0;i<length(string)-k;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k],k,maxhash);
       if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
         minimizer=hash.first;
-        minimizer_position=i+1;
+        minimizer_pos=i+1;
       }
       if (ReturnSmaller(minimizer,hash.second,random_seed)!=minimizer){
         minimizer=hash.second;
-        minimizer_position=i+1;
+        minimizer_pos=i+1;
       }
   }
+  minimizer_position+=minimizer_pos;
   return minimizer;
 }
 
