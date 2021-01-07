@@ -103,8 +103,8 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode (maybe exclude very frequent k-mers?)
-std::vector<std::tuple<unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
-std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrk;
+std::vector<std::tuple<unsigned,unsigned,unsigned long long>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
+std::vector<std::tuple<unsigned,unsigned,unsigned long long>>::const_iterator itrk;
 std::vector<std::pair<unsigned,unsigned>>::const_iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
@@ -156,7 +156,6 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
 std::cerr << __LINE__ << " ";
-std::cerr << ABU(kmer_list.begin()); 
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
@@ -174,7 +173,7 @@ std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
 //   std::cout<<"\nref: " << std::get<0>(*itrk) << "\tpos: " << std::get<1>(*itrk)<< "\tabu: "<< std::get<2>(*itrk);
 // }
 
-std::cerr << __LINE__ << " ";
+
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over kmer_list
     // trimm the begining of the window
     if(ABU(itrk-1)>99){
@@ -194,7 +193,6 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
     slider--;
 
     // checking if current window qualifies
-    std::cerr << __LINE__ << " ";
     int inserted=0;
 
     if( window_quality > std::get<0>(best_windows.front()) && POS(itrk)!=POS(itrk-1)) { // if current window better than worst window:
@@ -234,9 +232,8 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ // iterating over km
           }
         }
     }
-  std::cerr << __LINE__ << " ";
 }
-std::cerr << __LINE__ << " ";
+
 // trimm unused parts of best_windows
 
 while(std::get<0>(*best_windows.begin())==0){
