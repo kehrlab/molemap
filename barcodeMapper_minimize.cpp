@@ -96,7 +96,7 @@ std::srand(time(NULL));
 long long int random_seed=std::rand()%maxhash;
 
 unsigned long long bucket_number=length(C);
-unsigned mini_window_size=10;
+unsigned mini_window_size=100;
 
 /*
 Searching for all kmers of reads with the same Barcode
