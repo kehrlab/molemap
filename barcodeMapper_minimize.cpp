@@ -103,8 +103,8 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode (maybe exclude very frequent k-mers?)
-std::vector<std::tuple<unsigned,unsigned,unsigned long long>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
-std::vector<std::tuple<unsigned,unsigned,unsigned long long>>::const_iterator itrk;
+std::vector<std::tuple<unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
+std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrk;
 std::vector<std::pair<unsigned,unsigned>>::const_iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
@@ -156,6 +156,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
 std::cerr << __LINE__ << " ";
+std::cerr << std::get<0>(*kmer_list.begin());
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
