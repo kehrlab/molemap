@@ -7,7 +7,7 @@ using namespace seqan;
 
 // randomizes the hashvalues order
 long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
-  if (hash1^random_seed < hash2^random_seed){
+  if ((hash1^random_seed) < (hash2^random_seed)){
     return hash1;
   } else {
     return hash2;
@@ -17,7 +17,7 @@ long long int ReturnSmaller(const long long int hash1,const long long int hash2,
 // initializes the minimizer
 long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
   long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-  long long int minimizer_pos=0
+  long long int minimizer_pos=0;
   for (unsigned i=0;i<length(string)-k;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k],k,maxhash);
       if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
