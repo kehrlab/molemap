@@ -156,6 +156,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
 std::cerr << __LINE__ << " ";
+std::cerr << ABU(kmer_list.begin()); 
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
