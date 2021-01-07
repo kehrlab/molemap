@@ -119,11 +119,13 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){               
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
   for (unsigned t=0;t<(length(*it)-mini_window_size);t++){                                                   // iterating over all kmers
     if (t!=minimizer_position){                                                                              // if old minimizer in current window
+      std::cerr << "1";
       if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
         minimizer_position=t+1;
       }
     }else{                                                                                                  // if old minimizer no longer in window
+      std::cerr << "2";
       minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
       AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
     }
@@ -156,7 +158,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
 std::cerr << __LINE__ << " ";
-std::cerr << std::get<0>(*kmer_list.begin());
+std::cerr << kmer_list.size();
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
