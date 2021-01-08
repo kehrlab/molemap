@@ -113,25 +113,29 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
+
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
   long long int minimizer_position=0;
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-  for (unsigned t=0;t<(length(*it)-mini_window_size);t++){                                                   // iterating over all kmers
-    if (t!=minimizer_position){                                                                              // if old minimizer in current window
-      std::cerr << "1";
-      if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
+  if ((int)length(*it)-mini_window_size>0){
+    for (unsigned t=0;t<(length(*it)-mini_window_size);t++){                                                   // iterating over all kmers
+      if (t!=minimizer_position){                                                                              // if old minimizer in current window
+        std::cerr << "1";
+        if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
+          AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+          minimizer_position=t+1+mini_window_size-k;
+        }
+      }else{                                                                                                  // if old minimizer no longer in window
+        std::cerr << "2";
+        minimizer_position=t+1;
+        rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+        minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-        minimizer_position=t+1+mini_window_size-k;
       }
-    }else{                                                                                                  // if old minimizer no longer in window
-      std::cerr << "2";
-      minimizer_position=t+1;
-      minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-      AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
     }
+}
 
-  }
 }
 std::cerr << "k-mers listed.  \n";
 
