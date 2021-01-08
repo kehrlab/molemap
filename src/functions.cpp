@@ -7,7 +7,7 @@ using namespace seqan;
 
 // randomizes the hashvalues order
 long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
-  if ((hash1^random_seed) < (hash2^random_seed)){
+  if ((hash1^random_seed) < (hash2^random_seed)){ //does this work with const?
     return hash1;
   } else {
     return hash2;
@@ -43,7 +43,6 @@ int RollMini(long long int & minimizer, std::pair <long long int, long long int>
   return 0;
 }
 
-
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       unsigned long long c=GetBkt(hash,C,bucket_number);
@@ -56,6 +55,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       }
       return;
 }
+
 // return k-mer positions
 std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
       std::vector<std::pair <unsigned,unsigned>> positions;
