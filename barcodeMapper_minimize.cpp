@@ -13,8 +13,8 @@ g++ BarcodeMapper.cpp -o bcmap
 
 int main(int argc, char *argv[]){
 
-if(argc!=4){
-  std::cerr << "Usage: ./bcmap readFile k Index_name\n\n";
+if(argc!=5){
+  std::cerr << "Usage: ./bcmap readFile k Index_name mini_window_size\n\n";
   exit(-1);
 }
 
@@ -22,7 +22,7 @@ if(argc!=4){
 defining Parameters
 */
 
-int window_size=5000;   // size of the genomic windows to wich the reads are matched
+int window_size=20;  //5000;   // size of the genomic windows to wich the reads are matched
 int window_count=100;   // amount of saved candidate windows
 
 /*
@@ -92,11 +92,11 @@ for (unsigned i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
 }
 
-std::srand(time(NULL));
+std::srand(0);
 long long int random_seed=std::rand()%maxhash;
 
 unsigned long long bucket_number=length(C);
-unsigned mini_window_size=100;
+unsigned mini_window_size=std::stoi(argv[4]);
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -113,33 +113,22 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
-
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
   long long int minimizer_position=0;
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-  // std::cerr << "\n -0- hash: " << hash.first << " "<< hash.second << "\n";
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
   if (length(*it)>mini_window_size){
     for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
-      // if(t>10){break;}
       if (t!=minimizer_position){                                                                              // if old minimizer in current window
-        // std::cerr << " -1- ";
         if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
-          // std::cerr << "hash: " << hash.first << " "<< hash.second << "\n";
-          // std::cerr << "mini: " << minimizer << "\n";
-          // std::cerr << "minipos: "<< minimizer_position;
           AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
           minimizer_position=t+1+mini_window_size-k;
         }
       }else{                                                                                                  // if old minimizer no longer in window
-        // std::cerr << " -2- ";
         minimizer_position=t+1;
-        rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
+        hash=hashkMer(infix(*it,t+1,t+1+k),k);
         minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-        // std::cerr << "hash: " << hash.first << " "<< hash.second << "\n";
-        // std::cerr << "mini: " << minimizer << "\n";
-        // std::cerr << "minipos: "<< minimizer_position;
       }
     }
 }
@@ -170,7 +159,6 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 // for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
-std::cerr << __LINE__ << " ";
 std::cerr << kmer_list.size();
 unsigned slider=1;
 double window_quality=0;
@@ -179,7 +167,6 @@ if(ABU(kmer_list.begin())>99){
 }else{
   window_quality+=lookQual[ABU(kmer_list.begin())]; // lookQual = 1/(log(abund)^5)
 }
-std::cerr << __LINE__ << " ";
 
 std::vector<std::tuple<double,unsigned,int>> best_windows(window_count,std::make_tuple(0,0,-(window_size+10))); //(maping_quality, reference, position in referende)
 std::vector<std::tuple<double,unsigned,int>>::iterator itrbw;
