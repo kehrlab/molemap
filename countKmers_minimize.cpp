@@ -53,13 +53,13 @@ int main(int argc, char *argv[]){
   // long long int maxhash=pow(2,k*2)-1;
 
   long long int maxhash;
-  for (int i=0;i<k;i++){
+  for (unsigned i=0;i<k;i++){
     maxhash= maxhash << 2 | 3;
   }
 
   std::srand(0);
   long long int random_seed=std::rand()%maxhash;
-  
+  std::cerr << "seed: " << random_seed << "\n";
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
   // unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome

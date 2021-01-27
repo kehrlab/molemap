@@ -87,6 +87,7 @@ assign(C, extC, Exact());
 close(extC);
 
 unsigned k=std::stoi(argv[2]); // length of k-mers in index
+
 long long int maxhash;
 for (unsigned i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
@@ -94,6 +95,7 @@ for (unsigned i=0;i<k;i++){
 
 std::srand(0);
 long long int random_seed=std::rand()%maxhash;
+std::cerr<< "seed: " << random_seed << "\n";
 
 unsigned long long bucket_number=length(C);
 unsigned mini_window_size=std::stoi(argv[4]);
@@ -111,30 +113,42 @@ std::cerr << "Index and reads loaded.\n";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
 
+unsigned counter=0;
+std::cerr << "minimizer_position: ";
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
   long long int minimizer_position=0;
+  std::cerr << minimizer_position << " ";
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
+  std::cerr << " ini: " << minimizer_position << " ";
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+  counter++;
   if (length(*it)>mini_window_size){
     for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
       if (t!=minimizer_position){                                                                              // if old minimizer in current window
         if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
+          counter++;
           AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
           minimizer_position=t+1+mini_window_size-k;
         }
       }else{                                                                                                  // if old minimizer no longer in window
         minimizer_position=t+1;
         hash=hashkMer(infix(*it,t+1,t+1+k),k);
+        std::cerr << minimizer_position << " ";
         minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
+        std::cerr << " reini: "
+        conter++;
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
       }
+      std::cerr << minimizer_position << " ";
     }
 }
 
 }
 std::cerr << "k-mers listed.  \n";
+std::cerr << kmer_list.size() <<" k-mers listed\n";
+std::cerr << "counter: " << counter << "\n";
 
 
 auto tend = std::chrono::high_resolution_clock::now();
@@ -159,7 +173,6 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 // for(itrk=kmer_list.begin();itrk!=kmer_list.end();itrk++){
 //   std::cerr << "(" << REF(itrk) <<"," << POS(itrk) <<","<<ABU(itrk)<< ")" << " ";
 // }
-std::cerr << kmer_list.size();
 unsigned slider=1;
 double window_quality=0;
 if(ABU(kmer_list.begin())>99){
