@@ -137,8 +137,8 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){               
         hash=hashkMer(infix(*it,t+1,t+1+k),k);
         std::cerr << minimizer_position << " ";
         minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-        std::cerr << " reini: "
-        conter++;
+        std::cerr << " reini: ";
+        counter++;
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
       }
       std::cerr << minimizer_position << " ";
