@@ -59,7 +59,6 @@ int main(int argc, char *argv[]){
 
   std::srand(0);
   long long int random_seed=std::rand()%maxhash;
-  std::cerr << "seed: " << random_seed << "\n";
   unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
   // unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome
