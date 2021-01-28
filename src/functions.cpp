@@ -16,16 +16,19 @@ long long int ReturnSmaller(const long long int hash1,const long long int hash2,
 
 // initializes the minimizer
 long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> & hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
-  long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-  std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
+  // long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+  long long int minimizer=std::min(hash.first,hash.second);
+  // std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
   long long int minimizer_pos=0;
   for (unsigned i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
-      if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
+      // if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
+      if (std::min(minimizer,hash.first)!=minimizer){
         minimizer=hash.first;
         minimizer_pos=i;
       }
-      if (ReturnSmaller(minimizer,hash.second,random_seed)!=minimizer){
+      // if (ReturnSmaller(minimizer,hash.second,random_seed)!=minimizer){
+      if (std::min(minimizer,hash.second)!=minimizer){
         minimizer=hash.second;
         minimizer_pos=i;
       }
@@ -37,8 +40,10 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 // calculates following minimizer and reports if it replaces the old minimizer
 int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed){
   rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash);
-  if (ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed)!=minimizer){
-    minimizer=ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed);
+  // if (ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed)!=minimizer){
+  if (std::min(minimizer,std::min(hash.first,hash.second))!=minimizer){
+    // minimizer=ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed);
+    minimizer=std::min(minimizer,std::min(hash.first,hash.second));
     return 1;
   }
   return 0;
@@ -46,12 +51,12 @@ int RollMini(long long int & minimizer, std::pair <long long int, long long int>
 
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
-      std::cerr <<"\nhash: " << hash << "\n";
+      // std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
-      std::cerr << "c: " << c << "\n";
+      // std::cerr << "c: " << c << "\n";
       unsigned long long abundance=dir[c+1]-dir[c];
-      std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
-      std::cerr << "abundance: " << abundance << "\n";
+      // std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
+      // std::cerr << "abundance: " << abundance << "\n";
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
         for (unsigned long long i = dir[c];i!=dir[c+1];i++){
