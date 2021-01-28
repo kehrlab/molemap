@@ -122,6 +122,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){ // Iterating o
       rollinghashkMer(hash.first,hash.second,(*it)[t+k],k,maxhash);
       // std::cerr<<"line: "<<__LINE__<<"\n";
     }
+    return;
   }
   else {continue;}
 }

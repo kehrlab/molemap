@@ -22,7 +22,7 @@ if(argc!=5){
 defining Parameters
 */
 
-int window_size=20;  //5000;   // size of the genomic windows to wich the reads are matched
+int window_size=5000;  //5000;   // size of the genomic windows to wich the reads are matched
 int window_count=100;   // amount of saved candidate windows
 
 /*
@@ -95,10 +95,8 @@ for (unsigned i=0;i<k;i++){
 
 std::srand(0);
 long long int random_seed=std::rand()%maxhash;
-std::cerr<< "seed: " << random_seed << "\n";
-
 unsigned long long bucket_number=length(C);
-unsigned mini_window_size=std::stoi(argv[4]);
+int mini_window_size=std::stoi(argv[4]);
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -123,6 +121,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){               
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
   std::cerr << " ini: " << minimizer_position << " ";
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+  return;
   counter++;
   if (length(*it)>mini_window_size){
     for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
