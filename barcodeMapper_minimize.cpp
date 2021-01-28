@@ -121,7 +121,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){               
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
   std::cerr << " ini: " << minimizer_position << " ";
   AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-  return;
+  return 0;
   counter++;
   if (length(*it)>mini_window_size){
     for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
