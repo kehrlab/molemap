@@ -17,6 +17,7 @@ long long int ReturnSmaller(const long long int hash1,const long long int hash2,
 // initializes the minimizer
 long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> & hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
   long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+  std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
   long long int minimizer_pos=0;
   for (unsigned i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
@@ -45,8 +46,12 @@ int RollMini(long long int & minimizer, std::pair <long long int, long long int>
 
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
+      std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
+      std::cerr << "c: " << c << "\n";
       unsigned long long abundance=dir[c+1]-dir[c];
+      std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
+      std::cerr << "abundance: " << abundance << "\n";
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
         for (unsigned long long i = dir[c];i!=dir[c+1];i++){
