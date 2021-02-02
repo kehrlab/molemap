@@ -108,7 +108,6 @@ std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrk;
 std::vector<std::pair<unsigned,unsigned>>::const_iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
-
 auto tbegin = std::chrono::high_resolution_clock::now();
 
 unsigned counter=0;
@@ -147,7 +146,7 @@ for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){               
         counter++;
         AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
       }
-      std::cerr << minimizer_position << " ";
+      // std::cerr << minimizer_position << " ";
     }
 }
 
