@@ -39,7 +39,7 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 
 // calculates following minimizer and reports if it replaces the old minimizer
 int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed){
-  rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash);
+  rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash); // inline?!
   // if (ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed)!=minimizer){
   if (std::min(minimizer,std::min(hash.first,hash.second))!=minimizer){
     // minimizer=ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed);
@@ -113,7 +113,7 @@ std::pair <long long int, long long int> hashkMer(const DnaString & kmer, const 
 
 // Rolling hashfunction for k-mer
 void rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna & newnuc, const unsigned k, const long long int & maxhash){
-  oldHash=((oldHash << 2) | ordValue(newnuc)) & maxhash;
-  oldHash2=(oldHash2 >> 2) | (3-ordValue(newnuc)) << (k*2-2);
+  oldHash=((oldHash << 2) | ordValue(newnuc)) & maxhash;            // inline?
+  oldHash2=(oldHash2 >> 2) | (3-ordValue(newnuc)) << (k*2-2);       // inline?
   return;
 }
