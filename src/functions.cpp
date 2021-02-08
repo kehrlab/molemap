@@ -87,10 +87,10 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
     counter+=1;
     i=(i+2*d+1)%bucket_number;
     d++;
-    if (counter > 100){   // error if bucket_number not high enough
-      if (counter=101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
-      if (counter > 1000) {break;} 
-    }
+    // if (counter > 100){   // error if bucket_number not high enough
+    //   if (counter=101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
+    //   if (counter > 1000) {break;}
+    // }
   }
   return i;
 }
