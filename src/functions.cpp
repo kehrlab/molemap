@@ -81,14 +81,16 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
   std::srand(hash);
   unsigned long long i=std::rand()%bucket_number;
   unsigned long long d=0;
-  // unsigned counter=0;
+  unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
-    // counter+=1;
+
+    counter+=1;
     i=(i+2*d+1)%bucket_number;
     d++;
-    // if (counter > 1000){   // error if bucket_number not high enough
-      // std::cerr<<"\nERROR: Bucket number to small.\n";
-      // break;}
+    if (counter > 100){   // error if bucket_number not high enough
+      if (counter=101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
+      if (counter > 1000) {break;} 
+    }
   }
   return i;
 }
