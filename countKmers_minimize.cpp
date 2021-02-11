@@ -96,7 +96,6 @@ int main(int argc, char *argv[]){
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-    std::cerr << "chrom: " << chrom << "\n";
     chrom++;
 
     // counting k-mers
@@ -105,7 +104,6 @@ int main(int argc, char *argv[]){
 
 
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
-      std::cerr << "Pos: "<<i<<"\n";
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
