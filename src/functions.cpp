@@ -5,6 +5,26 @@
 
 using namespace seqan;
 
+// checks if candidate should be inserted into best_windows and inserts it at the correct palce
+void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned,unsigned,unsigned> & candidate){
+  std::vector<std::tuple<double,unsigned,unsigned,unsigned>>::iterator itrbw;
+  unsigned inserted=0;
+  if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
+    for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
+      if(std::get<0>(candidate) < std::get<0>(*itrbw)){                            // if (as soon as) quality is worse than quality in best_windows
+        best_windows.insert(itrbw,candidate);                                      // insert new window there
+        best_windows.erase(best_windows.begin());                                  // and delete worst window
+        candidate=std::make_tuple(0,0,0,4294967295);
+        return;
+      }
+    }
+    best_windows.push_back(candidate);
+    best_windows.erase(best_windows.begin());
+    candidate=std::make_tuple(0,0,0,4294967295);
+    return;
+  }
+}
+
 // randomizes the hashvalues order
 long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
   if ((hash1^random_seed) < (hash2^random_seed)){
@@ -78,8 +98,9 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, co
 
 // Find correct Bucket
 unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
-  std::srand(hash);
-  unsigned long long i=std::rand()%bucket_number;
+  // std::srand(hash);
+  // unsigned long long i=std::rand()%bucket_number;
+  unsigned long long i=hash%bucket_number;
   unsigned long long d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){

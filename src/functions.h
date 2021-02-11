@@ -6,6 +6,7 @@
 # include <iostream>
 using namespace seqan;
 
+void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned,unsigned,unsigned> & candidate);
 long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed);
 long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> & hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position);
 int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna5 & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed);
