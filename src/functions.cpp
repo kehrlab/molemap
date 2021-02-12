@@ -26,7 +26,7 @@ void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & 
 }
 
 // randomizes the hashvalues order
-long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
+inline long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
   if ((hash1^random_seed) < (hash2^random_seed)){
     return hash1;
   } else {
@@ -100,21 +100,41 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, co
 unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
   // std::srand(hash);
   // unsigned long long i=std::rand()%bucket_number;
-  unsigned long long i=hash%bucket_number;
-  unsigned long long d=0;
+  long long int i=hash%(long long int)bucket_number;
+  // long long int d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
-
+    i=(i^(hash>>(k%2)))%(long long int)bucket_number;
     counter+=1;
-    i=(i+2*d+1)%bucket_number;
-    d++;
-    // if (counter > 100){   // error if bucket_number not high enough
-    //   if (counter=101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
-    //   if (counter > 1000) {break;}
-    // }
+    // i=(i+2*d+1)%(long long int)bucket_number;
+    // d++;
+    if (counter > 100){   // error if bucket_number not high enough
+      if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
+      // if (counter > 1000) {break;}
+    }
   }
   return i;
 }
+
+// unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
+//   // std::srand(hash);
+//   // unsigned long long i=std::rand()%bucket_number;
+//   long long int i=hash%(long long int)bucket_number;
+//   long long int d=0;
+//   unsigned counter=0;
+//   while(C[i]!=hash and C[i]!=-1){
+//
+//     counter+=1;
+//     i=(i+2*d+1)%(long long int)bucket_number;
+//     d++;
+//     if (counter > 100){   // error if bucket_number not high enough
+//       if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
+//       // if (counter > 1000) {break;}
+//     }
+//   }
+//   return i;
+// }
+
 
 // Request a Bucket
 unsigned long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number){
@@ -135,9 +155,8 @@ std::pair <long long int, long long int> hashkMer(const DnaString & kmer, const 
 }
 
 // Rolling hashfunction for k-mer
-void rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna5 & newnuc, const unsigned k, const long long int & maxhash){
-  // std::cerr << "ordval:" << (int)ordValue(newnuc)<< "\n";
-  oldHash=((oldHash << 2) | (long long int)ordValue(newnuc)) & maxhash;            // inline?
-  oldHash2=(oldHash2 >> 2) | (long long int)(3-ordValue(newnuc)) << (k*2-2);       // inline?
+inline void rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna5 & newnuc, const unsigned k, const long long int & maxhash){
+  oldHash=((oldHash << 2) | (long long int)ordValue(newnuc)) & maxhash;
+  oldHash2=(oldHash2 >> 2) | (long long int)(3-ordValue(newnuc)) << (k*2-2);
   return;
 }
