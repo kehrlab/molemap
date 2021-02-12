@@ -96,7 +96,7 @@ int main(int argc, char *argv[]){
 
 
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
-      c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);     // indexing the hashed k-mers
+      c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number,k);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
         rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]){
         hash=hashkMer(infix(*seq,i,i+k),k);
       }
     }
-    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number);       // indexing of the last element
+    c=ReqBkt(std::min(hash.first,hash.second),C,bucket_number,k);       // indexing of the last element
     dir[c+1]+=1;
 
   }
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
-      c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);   // filling of the position table
+      c=GetBkt(std::min(hash.first,hash.second),C,bucket_number,k);   // filling of the position table
       pos[dir[c+1]]=std::make_pair(CHROM,i);
       dir[c+1]++;
       if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]){
         hash=hashkMer(infix(*seq,i,i+k),k);
       }
     }
-    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number);     // filling the position table for the last element
+    c=GetBkt(std::min(hash.first,hash.second),C,bucket_number,k);     // filling the position table for the last element
     pos[dir[c+1]]=std::make_pair(CHROM,length(*seq)-k);
     dir[c+1]++;
     CHROM++;
