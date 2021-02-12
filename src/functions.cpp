@@ -97,14 +97,14 @@ std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, co
 }
 
 // Find correct Bucket
-unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number,const unsigned & k){
+unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
   // std::srand(hash);
   // unsigned long long i=std::rand()%bucket_number;
   long long int i=hash%(long long int)bucket_number;
   // long long int d=0;
   unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
-    i=(i^(hash>>(k%2)))%(long long int)bucket_number;
+    i=(i^(hash>>(15)))%(long long int)bucket_number;
     counter+=1;
     // i=(i+2*d+1)%(long long int)bucket_number;
     // d++;
@@ -137,8 +137,8 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
 
 
 // Request a Bucket
-unsigned long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number, const unsigned & k){
-  unsigned long long i = GetBkt(hash,C,bucket_number,k);
+unsigned long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number){
+  unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
