@@ -83,13 +83,14 @@ int main(int argc, char *argv[]){
 
   unsigned long long c;
   unsigned CHROM =0;
-
+  unsigned chr=0;
   std::cerr << "Index prepared. \n";
 
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-
+    std::cerr <<"Chrom: " << chr << "\n";
+    chr++;
     // counting k-mers
 
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
