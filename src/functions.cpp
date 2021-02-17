@@ -106,18 +106,20 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
   while(C[i]!=hash and C[i]!=-1){
     // std::cerr <<counter <<"\n";
     // std::cerr << "i before: " << i << "\n";
-    i=(i^(hash>>((d)%31)));
+    i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(long long int)bucket_number;
     // std::cerr << "i after: " << i << "\n";
 
     counter+=1;
     d++;
     if (counter > 100){   // error if bucket_number not high enough
-      if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
+      if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";
+      std::cerr << " hash: " << hash << " seq: " << hash2kmer(hash,31) <<"\n";
+      }
       // if (counter > 1000) {break;}
     }
   }
-  std::cerr << "tries: " << counter << "\n";
+  // std::cerr << "tries: " << counter << "\n";
   return i;
 }
 
@@ -146,6 +148,26 @@ unsigned long long ReqBkt(const long long int & hash, String<int long long> & C,
   unsigned long long i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
+}
+
+// turn hashvalue into kmer
+DnaString hash2kmer(const long long int & hash,const unsigned k){
+  DnaString kmer="";
+  long long int temp;
+  for (size_t i = 0; i < k; i++) {
+    temp=(hash>>((k-1-i)*2)) & (long long int)3;
+    // std::cerr << "temp: " << temp <<"\n";
+    if (temp==(long long int)0) {
+      kmer+="A";
+    }else if(temp==1){
+      kmer+="C";
+    }else if (temp==2){
+      kmer+="G";
+    }else{
+      kmer+="T";
+    }
+  }
+  return kmer;
 }
 
 //  Hashfunction for k-mer
