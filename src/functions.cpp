@@ -28,9 +28,9 @@ void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & 
 // randomizes the hashvalues order
 long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
   if ((hash1^random_seed) < (hash2^random_seed)){
-    return hash1;
+    return hash1^random_seed;
   } else {
-    return hash2;
+    return hash2^random_seed;
   }
 }
 
@@ -42,12 +42,12 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
   long long int minimizer_pos=0;
   for (unsigned i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
-      if (ReturnSmaller(minimizer,hash.first,random_seed)!=minimizer){
+      if (minimizer > (hash.first^random_seed)){
       // if (std::min(minimizer,hash.first)!=minimizer){
         minimizer=hash.first;
         minimizer_pos=i;
       }
-      if (ReturnSmaller(minimizer,hash.second,random_seed)!=minimizer){
+      if (minimizer > (hash.second^random_seed)){
       // if (std::min(minimizer,hash.second)!=minimizer){
         minimizer=hash.second;
         minimizer_pos=i;
@@ -60,9 +60,9 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 // calculates following minimizer and reports if it replaces the old minimizer
 int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna5 & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed){
   rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash); // inline?!
-  if (ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed)!=minimizer){
+  if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){
   // if (std::min(minimizer,std::min(hash.first,hash.second))!=minimizer){
-    minimizer=ReturnSmaller(minimizer,ReturnSmaller(hash.first,hash.second,random_seed),random_seed);
+    minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
     // minimizer=std::min(minimizer,std::min(hash.first,hash.second));
     return 1;
   }
