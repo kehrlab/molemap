@@ -22,7 +22,7 @@ if(argc!=5){
 defining Parameters
 */
 
-unsigned max_window_size=5000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
+unsigned max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
 unsigned max_gap_size=4500;     // maximum gap size between two adjacent k_mer hits
 unsigned window_count=100;   // amount of saved candidate windows
 

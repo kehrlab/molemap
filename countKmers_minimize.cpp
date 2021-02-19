@@ -102,7 +102,6 @@ int main(int argc, char *argv[]){
 
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
-
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // indexing the hashed k-mers
       dir[c+1]+=1;
