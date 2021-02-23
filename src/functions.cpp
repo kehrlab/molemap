@@ -58,19 +58,18 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 }
 
 // calculates following minimizer and reports if it replaces the old minimizer
-int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna5 & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed){
-  rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash); // inline?!
-  if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){
-  // if (std::min(minimizer,std::min(hash.first,hash.second))!=minimizer){
-    minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-    // minimizer=std::min(minimizer,std::min(hash.first,hash.second));
-    return 1;
-  }
-  return 0;
-}
+// int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna5 & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed,const unsigned long long bucket_number){
+//   rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash); // inline?!
+//   if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){
+//     AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+//     minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+//     return 1;
+//   }
+//   return 0;
+// }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
+void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number,unsigned & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
@@ -80,7 +79,7 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned>> & kmer_list,
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
         for (unsigned long long i = dir[c];i!=dir[c+1];i++){
-          kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance));
+          kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance,minimizer_active_bases));
         }
       }
       return;
