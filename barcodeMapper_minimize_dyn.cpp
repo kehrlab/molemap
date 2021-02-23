@@ -108,56 +108,48 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode (maybe exclude very frequent k-mers?)
-std::vector<std::tuple<unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference
-std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrk;
+std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrk;
 std::vector<std::pair<unsigned,unsigned>>::const_iterator itrp;
 
 std::cerr << "Index and reads loaded.\n";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
-unsigned counter=0;
 // std::cerr << "minimizer_position: ";
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
   long long int minimizer_position=0;
-  // std::cerr << minimizer_position << " ";
   long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-  // std::cerr << " new:  " << minimizer;
-  // std::cerr << " ini: " << minimizer_position << " ";
-  AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-  counter++;
-  // std::pair <long long int, long long int> hash2;
+  unsigned minimizer_active_bases=1;
   if (length(*it)>mini_window_size){
     for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
-      // RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed);
-      // std::cerr << "read: " << *it << "\n";
-      // std::cerr << "roll: " << minimizer;
-      // minimizer_position=t+1;
-      // hash2=hashkMer(infix(*it,t+1,t+1+k),k);
-      // std::cerr << " new:  " << InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash2, maxhash, random_seed,minimizer_position)<< "\n";
-      if (t!=minimizer_position){                                                                              // if old minimizer in current window
-        if (RollMini(minimizer, hash, (*it)[t+mini_window_size], k, maxhash, random_seed)){                    // calculating the new minimizer by rolling it
-          counter++;
-          AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+
+
+      if (t!=minimizer_position){                 // if old minimizer in current window
+        rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
+        if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
+          AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number,minimizer_active_bases);
+          minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
           minimizer_position=t+1+mini_window_size-k;
+          minimizer_active_bases=0;
         }
-      }else{                                                                                                  // if old minimizer no longer in window
+        minimizer_active_bases++;
+
+
+
+      }else{
+        AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number, minimizer_active_bases);                                                                                                  // if old minimizer no longer in window
         minimizer_position=t+1;
         hash=hashkMer(infix(*it,t+1,t+1+k),k);
-        // std::cerr << minimizer_position << " ";
         minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-        // std::cerr << " reini: ";
-        counter++;
-        AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
+        unsigned minimizer_active_bases=1;
       }
-      // std::cerr << minimizer_position << " ";
     }
+    AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number, minimizer_active_bases);   // append last minimizer                                                                                               // if old minimizer no longer in window
   }
 }
 std::cerr << "k-mers listed.  \n";
-std::cerr << kmer_list.size() <<" k-mers listed\n";
-std::cerr << "counter: " << counter << "\n";
 
 auto tend = std::chrono::high_resolution_clock::now();
 std::cout << "\ntime: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
@@ -177,6 +169,8 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 #define REF(X) std::get<0>(*(X))
 #define POS(X) std::get<1>(*(X))
 #define ABU(X) std::get<2>(*(X))
+#define ACT(X) std::get<3>(*(X))
+
 
 std::cerr<<__LINE__<<"\n";
 std::vector<std::tuple<double,unsigned,unsigned,unsigned>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
@@ -184,20 +178,20 @@ std::vector<std::tuple<double,unsigned,unsigned,unsigned>>::iterator itrbw;
 // std::cerr<<"iteration prepared. \n";
 
 unsigned reference=REF(kmer_list.begin());
-std::vector<std::tuple<unsigned,unsigned,unsigned>>::const_iterator itrstart=kmer_list.begin();
+std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrstart=kmer_list.begin();
 unsigned start_position=POS(kmer_list.begin());
 unsigned end_position=POS(kmer_list.begin());
 double window_quality=0;
 std::tuple<double,unsigned,unsigned,unsigned> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
 if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
-  window_quality+=0.00032;
+  window_quality+=0.00032*ACT(kmer_list.begin());
 }else{
-  window_quality+=lookQual[ABU(kmer_list.begin())]; // lookQual = 1/(log(abund)^5)
+  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = 1/(log(abund)^5)
 }
 
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
-
+  std::cerr <<"active: "<<ACT(itrk)<<"\n";
   if (/*end position*/std::get<3>(candidate) < start_position) { // if current window no longer overlaps the qualifiing window
     report_window(best_windows,candidate);
   }
@@ -205,9 +199,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
   if (reference==REF(itrk) && (POS(itrk)-start_position) < max_window_size && (POS(itrk)-end_position) < max_gap_size) { //checking break criteria
     //append window by kmer_hit
     if(ABU(itrk)>99){
-      window_quality+=0.00032;
+      window_quality+=0.00032*ACT(itrk);
     }else{
-      window_quality+=lookQual[ABU(itrk)];
+      window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
     }
     end_position=POS(itrk);
     // std::cerr<<"ref: " << reference<<" endpos: " << end_position << " qual: " << window_quality << "\n";
@@ -221,9 +215,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
     }
 
     if(ABU(itrk)>99){ // initialize new window
-      window_quality=0.00032;
+      window_quality=0.00032*ACT(itrk);
     }else{
-      window_quality=lookQual[ABU(itrk)];
+      window_quality=lookQual[ABU(itrk)]*ACT(itrk);
     }
     itrstart=itrk;
     reference=REF(itrk);
@@ -234,9 +228,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
       candidate=std::make_tuple(window_quality,reference,start_position,end_position);
     }
     if(ABU(itrk)>99){ //Append window by new kmer_hit
-      window_quality+=0.00032;
+      window_quality+=0.00032*ACT(itrk);
     }else{
-      window_quality+=lookQual[ABU(itrk)];
+      window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
     }
     end_position=POS(itrk);
     // std::cerr<<"ref: " << reference<<" endpos: " << end_position << " qual: " << window_quality << "\n";
@@ -244,9 +238,9 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
 
     while (POS(itrk)-POS(itrstart)>max_window_size){ //shrinking window untill max_window_size criterion met
       if(ABU(itrstart)>99){
-        window_quality-=0.00032;
+        window_quality-=0.00032*ACT(itrstart);
       }else{
-        window_quality-=lookQual[ABU(itrstart)];
+        window_quality-=lookQual[ABU(itrstart)*ACT(itrstart)];
       }
       itrstart++;
     }
