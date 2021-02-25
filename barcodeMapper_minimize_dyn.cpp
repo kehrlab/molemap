@@ -207,6 +207,10 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
     // std::cerr<<"ref: " << reference<<" endpos: " << end_position << " qual: " << window_quality << "\n";
   }else if (REF(itrk)!=reference || (POS(itrk)-end_position) > max_gap_size){  // if k_mer hit from next reference or gapsize to large: report current window or candiadate window and initialize new window
 
+    if ((POS(itrk)-end_position) > max_gap_size) {
+      std::cerr << "gapsize hurt!  Ref: "<<REF(itrk) << " Pos: " << POS(itrk) << "\n";
+    }
+
     if(window_quality > std::get<0>(candidate)){ // report current window or candidate
       candidate=std::make_tuple(window_quality,reference,start_position,end_position);
       report_window(best_windows,candidate);
