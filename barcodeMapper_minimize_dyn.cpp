@@ -187,7 +187,7 @@ std::tuple<double,unsigned,unsigned,unsigned> candidate=std::make_tuple(0,0,0,42
 if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
   window_quality+=0.00032*ACT(kmer_list.begin());
 }else{
-  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = 1/(log(abund)^5)
+  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
 }
 
 for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
