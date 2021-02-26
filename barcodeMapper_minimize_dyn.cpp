@@ -274,7 +274,9 @@ std::cout <<"\ntime: "<< (float)std::chrono::duration_cast<std::chrono::millisec
 
 
 for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
-  std::cout<<"\nquality: " << std::get<0>(*itrbw) << "\tref: " << std::get<1>(*itrbw)<< "\tstart: "<< std::get<2>(*itrbw) << "\tend: " << std::get<3>(*itrbw) << "\tlength: " << std::get<3>(*itrbw)-std::get<2>(*itrbw);
+  std::string qual=std::to_string(std::get<0>(*itrbw));
+  for (int i=qual.length();i<=20;i++) {qual+=" ";}
+  std::cout<<"\nquality: " << qual << "\tref: " << std::get<1>(*itrbw)<< "\tstart: "<< std::get<2>(*itrbw) << "\tend: " << std::get<3>(*itrbw) << "\tlength: " << std::get<3>(*itrbw)-std::get<2>(*itrbw);
 }
 std::cerr<<"\n";
 
