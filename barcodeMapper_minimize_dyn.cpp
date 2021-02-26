@@ -275,8 +275,17 @@ std::cout <<"\ntime: "<< (float)std::chrono::duration_cast<std::chrono::millisec
 
 for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
   std::string qual=std::to_string(std::get<0>(*itrbw));
-  for (int i=qual.length();i<=20;i++) {qual+=" ";}
-  std::cout<<"\nquality: " << qual << "\tref: " << std::get<1>(*itrbw)<< "\tstart: "<< std::get<2>(*itrbw) << "\tend: " << std::get<3>(*itrbw) << "\tlength: " << std::get<3>(*itrbw)-std::get<2>(*itrbw);
+  for (int i=qual.length();i<=15;i++) {qual+=" ";}
+  std::string ref=std::to_string(std::get<1>(*itrbw));
+  for (int i=ref.length();i<=5;i++) {qual+=" ";}
+  std::string start=std::to_string(std::get<2>(*itrbw));
+  for (int i=start.length();i<=10;i++) {qual+=" ";}
+  std::string end=std::to_string(std::get<3>(*itrbw));
+  for (int i=end.length();i<=10;i++) {qual+=" ";}
+  std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
+  for (int i=len.length();i<=10;i++) {qual+=" ";}
+
+  std::cout<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
 }
 std::cerr<<"\n";
 
