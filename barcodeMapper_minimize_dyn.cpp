@@ -23,7 +23,7 @@ defining Parameters
 */
 
 unsigned max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
-unsigned max_gap_size=10000;     // maximum gap size between two adjacent k_mer hits
+unsigned max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
 unsigned window_count=100;   // amount of saved candidate windows
 
 /*
@@ -172,7 +172,7 @@ float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 
 #define ACT(X) std::get<3>(*(X))
 
 
-std::cerr<<__LINE__<<"\n";
+// std::cerr<<__LINE__<<"\n";
 std::vector<std::tuple<double,unsigned,unsigned,unsigned>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
 std::vector<std::tuple<double,unsigned,unsigned,unsigned>>::iterator itrbw;
 // std::cerr<<"iteration prepared. \n";
@@ -208,7 +208,7 @@ for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kme
   }else if (REF(itrk)!=reference || (POS(itrk)-end_position) > max_gap_size){  // if k_mer hit from next reference or gapsize to large: report current window or candiadate window and initialize new window
 
     if ((POS(itrk)-end_position) > max_gap_size) {
-      std::cerr << "gapsize hurt!  Ref: "<<REF(itrk) << " Pos: " << POS(itrk) << "\n";
+      // std::cerr << "gapsize hurt!  Ref: "<<REF(itrk) << " Pos: " << POS(itrk) << "\n";
     }
 
     if(window_quality > std::get<0>(candidate)){ // report current window or candidate
