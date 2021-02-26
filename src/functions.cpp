@@ -101,7 +101,7 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
   // unsigned long long i=std::rand()%bucket_number;
   long long int i=hash%(long long int)bucket_number;
   long long int d=0;
-  unsigned counter=0;
+  // unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
     // std::cerr <<counter <<"\n";
     // std::cerr << "i before: " << i << "\n";
@@ -109,14 +109,14 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
     i=(i+2*d+1)%(long long int)bucket_number;
     // std::cerr << "i after: " << i << "\n";
 
-    counter+=1;
+    // counter+=1;
     d++;
-    if (counter > 100){   // error if bucket_number not high enough
-      if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";
-      std::cerr << " hash: " << hash << " seq: " << hash2kmer(hash,31) <<"\n";
-      }
-      // if (counter > 1000) {break;}
-    }
+    // if (counter > 100){   // error if bucket_number not high enough
+    //   if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";
+    //   std::cerr << " hash: " << hash << " seq: " << hash2kmer(hash,31) <<"\n";
+    //   }
+    //   // if (counter > 1000) {break;}
+    // }
   }
   // std::cerr << "tries: " << counter << "\n";
   return i;
