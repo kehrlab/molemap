@@ -277,13 +277,13 @@ for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
   std::string qual=std::to_string(std::get<0>(*itrbw));
   for (int i=qual.length();i<=18;i++) {qual+=" ";}
   std::string ref=std::to_string(std::get<1>(*itrbw));
-  for (int i=ref.length();i<=8;i++) {qual+=" ";}
+  for (int i=ref.length();i<=8;i++) {ref+=" ";}
   std::string start=std::to_string(std::get<2>(*itrbw));
-  for (int i=start.length();i<=13;i++) {qual+=" ";}
+  for (int i=start.length();i<=13;i++) {start+=" ";}
   std::string end=std::to_string(std::get<3>(*itrbw));
-  for (int i=end.length();i<=13;i++) {qual+=" ";}
+  for (int i=end.length();i<=13;i++) {end+=" ";}
   std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-  for (int i=len.length();i<=13;i++) {qual+=" ";}
+  for (int i=len.length();i<=13;i++) {len+=" ";}
 
   std::cout<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
 }
