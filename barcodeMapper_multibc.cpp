@@ -296,9 +296,9 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
-      char[] qual=std::to_string(std::get<0>(*itrbw));
+      std::string qual=std::to_string(std::get<0>(*itrbw));
       for (int i=qual.length();i<=18;i++) {qual+=" ";}
-      char[] ref=std::to_string(std::get<1>(*itrbw));
+      std::string ref=std::to_string(std::get<1>(*itrbw));
       for (int i=ref.length();i<=8;i++) {ref+=" ";}
       std::string start=std::to_string(std::get<2>(*itrbw));
       for (int i=start.length();i<=13;i++) {start+=" ";}
