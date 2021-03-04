@@ -21,8 +21,10 @@ int main(int argc, char *argv[]){
   std::string old_barcode;
   std::string id;
 
-  FILE *file1=fopen(filename1,"r");
-  FILE *file2=fopen(filename2,"r");
+  std::fstream file1;
+  file1.open(filename1,std::ios::in);
+  std::fstream file2;
+  file2.open(filename2,std::ios::in);
 
   getline(file1,id)
   barcode=id.substr(id.find("RX:Z:")+5,16);
