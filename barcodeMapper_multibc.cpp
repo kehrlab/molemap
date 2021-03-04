@@ -142,8 +142,8 @@ while (atEnd(file1)!=1) {
     sort(kmer_list.begin(),kmer_list.end());
     map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count);
     kmer_list.clear();
-    barcode=new_barcode;
   }
+  barcode=new_barcode;
 
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
     std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -173,6 +173,11 @@ while (atEnd(file1)!=1) {
     }
   }
 }
+if (!kmer_list.empty()) {
+  sort(kmer_list.begin(),kmer_list.end());
+  map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count);
+}
+
 close(file1);
 close(file2);
 } //main
