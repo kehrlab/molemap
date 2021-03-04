@@ -305,18 +305,18 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
       for (int i=end.length();i<=13;i++) {end+=" ";}
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
       for (int i=len.length();i<=13;i++) {len+=" ";}
-      results.std::fwrite("\nquality: ");
-      results.std::fwrite(qual);
-      results.fwrite("\tref: ");
-      results.fwrite(ref);
-      results.fwrite("\tstart: ");
-      results.fwrite(start);
-      results.fwrite("\tend: ");
-      results.fwrite(end);
-      results.fwrite("\tlength: ");
-      results.fwrite(len);
+      results.write("\nquality: ");
+      results.write(qual);
+      results.write("\tref: ");
+      results.write(ref);
+      results.write("\tstart: ");
+      results.write(start);
+      results.write("\tend: ");
+      results.write(end);
+      results.write("\tlength: ");
+      results.write(len);
       results<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
     }
-    fclose(results);
+    std::fclose(results);
     std::cerr<<"\n";
   } //map_kmer_list
