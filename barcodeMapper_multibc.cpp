@@ -141,7 +141,7 @@ while (atEnd(file1)!=1) {
 
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
     sort(kmer_list.begin(),kmer_list.end());
-    map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count);
+    map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
   }
   barcode=new_barcode;
@@ -176,7 +176,7 @@ while (atEnd(file1)!=1) {
 }
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
-  map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count);
+  map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
 }
 
 close(file1);
