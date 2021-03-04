@@ -28,7 +28,7 @@ int main(int argc, char *argv[]){
 
   getline(file1,id);
   old_barcode=id.substr(id.find("RX:Z:")+5,16);
-  // file1.tellg()
+  std::cerr << "type: " << typeid(file1.tellg()).name() << "value: " << file1.tellg() << "\n";
   std::cerr << "barcode: " << new_barcode << "\n";
 
   while (!file1.eof()) {
@@ -37,6 +37,7 @@ int main(int argc, char *argv[]){
     new_barcode=id.substr(id.find("RX:Z:")+5,16);
     if (new_barcode!=old_barcode) {
       // SAVE POSITION
+      std::cerr << "type: " << typeid(file1.tellg()).name() << "value: " << file1.tellg() << "\n";
       std::cerr << "barcode: " << new_barcode << "\n";
       old_barcode=new_barcode;
     }
