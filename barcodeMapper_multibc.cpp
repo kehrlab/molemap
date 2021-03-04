@@ -103,7 +103,7 @@ catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
 
-std::cerr << "reads loaded.\n";
+std::cerr << "read file works\n";
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -112,8 +112,8 @@ Searching for all kmers of reads with the same Barcode
 // building the kmer_list for a specific Barcode
 std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
 std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrk;
-
-auto tbegin = std::chrono::high_resolution_clock::now();
+std::cerr << "kmerlist empty?  " << kmer_list.empty()<< "\n";
+// auto tbegin = std::chrono::high_resolution_clock::now();
 
 std::string barcode;
 std::string new_barcode;
@@ -136,6 +136,7 @@ while (atEnd(file1)!=1) {
   assignValue(reads,1,read2);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+  std::cerr << "new barcode: " << new_barcode << "\n";
 
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
     sort(kmer_list.begin(),kmer_list.end());
@@ -320,4 +321,4 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
       std::cout<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
     }
     std::cerr<<"\n";
-  }
+  } //map_kmer_list
