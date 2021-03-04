@@ -112,7 +112,6 @@ Searching for all kmers of reads with the same Barcode
 // building the kmer_list for a specific Barcode
 std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
 std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrk;
-std::cerr << "kmerlist empty?  " << kmer_list.empty()<< "\n";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 std::string barcode;
@@ -136,7 +135,6 @@ while (atEnd(file1)!=1) {
   assignValue(reads,1,read2);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  std::cerr << "new barcode: " << new_barcode << "\n";
 
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
     sort(kmer_list.begin(),kmer_list.end());
