@@ -2,7 +2,7 @@
 # include <fstream>
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
-using namespace seqan;
+using namespace std;
 
 /*
 g++ ./build_bcindex.cpp -o bcindex
@@ -26,13 +26,13 @@ int main(int argc, char *argv[]){
   std::fstream file2;
   file2.open(filename2,std::ios::in);
 
-  getline(file1,id)
+  getline(file1,id);
   barcode=id.substr(id.find("RX:Z:")+5,16);
   // file1.tellg()
   std::cerr << "barcode: " << new_barcode << "\n";
 
   while (!file1.eof()) {
-    getline(file1,id)
+    getline(file1,id);
     std::cerr<< id << "\n";
     new_barcode=id.substr(id.find("RX:Z:")+5,16);
     if (new_barcode!=old_barcode) {
@@ -40,9 +40,9 @@ int main(int argc, char *argv[]){
       std::cerr << "barcode: " << new_barcode << "\n";
       old_barcode=new_barcode;
     }
-    file1.ignore(numeric_limits<streamsize>::max(),"\n");
-    file1.ignore(numeric_limits<streamsize>::max(),"\n");
-    file1.ignore(numeric_limits<streamsize>::max(),"\n");
+    file1.ignore(std::numeric_limits<streamsize>::max(),"\n");
+    file1.ignore(std::numeric_limits<streamsize>::max(),"\n");
+    file1.ignore(std::numeric_limits<streamsize>::max(),"\n");
 
 
   }
