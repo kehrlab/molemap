@@ -9,7 +9,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, std::string file);
+void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file);
 
 
 int main(int argc, char *argv[]){
@@ -27,7 +27,7 @@ unsigned max_window_size=200000;  //5000;   // maximum size of the genomic windo
 unsigned max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
 unsigned window_count=100;   // amount of saved candidate windows
 
-std::string resultfile="bc_windows.txt";
+const char* resultfile="bc_windows.txt";
 
 
 
@@ -185,7 +185,7 @@ close(file2);
 
 
 
-void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, std::string file){
+void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file){
 
     std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrk;
 
