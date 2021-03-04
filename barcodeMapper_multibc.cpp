@@ -291,7 +291,7 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
 
     /*--------------------------------------------------------------------------------------------------*/
     // Output
-    std::fstream results=fopen(file,"w");
+    std::fstream results=std::fopen(file,"w");
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
@@ -305,8 +305,8 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
       for (int i=end.length();i<=13;i++) {end+=" ";}
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
       for (int i=len.length();i<=13;i++) {len+=" ";}
-      results.fwrite("\nquality: ");
-      results.fwrite(qual);
+      results.std::fwrite("\nquality: ");
+      results.std::fwrite(qual);
       results.fwrite("\tref: ");
       results.fwrite(ref);
       results.fwrite("\tstart: ");
