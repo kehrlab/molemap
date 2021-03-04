@@ -40,9 +40,9 @@ int main(int argc, char *argv[]){
       std::cerr << "barcode: " << new_barcode << "\n";
       old_barcode=new_barcode;
     }
-    file1.ignore(100000,"\n");
-    file1.ignore(100000,"\n");
-    file1.ignore(100000,"\n");
+    file1.ignore(100000,'\n');
+    file1.ignore(100000,'\n');
+    file1.ignore(100000,'\n');
 
 
   }
