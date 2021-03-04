@@ -9,7 +9,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count);
+void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, std::string file);
 
 
 int main(int argc, char *argv[]){
@@ -26,6 +26,9 @@ defining Parameters
 unsigned max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
 unsigned max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
 unsigned window_count=100;   // amount of saved candidate windows
+
+std::string resultfile="bc_windows.txt";
+
 
 
 /*
@@ -103,7 +106,7 @@ catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
 
-std::cerr << "read file works\n";
+std::cerr << "read file checked\n";
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -182,26 +185,7 @@ close(file2);
 
 
 
-
-
-
-
-
-//
-// std::cerr << "k-mers listed.  \n";
-//
-// auto tend = std::chrono::high_resolution_clock::now();
-// std::cout << "\ntime: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
-// tbegin = std::chrono::high_resolution_clock::now();
-// //sorting k-mers by position in reference
-//
-//
-// tend = std::chrono::high_resolution_clock::now();
-// std::cout << "\nsorting time: "<<(float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
-// tbegin = std::chrono::high_resolution_clock::now();
-
-// iterate over k-mers (sliding window)
-void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count){
+void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, std::string file){
 
     std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>>::const_iterator itrk;
 
@@ -306,10 +290,12 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
     // std::cout <<"\ntime: "<< (float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
 
     /*--------------------------------------------------------------------------------------------------*/
-    // Konttrollausgabe
+    // Output
 
+    FILE *results=fopen(file,"w");
 
-      for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
+    for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
+
       std::string qual=std::to_string(std::get<0>(*itrbw));
       for (int i=qual.length();i<=18;i++) {qual+=" ";}
       std::string ref=std::to_string(std::get<1>(*itrbw));
@@ -321,7 +307,8 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
       for (int i=len.length();i<=13;i++) {len+=" ";}
 
-      std::cout<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
+      results<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
     }
+    fclose(results);
     std::cerr<<"\n";
   } //map_kmer_list
