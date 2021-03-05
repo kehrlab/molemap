@@ -129,6 +129,8 @@ CharString id1;
 CharString id2;
 
 SeqFileIn file1(argv[1]);
+streampos Streampos = file1.stream->file.tellg();
+std::cerr << "Streampos: " << Streampos;
 SeqFileIn file2(argv[2]);
 
 while (atEnd(file1)!=1) {
