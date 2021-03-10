@@ -133,7 +133,7 @@ SeqFileIn file1(argv[1]);
 SeqFileIn file2(argv[2]);
 
 // preparing barcode Index
-std::vector<DnaString> BCI_barcodes;
+std::vector<std::string> BCI_barcodes;
 std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
 std::streampos BCI_pos1;
 std::streampos BCI_pos2;
