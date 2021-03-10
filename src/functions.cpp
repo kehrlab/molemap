@@ -1,9 +1,49 @@
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
 # include <iostream>
+# include <fstream>
 #include "functions.h"
 
 using namespace seqan;
+
+// String<Dna5String> ReturnBarcodeReads(std::string Index_name, std::string readFile1, std::string readFile2 ,DnaString Barcode){
+//   //open index files
+//   std::string IndPos=Index_name;
+//   IndPos.append("_pos.txt");
+//   std::string IndBC=Index_name;
+//   IndPos.append("_BC.txt");
+//
+//   String<DnaString> BCI_barcodes;
+//   String<DnaString, External<ExternalConfigLarge<>> > extbc;
+//   if (!open(extbc, IndBC.c_str(), OPEN_RDONLY | OPEN_CREATE)){
+//     throw std::runtime_error("Could not open index_barcodes file." );
+//   }
+//   assign(BCI_barcodes, extbc, Exact());
+//   close(extbc);
+//
+//   String<std::pair <std::streampos,std::streampos>> BCI_positions;
+//   String<std::pair <std::streampos,std::streampos>, External<ExternalConfigLarge<>> > extpos;
+//   if (!open(extpos, IndPos.c_str(), OPEN_RDONLY | OPEN_CREATE)){
+//     throw std::runtime_error("Could not open index_pos file." );
+//   }
+//   assign(BCI_positions, extpos, Exact());
+//   close(extpos);
+//
+//   // open read files
+//   SeqFileIn file1(readFile1);
+//   SeqFileIn file2(readFile2);
+//
+//   typedef Iterator<StringSet<DnaString> >::Type TStringSetIterator;
+//   TStringSetIterator it;
+//   //retreive reads
+//   it=std::lower_bound(begin(BCI_barcodes),end(BCI_barcodes),Barcode);
+//   int pos = it-begin(BCI_barcodes);
+//   std::streampos start1=std::get<0>(BCI_positions[pos]);
+//   std::streampos start2=std::get<1>(BCI_positions[pos]);
+//   std::streampos end1=std::get<0>(BCI_positions[pos+1]);
+//   std::streampos end2=std::get<1>(BCI_positions[pos+1]);
+//
+// }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
 void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned,unsigned,unsigned> & candidate){
