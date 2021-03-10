@@ -1,6 +1,6 @@
-# include <iostream>
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
+# include <iostream>
 # include <fstream>
 # include "./src/functions.h"
 # include <time.h>
@@ -14,8 +14,8 @@ void map_kmer_list(std::vector<std::tuple<unsigned,unsigned,unsigned,unsigned>> 
 
 int main(int argc, char *argv[]){
 
-if(argc!=6){
-  std::cerr << "Usage: ./bcmap readFile1 readFile2 k Index_name mini_window_size\n\n";
+if(argc!=7){
+  std::cerr << "Usage: ./bcmap readFile1 readFile2 k Index_name mini_window_size BCI_name\n\n";
   exit(-1);
 }
 
@@ -128,24 +128,37 @@ Dna5String read2;
 CharString id1;
 CharString id2;
 
+// opening read files
 SeqFileIn file1(argv[1]);
-streampos Streampos = file1.stream->file.tellg();
-std::cerr << "Streampos: " << Streampos;
 SeqFileIn file2(argv[2]);
 
-while (atEnd(file1)!=1) {
+// preparing barcode Index
+std::vector<DnaString> BCI_barcodes;
+std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
+std::streampos BCI_pos1;
+std::streampos BCI_pos2;
+
+
+while (atEnd(file1)!=1) { // proceeding through files
+  BCI_pos1=file1.steam.file.tellg();
   readRecord(id1, read1, file1);
-  readRecord(id2, read2, file2);
   assignValue(reads,0,read1);
-  assignValue(reads,1,read2);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
 
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
+    //append Barcode Index
+    BCI_pos2=file2.steam.file.tellg();
+    BCI_barcodes.push_back(new_barcode);
+    BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+    // map barcode and clear k_mer list
     sort(kmer_list.begin(),kmer_list.end());
     map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
   }
+
+  readRecord(id2, read2, file2);
+  assignValue(reads,1,read2);
   barcode=new_barcode;
 
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
@@ -183,6 +196,23 @@ if (!kmer_list.empty()) {
 
 close(file1);
 close(file2);
+
+// write Barcode Index to file
+std::string IndBC=argv[6];
+IndPos.append("_bc.txt");
+std::string IndPos=argv[6];
+IndPos.append("_pos.txt");
+
+ofstream file_bc;
+file_bc.open(IndBC, ios::binary);
+file_bc << BCI_barcodes;
+file_bc.close();
+
+ofstream file_pos;
+file_pos.open(IndPOS, ios::binary);
+file_pos << BCI_positions;
+file_pos.close();
+
 } //main
 
 
