@@ -199,17 +199,17 @@ close(file2);
 
 // write Barcode Index to file
 std::string IndBC=argv[6];
-IndPos.append("_bc.txt");
-std::string IndPos=argv[6];
+IndBC.append("_bc.txt");
+IndPos=argv[6];
 IndPos.append("_pos.txt");
 
-ofstream file_bc;
-file_bc.open(IndBC, ios::binary);
+std::ofstream file_bc;
+file_bc.open(IndBC, std::ios::binary);
 file_bc << BCI_barcodes;
 file_bc.close();
 
-ofstream file_pos;
-file_pos.open(IndPOS, ios::binary);
+std::ofstream file_pos;
+file_pos.open(IndPOS, std::ios::binary);
 file_pos << BCI_positions;
 file_pos.close();
 
