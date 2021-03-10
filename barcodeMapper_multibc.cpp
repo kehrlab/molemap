@@ -140,7 +140,7 @@ std::streampos BCI_pos2;
 
 
 while (atEnd(file1)!=1) { // proceeding through files
-  BCI_pos1=file1.steam.file.tellg();
+  BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
   assignValue(reads,0,read1);
   meta=toCString(id1);
@@ -148,7 +148,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
-    BCI_pos2=file2.steam.file.tellg();
+    BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
