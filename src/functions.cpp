@@ -6,6 +6,56 @@
 
 using namespace seqan;
 
+void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
+  //construct file names
+  std::string IndBC=Index_name;
+  IndBC.append("_bc.txt");
+  std::string IndPos=Index_name;
+  IndPos.append("_pos.txt");
+  // open barcode file
+  std::ifstream file_bc;
+  file_bc.open(IndBC, std::ios::binary);
+  //load Barcodes line by line
+  std::string barcode;
+  while (getline(file_bc,barcode)){
+    BCI_barcodes.push_back(barcode);
+  }
+  file_bc.close();
+  //determine length of position table
+  BCI_positions.reserve(BCI_barcodes.size()+1);
+  std::streampos pos1;
+  std::streampos pos2;
+  //fill Position table
+  std::ifstream file_pos;
+  std::string posstr1;
+  std::string posstr2;
+  while(std::getline(file_pos,posstr1)){
+    std::getline(file_pos,posstr2);
+    pos1=stoi(posstr1);
+    pos2=stoi(posstr2);
+    BCI_positions.push_back(std::make_pair(pos1,pos2));
+  }
+  return;
+}
+
+void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, SeqFileIn file1, SeqFileIn file2){
+  std::streampos posfile1;
+  std::streampos posfile2;
+  Dna5String read1;
+  Dna5String read2;
+  CharString id;
+  unsigned pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
+  file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
+  file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
+  std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
+  while(file1.stream.file.tellg()!=endpos){
+    readRecord(id,read1,file1);
+    readRecord(id,read2,file2);
+
+    std::cerr << read1 << "\n" << read2 << "\n\n";
+  }
+}
+
 // String<Dna5String> ReturnBarcodeReads(std::string Index_name, std::string readFile1, std::string readFile2 ,DnaString Barcode){
 //   //open index files
 //   std::string IndPos=Index_name;
