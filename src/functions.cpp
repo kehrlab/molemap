@@ -38,7 +38,9 @@ void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_b
   return;
 }
 
-void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, SeqFileIn file1, SeqFileIn file2){
+void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, char* readfile1, char* readfile2){
+  SeqFileIn file1(readfile1);
+  SeqFileIn file2(readfile2);
   std::streampos posfile1;
   std::streampos posfile2;
   Dna5String read1;
