@@ -35,6 +35,8 @@ const char* resultfile="bc_windows.txt";
 reading the Index
 */
 
+std::cerr << "Reading in the k-mer index ";
+
 String<unsigned long long> dir;
 String<std::pair <unsigned,unsigned>> pos;
 String<int long long> C;
@@ -52,6 +54,7 @@ if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
 }
 assign(pos, extpos, Exact());
 close(extpos);
+std::cerr <<".";
 
 String<unsigned long long, External<> > extdir;
 if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
@@ -59,6 +62,8 @@ if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
 }
 assign(dir, extdir, Exact());
 close(extdir);
+std::cerr <<".";
+
 
 String<int long long, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
@@ -83,7 +88,7 @@ for (unsigned i=0;i<k;++i){
 unsigned long long bucket_number=length(C);
 int mini_window_size=std::stoi(argv[5]);
 
-std::cerr << "Index loaded.\n";
+std::cerr <<". done!\n";
 
 /*
 loading in the reads
@@ -106,7 +111,7 @@ catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
 
-std::cerr << "read file checked\n";
+std::cerr << "read file checked.\n";
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -138,6 +143,8 @@ std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
 std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
+std::cerr << "Processing read file:\n";
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   BCI_pos1=file1.stream.file.tellg();
@@ -155,6 +162,9 @@ while (atEnd(file1)!=1) { // proceeding through files
     sort(kmer_list.begin(),kmer_list.end());
     map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
+
+    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/100 << "s\n";
+    tbegin = std::chrono::high_resolution_clock::now();
   }
 
   readRecord(id2, read2, file2);
@@ -192,10 +202,14 @@ while (atEnd(file1)!=1) { // proceeding through files
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
+  std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/100 << "s\n";
+  tbegin = std::chrono::high_resolution_clock::now();
 }
 
 close(file1);
 close(file2);
+
+std::cerr << "Writing BarcodeIndex to file ...";
 
 // write Barcode Index to file
 std::string IndBC=argv[6];
@@ -217,14 +231,20 @@ for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BC
 }
 file_pos.close();
 
+std::cerr << "done!\n";
+
 //Kontrollausgabe
+std::cerr << "\nKontrollausgabe:\n";
 BCI_barcodes.clear();
 BCI_positions.clear();
 std::string testbarcode = "AAACACCGTAGATTAG";
-SeqFileIn file1(argv[1]);
-SeqFileIn file2(argv[2]);
-LoadBarcodeIndex(argv[6],BCI_barcodes,BCI_positions);
-ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,);
+// open(file1,argv[1]);
+// open(file2,argv[2]);
+// std::string readfile1 = argv[1];
+// std::string readfile2 = argv[2];
+std::string Index_name = argv[6];
+LoadBarcodeIndex(Index_name,BCI_barcodes,BCI_positions);
+ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,argv[1],argv[2]);
 close(file1);
 close(file2);
 
