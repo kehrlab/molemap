@@ -217,6 +217,17 @@ for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BC
 }
 file_pos.close();
 
+//Kontrollausgabe
+BCI_barcodes.clear();
+BCI_positions.clear();
+std::string testbarcode = "AAACACCGTAGATTAG";
+SeqFileIn file1(argv[1]);
+SeqFileIn file2(argv[2]);
+LoadBarcodeIndex(argv[6],BCI_barcodes,BCI_positions);
+ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,);
+close(file1);
+close(file2);
+
 } //main
 
 
