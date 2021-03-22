@@ -37,6 +37,8 @@ reading the Index
 
 std::cerr << "Reading in the k-mer index ";
 
+auto tbegin = std::chrono::high_resolution_clock::now();
+
 String<unsigned long long> dir;
 String<std::pair <unsigned,unsigned>> pos;
 String<int long long> C;
@@ -88,8 +90,9 @@ for (unsigned i=0;i<k;++i){
 unsigned long long bucket_number=length(C);
 int mini_window_size=std::stoi(argv[5]);
 
-std::cerr <<". done!\n";
-
+std::cerr <<". done ";
+std::cerr << "in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/100 << "s\n";
+tbegin = std::chrono::high_resolution_clock::now();
 /*
 loading in the reads
 */
@@ -144,7 +147,6 @@ std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
 std::cerr << "Processing read file:\n";
-auto tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   BCI_pos1=file1.stream.file.tellg();
