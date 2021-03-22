@@ -6,6 +6,7 @@
 
 using namespace seqan;
 
+// Loads BarcodeIndex from file into string
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
   //construct file names
   std::string IndBC=Index_name;
@@ -38,6 +39,7 @@ void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_b
   return;
 }
 
+// retreives all reads of a given barcode using the BarcodeIndex
 void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, char* readfile1, char* readfile2){
   SeqFileIn file1(readfile1);
   SeqFileIn file2(readfile2);
@@ -58,48 +60,9 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   }
 }
 
-// String<Dna5String> ReturnBarcodeReads(std::string Index_name, std::string readFile1, std::string readFile2 ,DnaString Barcode){
-//   //open index files
-//   std::string IndPos=Index_name;
-//   IndPos.append("_pos.txt");
-//   std::string IndBC=Index_name;
-//   IndPos.append("_BC.txt");
-//
-//   String<DnaString> BCI_barcodes;
-//   String<DnaString, External<ExternalConfigLarge<>> > extbc;
-//   if (!open(extbc, IndBC.c_str(), OPEN_RDONLY | OPEN_CREATE)){
-//     throw std::runtime_error("Could not open index_barcodes file." );
-//   }
-//   assign(BCI_barcodes, extbc, Exact());
-//   close(extbc);
-//
-//   String<std::pair <std::streampos,std::streampos>> BCI_positions;
-//   String<std::pair <std::streampos,std::streampos>, External<ExternalConfigLarge<>> > extpos;
-//   if (!open(extpos, IndPos.c_str(), OPEN_RDONLY | OPEN_CREATE)){
-//     throw std::runtime_error("Could not open index_pos file." );
-//   }
-//   assign(BCI_positions, extpos, Exact());
-//   close(extpos);
-//
-//   // open read files
-//   SeqFileIn file1(readFile1);
-//   SeqFileIn file2(readFile2);
-//
-//   typedef Iterator<StringSet<DnaString> >::Type TStringSetIterator;
-//   TStringSetIterator it;
-//   //retreive reads
-//   it=std::lower_bound(begin(BCI_barcodes),end(BCI_barcodes),Barcode);
-//   int pos = it-begin(BCI_barcodes);
-//   std::streampos start1=std::get<0>(BCI_positions[pos]);
-//   std::streampos start2=std::get<1>(BCI_positions[pos]);
-//   std::streampos end1=std::get<0>(BCI_positions[pos+1]);
-//   std::streampos end2=std::get<1>(BCI_positions[pos+1]);
-//
-// }
-
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
-void report_window(std::vector<std::tuple<double,unsigned,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned,unsigned,unsigned> & candidate){
-  std::vector<std::tuple<double,unsigned,unsigned,unsigned>>::iterator itrbw;
+void ReportWindow(std::vector<std::tuple<double,char,unsigned,unsigned>> & best_windows, std::tuple<double,char,unsigned,unsigned> & candidate){
+  std::vector<std::tuple<double,char,unsigned,unsigned>>::iterator itrbw;
   unsigned inserted=0;
   if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
     for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
@@ -149,28 +112,17 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
   return minimizer;
 }
 
-// calculates following minimizer and reports if it replaces the old minimizer
-// int RollMini(long long int & minimizer, std::pair <long long int, long long int> & hash, const Dna5 & newnuc, const unsigned k, const long long int & maxhash,const long long int random_seed,const unsigned long long bucket_number){
-//   rollinghashkMer(hash.first,hash.second,newnuc,k,maxhash); // inline?!
-//   if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){
-//     AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number);
-//     minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-//     return 1;
-//   }
-//   return 0;
-// }
-
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number,unsigned & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <char,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
-      unsigned long long abundance=dir[c+1]-dir[c];
+      unsigned abundance=dir[c+1]-dir[c];
       // std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
       // std::cerr << "abundance: " << abundance << "\n";
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
-        for (unsigned long long i = dir[c];i!=dir[c+1];i++){
+        for (unsigned i = dir[c];i!=dir[c+1];i++){
           kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance,minimizer_active_bases));
         }
       }
@@ -178,17 +130,17 @@ void AppendPos(std::vector<std::tuple <unsigned,unsigned,unsigned,unsigned>> & k
 }
 
 // return k-mer positions
-std::vector<std::pair <unsigned,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned long long> & dir,const String<std::pair <unsigned,unsigned>> & pos, const unsigned long long bucket_number){
-      std::vector<std::pair <unsigned,unsigned>> positions;
-      unsigned long long c=GetBkt(hash,C,bucket_number);
-      for (unsigned long long i = dir[c];i!=dir[c+1];i++){
+std::vector<std::pair <char,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <char,unsigned>> & pos, const unsigned bucket_number){
+      std::vector<std::pair <char,unsigned>> positions;
+      unsigned c=GetBkt(hash,C,bucket_number);
+      for (unsigned i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
       }
       return positions;
 }
 
 // Find correct Bucket
-unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
+unsigned GetBkt(const long long int & hash, const String<int long long> & C, const unsigned bucket_number){
   // std::srand(hash);
   // unsigned long long i=std::rand()%bucket_number;
   long long int i=hash%(long long int)bucket_number;
@@ -210,33 +162,14 @@ unsigned long long  GetBkt(const long long int & hash, const String<int long lon
     //   // if (counter > 1000) {break;}
     // }
   }
+  std::cerr << d+1 << " ";
   // std::cerr << "tries: " << counter << "\n";
   return i;
 }
 
-// unsigned long long  GetBkt(const long long int & hash, const String<int long long> & C, const unsigned long long bucket_number){
-//   // std::srand(hash);
-//   // unsigned long long i=std::rand()%bucket_number;
-//   long long int i=hash%(long long int)bucket_number;
-//   long long int d=0;
-//   unsigned counter=0;
-//   while(C[i]!=hash and C[i]!=-1){
-//
-//     counter+=1;
-//     i=(i+2*d+1)%(long long int)bucket_number;
-//     d++;
-//     if (counter > 100){   // error if bucket_number not high enough
-//       if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";}
-//       // if (counter > 1000) {break;}
-//     }
-//   }
-//   return i;
-// }
-
-
 // Request a Bucket
-unsigned long long ReqBkt(const long long int & hash, String<int long long> & C, const unsigned long long bucket_number){
-  unsigned long long i = GetBkt(hash,C,bucket_number);
+unsigned ReqBkt(const long long int & hash, String<int long long> & C, const unsigned bucket_number){
+  unsigned i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
