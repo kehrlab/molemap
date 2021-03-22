@@ -55,7 +55,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     // Extract option values.
     getOptionValue(options.k, parser, "k");
-    getOptionValue(options.m, parser, "m");
+    getOptionValue(options.mini_window_size, parser, "m");
 
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
@@ -65,7 +65,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char const ** argv){
 
 if(argc < 5){
   std::cerr << "Usage: ./bcmap readFile1 readFile2 Index_name BCI_name [-flags] \n\n";
@@ -86,7 +86,7 @@ std::cout << "k        \t" << options.k << '\n'
           << "readfile2\t" << options.readfile2 << '\n';
 
 unsigned k = options.k;
-unsigend mini_window_size = options.mini_window_size;
+unsigned mini_window_size = options.mini_window_size;
 
 /*
 defining Parameters
@@ -323,7 +323,7 @@ std::cerr << "done!\n";
 //
 // close(file1);
 // close(file2);
-return;
+return 0;
 } //main
 
 
