@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
     random_seed= random_seed << 2 | (long long int)(std::rand()%3);
   }
 
-  unsigned long long bucket_number=std::stoll(argv[3]); // should depend on k and the length of the indexed sequence
+  unsigned bucket_number=std::stoul(argv[3]); // should depend on k and the length of the indexed sequence
   // unsigned maxfreq=std::stoll(argv[4]);
   // choosing Chromosome
 
@@ -75,20 +75,17 @@ int main(int argc, char *argv[]){
 
   // building index storage
 
-  String<unsigned long long> dir;
+  String<unsigned> dir;
   resize(dir,bucket_number+1,0);
-  String<std::pair <unsigned,unsigned>> pos;
-  resize(pos,length(concat(seqs)));
+  String<std::pair <char,unsigned>> pos;
+  resize(pos,length(concat(seqs)));   // may be re
   String<int long long> C;
   resize(C,bucket_number,-1);
 
-  typedef Iterator<String<unsigned long long>>::Type Titrs;
-
-  std::vector<unsigned long long>::iterator itrv;
-  std::vector<unsigned long long>::reverse_iterator itrvr;
+  typedef Iterator<String<unsigned>>::Type Titrs;
 
   unsigned long long c;
-  unsigned CHROM =0;
+  char CHROM =0;
 
 
   std::cerr << "Index prepared. \n";
@@ -128,7 +125,7 @@ int main(int argc, char *argv[]){
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
-      sum-=*itrs;
+      sum-=(long long unsigned)*itrs;
     }
     // abundance.push_back(*itrs);} //tracking k-mer abundances
     *itrs=sum;
@@ -164,34 +161,6 @@ int main(int argc, char *argv[]){
 
   std::cerr << "Index build. \n";
 
-  // // Deleting frequent k-mers
-  // long long unsigned deleted=0;
-  // unsigned diff1=dir[1]-dir[0]; // calculating initial distances
-  // unsigned diff2;
-  // for (Titrs itrs=begin(dir)+1;itrs!=end(dir)-1;itrs++){
-  //   diff2=diff1;                  // updating distances
-  //   diff1=*(itrs+1)-*itrs;
-  //   if(diff2<=maxfreq){           // rebuilding dir
-  //     *itrs=*(itrs-1)+diff2;
-  //   }else{                        // delete frequent k-mers
-  //     std::cerr<< "itrs-1:"<<*(itrs-1)<<"itrs:"<<*itrs<<" itrs+1: " << *(itrs+1)<< " ";
-  //     std::cerr<<5<<" diff2="<<diff2<<" deleted: "<<deleted <<" ";
-  //     std:: cerr<<"\nitrs-deleted: "<< (*itrs)-deleted <<" ";
-  //     erase(pos,*(itrs-1),(*itrs)-deleted);
-  //     std::cerr<<6;
-  //     *itrs=*(itrs-1);
-  //     deleted+=diff2;
-  //   }
-  // }
-  // if (diff1<=maxfreq){                // changing last element
-  //   *(end(dir)-1)=*(end(dir)-2)+diff1;
-  // }else{
-  //   erase(pos,*(end(dir)-2),*(end(dir)-1)-deleted);
-  //   *(end(dir)-1)=*(end(dir)-2);
-  // }
-  //
-  // std::cerr << "Frequent k-mers deleted. \n";
-
   //write index to file
 
   std::string IndPos=argv[4];
@@ -202,14 +171,14 @@ int main(int argc, char *argv[]){
   IndC.append("_C.txt");
 
 
-  String<std::pair <unsigned,unsigned>, External<ExternalConfigLarge<>> > extpos;
+  String<std::pair <char,unsigned>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extpos, pos, Exact());
   close(extpos);
 
-  String<long long unsigned, External<> > extdir;
+  String<unsigned, External<> > extdir;
   if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
@@ -224,21 +193,5 @@ int main(int argc, char *argv[]){
   close(extC);
 
   std::cerr << "Index writen to file.\n";
-
-  // Kontrollausgabe
-
-  //
-  // DnaString testDNA="ATTTTTAA";
-  // std::vector<std::pair <unsigned,unsigned>> positions=RetPos(std::min(hashkMer(testDNA,k).first,hashkMer(testDNA,k).second),C,dir,pos,bucket_number);
-  // std::vector<std::pair <unsigned,unsigned>>::iterator itrpv;
-  // for (itrpv=positions.begin();itrpv!=positions.end();itrpv++){
-  //   std::cout << (*itrpv).first << " " << (*itrpv).second <<"\n";
-  // }
-  // std::cout << "\n";
-
-// }
-
-// auto end = std::chrono::high_resolution_clock::now();
-// std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count();// << "ns" << std::endl;
 
 }
