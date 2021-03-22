@@ -236,19 +236,19 @@ file_pos.close();
 std::cerr << "done!\n";
 
 //Kontrollausgabe
-std::cerr << "\nKontrollausgabe:\n";
-BCI_barcodes.clear();
-BCI_positions.clear();
-std::string testbarcode = "AAACACCGTAGATTAG";
+//std::cerr << "\nKontrollausgabe:\n";
+//BCI_barcodes.clear();
+//BCI_positions.clear();
+//std::string testbarcode = "AAACACCGTAGATTAG";
 // open(file1,argv[1]);
 // open(file2,argv[2]);
 // std::string readfile1 = argv[1];
 // std::string readfile2 = argv[2];
-std::string Index_name = argv[6];
-LoadBarcodeIndex(Index_name,BCI_barcodes,BCI_positions);
-ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,argv[1],argv[2]);
-close(file1);
-close(file2);
+//std::string Index_name = argv[6];
+//LoadBarcodeIndex(Index_name,BCI_barcodes,BCI_positions);
+//ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,argv[1],argv[2]);
+//close(file1);
+//close(file2);
 
 } //main
 
