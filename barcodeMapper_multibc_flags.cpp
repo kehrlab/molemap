@@ -80,10 +80,13 @@ seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
 if (res != seqan::ArgumentParser::PARSE_OK)
     return res == seqan::ArgumentParser::PARSE_ERROR;
 
-std::cout << "k        \t" << options.k << '\n'
-          << "m        \t" << options.mini_window_size << '\n'
-          << "readfile1\t" << options.readfile1 << '\n'
-          << "readfile2\t" << options.readfile2 << '\n';
+std::cout <<'\n'
+          << "k          \t" << options.k << '\n'
+          << "m          \t" << options.mini_window_size << '\n'
+          << "readfile1  \t" << options.readfile1 << '\n'
+          << "readfile2  \t" << options.readfile2 << '\n'
+          << "index_name \t" << options.index_name << '\n'
+          << "bci_name   \t" << options.bci_name << '\n\n';
 
 unsigned k = options.k;
 unsigned mini_window_size = options.mini_window_size;
@@ -230,7 +233,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     sort(kmer_list.begin(),kmer_list.end());
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
-    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
     tbegin = std::chrono::high_resolution_clock::now();
   }
 
@@ -331,7 +334,6 @@ return 0;
 void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file){
 
     std::vector<std::tuple<char,unsigned,unsigned,unsigned>>::const_iterator itrk;
-
 
     float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
@@ -455,7 +457,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     /*--------------------------------------------------------------------------------------------------*/
     // Output
     std::fstream results;
-    results.open(file,std::ios::out);
+    results.open(file,std::ios::out::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
@@ -469,19 +471,19 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
       for (int i=end.length();i<=13;i++) {end+=" ";}
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
       for (int i=len.length();i<=13;i++) {len+=" ";}
-      results.write("\nquality: ",sizeof("\nquality: "));
-      results.write(&qual[0],sizeof(&qual[0]));
-      results.write("\tref: ",sizeof("\tref: "));
-      results.write(&ref[0],sizeof(&ref[0]));
-      results.write("\tstart: ",sizeof("\tstart: "));
-      results.write(&start[0],sizeof(&start[0]));
-      results.write("\tend: ",sizeof("\tend: "));
-      results.write(&end[0],sizeof(&end[0]));
-      results.write("\tlength: ",sizeof("\tlength: "));
-      results.write(&len[0],sizeof(&len[0]));
+      // results.write("\nquality: ",sizeof("\nquality: "));
+      // results.write(&qual[0],sizeof(&qual[0]));
+      // results.write("\tref: ",sizeof("\tref: "));
+      // results.write(&ref[0],sizeof(&ref[0]));
+      // results.write("\tstart: ",sizeof("\tstart: "));
+      // results.write(&start[0],sizeof(&start[0]));
+      // results.write("\tend: ",sizeof("\tend: "));
+      // results.write(&end[0],sizeof(&end[0]));
+      // results.write("\tlength: ",sizeof("\tlength: "));
+      // results.write(&len[0],sizeof(&len[0]));
       results<<"\nquality: " << qual << "\tref: " << ref << "\tstart: "<< start << "\tend: " << end << "\tlength: " << len;
     }
     results.close();
-    std::cerr<<"\n";
+    results<<"\n";
     return;
   } //MapKmerList
