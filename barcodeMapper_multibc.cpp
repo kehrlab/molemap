@@ -165,7 +165,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     map_kmer_list(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
 
-    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/100 << "s\n";
+    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/100 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
   }
 
