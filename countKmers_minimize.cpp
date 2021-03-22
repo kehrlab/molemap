@@ -77,7 +77,7 @@ int main(int argc, char *argv[]){
 
   String<unsigned> dir;
   resize(dir,bucket_number+1,0);
-  String<std::pair <char,unsigned>> pos;
+  String<std::pair <unsigned char,unsigned>> pos;
   resize(pos,length(concat(seqs)));   // may be re
   String<int long long> C;
   resize(C,bucket_number,-1);
@@ -85,16 +85,14 @@ int main(int argc, char *argv[]){
   typedef Iterator<String<unsigned>>::Type Titrs;
 
   unsigned long long c;
-  char CHROM =0;
+  unsigned char CHROM =0;
 
 
   std::cerr << "Index prepared. \n";
-  int chrom=0;
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-    chrom++;
-
+    std::cerr << "Chrom: " << CHROM << "\n";
     // counting k-mers
 
     std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
@@ -171,7 +169,7 @@ int main(int argc, char *argv[]){
   IndC.append("_C.txt");
 
 
-  String<std::pair <char,unsigned>, External<ExternalConfig<>> > extpos;
+  String<std::pair <unsigned char,unsigned>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
