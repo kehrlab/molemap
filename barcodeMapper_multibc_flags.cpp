@@ -67,10 +67,11 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
 int main(int argc, char const ** argv){
 
-if(argc < 5){
-  std::cerr << "Usage: ./bcmap readFile1 readFile2 Index_name BCI_name [-flags] \n\n";
-  exit(-1);
-}
+// if(argc < 5){
+//   std::cerr << "Usage: ./bcmap readFile1 readFile2 Index_name BCI_name [-flags] \n\n";
+//   exit(-1);
+// }
+
 // parsing command line arguments
 bcmapOptions options;
 seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
