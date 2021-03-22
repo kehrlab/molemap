@@ -58,11 +58,12 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
 
     std::cerr << read1 << "\n" << read2 << "\n\n";
   }
+  return;
 }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
-void ReportWindow(std::vector<std::tuple<double,char,unsigned,unsigned>> & best_windows, std::tuple<double,char,unsigned,unsigned> & candidate){
-  std::vector<std::tuple<double,char,unsigned,unsigned>>::iterator itrbw;
+void ReportWindow(std::vector<std::tuple<double,unsigned char,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned char,unsigned,unsigned> & candidate){
+  std::vector<std::tuple<double,unsigned char,unsigned,unsigned>>::iterator itrbw;
   unsigned inserted=0;
   if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
     for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
@@ -113,7 +114,7 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <char,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
@@ -130,8 +131,8 @@ void AppendPos(std::vector<std::tuple <char,unsigned,unsigned,unsigned>> & kmer_
 }
 
 // return k-mer positions
-std::vector<std::pair <char,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <char,unsigned>> & pos, const unsigned bucket_number){
-      std::vector<std::pair <char,unsigned>> positions;
+std::vector<std::pair <unsigned char,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number){
+      std::vector<std::pair <unsigned char,unsigned>> positions;
       unsigned c=GetBkt(hash,C,bucket_number);
       for (unsigned i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
