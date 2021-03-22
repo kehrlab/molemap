@@ -69,7 +69,7 @@ IndDir.append("_dir.txt");
 std::string IndC=argv[3];
 IndC.append("_C.txt");
 
-String<std::pair <char,unsigned>, External<ExternalConfigLarge<>> > extpos;
+String<std::pair <char,unsigned>, External<ExternalConfig<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -181,7 +181,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     sort(kmer_list.begin(),kmer_list.end());
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,resultfile);
     kmer_list.clear();
-    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
   }
 

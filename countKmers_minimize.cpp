@@ -171,7 +171,7 @@ int main(int argc, char *argv[]){
   IndC.append("_C.txt");
 
 
-  String<std::pair <char,unsigned>, External<ExternalConfigLarge<>> > extpos;
+  String<std::pair <char,unsigned>, External<ExternalConfig<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
