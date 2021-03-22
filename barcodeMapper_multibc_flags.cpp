@@ -69,7 +69,7 @@ IndDir.append("_dir.txt");
 std::string IndC=argv[3];
 IndC.append("_C.txt");
 
-String<std::pair <char,unsigned>, External<ExternalConfig<>> > extpos;
+String<std::pair <char,unsigned>, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -378,7 +378,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
         best_windows.erase(best_windows.begin());
       }
     }
-
+    std::cerr << "len before: " << best_windows.size()<< "\t";
     // filter short windows
     unsigned lengthThreshold=1000;
     std::vector<int> toshort;
@@ -393,6 +393,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     }
     std::cerr << "\n" << __LINE__;
 
+    std::cerr << "len during: " << best_windows.size()<< "\t";
     //filter low quality windows
     double qualityThreshold=20;
     if (std::get<0>(*(best_windows.end()-1))!=0) {
@@ -404,6 +405,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
       }
     }
     std::cerr << "\n" << __LINE__;
+    std::cerr << "len after: " << best_windows.size()<< "\t";
 
 
     // std::cerr<<"best_windows found. ";
