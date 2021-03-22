@@ -171,7 +171,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   assignValue(reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  std::cerr << "\n" << new_barcode << "\n";
+  // std::cerr << "\n" << new_barcode << "\n";
   if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
@@ -252,28 +252,28 @@ file_pos.close();
 std::cerr << "done!\n";
 
 //Kontrollausgabe
-std::cerr << "\nKontrollausgabe:\n";
-std::cerr << "\n" << __LINE__;
-
-BCI_barcodes.clear();
-BCI_positions.clear();
-std::string testbarcode = "AAACACCGTAGATTAG";
-
-// open(file1,argv[1]);
-// open(file2,argv[2]);
-// std::string readfile1 = argv[1];
-// std::string readfile2 = argv[2];
-std::string Index_name = argv[4];
-std::cerr << "\n" << __LINE__;
-
-LoadBarcodeIndex(Index_name,BCI_barcodes,BCI_positions);
-std::cerr << "\n" << __LINE__;
-
-ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,argv[1],argv[2]);
-std::cerr << "\n" << __LINE__;
-
-close(file1);
-close(file2);
+// std::cerr << "\nKontrollausgabe:\n";
+// std::cerr << "\n" << __LINE__;
+//
+// BCI_barcodes.clear();
+// BCI_positions.clear();
+// std::string testbarcode = "AAACACCGTAGATTAG";
+//
+// // open(file1,argv[1]);
+// // open(file2,argv[2]);
+// // std::string readfile1 = argv[1];
+// // std::string readfile2 = argv[2];
+// std::string Index_name = argv[4];
+// std::cerr << "\n" << __LINE__;
+//
+// LoadBarcodeIndex(Index_name,BCI_barcodes,BCI_positions);
+// std::cerr << "\n" << __LINE__;
+//
+// ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,argv[1],argv[2]);
+// std::cerr << "\n" << __LINE__;
+//
+// close(file1);
+// close(file2);
 
 } //main
 
@@ -391,7 +391,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     for (int i=(toshort.size()-1);i>=0;i--) {
       best_windows.erase(best_windows.begin()+toshort[i]);
     }
-    std::cerr << "\n" << __LINE__;
+    // std::cerr << "\n" << __LINE__;
 
     //filter low quality windows
     double qualityThreshold=20;
@@ -400,7 +400,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     //     best_windows.erase(best_windows.begin());
     //   }
     // }
-    std::cerr << "\n" << __LINE__;
+    // std::cerr << "\n" << __LINE__;
 
 
     // std::cerr<<"best_windows found. ";
