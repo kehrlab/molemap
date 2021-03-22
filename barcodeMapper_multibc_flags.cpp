@@ -396,7 +396,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     //filter low quality windows
     double qualityThreshold=20;
     if (std::get<0>(*(best_windows.end()-1))!=0) {
-      while(std::get<0>(*best_windows.begin())<qualityThreshold){
+      while(std::get<0>(*best_windows.begin())<qualityThreshold && !best_windows.empty()){
         best_windows.erase(best_windows.begin());
       }
     }
