@@ -13,7 +13,7 @@ g++ BarcodeMapper.cpp -o bcmap
 void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file);
 
 struct bcmapOptions{
-  std::string readfile1;
+  char[] readfile1;
   std::string readfile2;
   std::string index_name;
   std::string bci_name;
