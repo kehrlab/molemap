@@ -162,7 +162,7 @@ unsigned GetBkt(const long long int & hash, const String<int long long> & C, con
     //   // if (counter > 1000) {break;}
     // }
   }
-  std::cerr << d+1 << " ";
+  // std::cerr << d+1 << " ";
   // std::cerr << "tries: " << counter << "\n";
   return i;
 }
