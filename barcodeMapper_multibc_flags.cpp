@@ -380,17 +380,17 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     }
     std::cerr << "len before: " << best_windows.size()<< "\t";
     // filter short windows
-    unsigned lengthThreshold=1000;
-    std::vector<int> toshort;
-    for (int i = best_windows.size()-1; i>=0; i--){
-      if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
-        toshort.push_back(i);
-      }
-    }
-
-    for (int i=(toshort.size()-1);i>=0;i--) {
-      best_windows.erase(best_windows.begin()+toshort[i]);
-    }
+    // unsigned lengthThreshold=1000;
+    // std::vector<int> toshort;
+    // for (int i = best_windows.size()-1; i>=0; i--){
+    //   if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
+    //     toshort.push_back(i);
+    //   }
+    // }
+    //
+    // for (int i=(toshort.size()-1);i>=0;i--) {
+    //   best_windows.erase(best_windows.begin()+toshort[i]);
+    // }
 
     std::cerr << "len during: " << best_windows.size()<< "\t";
     //filter low quality windows
