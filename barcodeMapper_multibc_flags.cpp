@@ -168,7 +168,7 @@ loading in the reads
 
 try {         // opening read-files
   SeqFileIn file1(toCString(options.readfile1));
-  SeqFileIn file2(options.readfile2);
+  SeqFileIn file2(toCString(options.readfile2));
   close(file1);
   close(file2);
 }
@@ -202,8 +202,8 @@ CharString id1;
 CharString id2;
 
 // opening read files
-SeqFileIn file1(options.readfile1);
-SeqFileIn file2(options.readfile2);
+SeqFileIn file1(toCString(options.readfile1));
+SeqFileIn file2(toCString(options.readfile2));
 
 // preparing barcode Index
 std::vector<std::string> BCI_barcodes;
