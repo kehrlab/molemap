@@ -86,7 +86,7 @@ std::cout <<'\n'
           << "readfile1  \t" << options.readfile1 << '\n'
           << "readfile2  \t" << options.readfile2 << '\n'
           << "index_name \t" << options.index_name << '\n'
-          << "bci_name   \t" << options.bci_name << '\n\n';
+          << "bci_name   \t" << options.bci_name << "\n\n";
 
 unsigned k = options.k;
 unsigned mini_window_size = options.mini_window_size;
@@ -457,7 +457,7 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     /*--------------------------------------------------------------------------------------------------*/
     // Output
     std::fstream results;
-    results.open(file,std::ios::out::app);
+    results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
