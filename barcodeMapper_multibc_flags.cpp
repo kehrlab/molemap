@@ -33,7 +33,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile1"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile2"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "index_name"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "bci_"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "bci_name"));
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
