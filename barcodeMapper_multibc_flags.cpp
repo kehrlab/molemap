@@ -1,5 +1,6 @@
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
+# include <seqan/arg_parse.h>
 # include <iostream>
 # include <fstream>
 # include "./src/functions.h"
@@ -11,6 +12,58 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file);
 
+struct bcmapOptions{
+  std::string readfile1;
+  std::string readfile2;
+  std::string index_name;
+  std::string bci_name;
+  unsigned k;
+  unsigned mini_window_size;
+
+  bcmapOptions() :
+  k(31), mini_window_size(35)
+  {}
+  };
+
+seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
+    // Setup ArgumentParser.
+    seqan::ArgumentParser parser("bcmap");
+
+    // We require one argument.
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile1"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile2"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "index_name"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "bci_"));
+
+    // Define Options
+    addOption(parser, seqan::ArgParseOption(
+        "k", "kmer_length", "length of k-mers in kmer indexed",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "k", "31");
+    addOption(parser, seqan::ArgParseOption(
+        "m", "mini_window_size", "length of minimizing window",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "m", "35");
+
+
+    // Parse command line.
+    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
+
+    // Only extract  options if the program will continue after parseCommandLine()
+    if (res != seqan::ArgumentParser::PARSE_OK){
+        return res;}
+
+    // Extract option values.
+    getOptionValue(options.k, parser, "k");
+    getOptionValue(options.m, parser, "m");
+
+    getArgumentValue(options.readfile1, parser, 0);
+    getArgumentValue(options.readfile2, parser, 1);
+    getArgumentValue(options.index_name, parser, 2);
+    getArgumentValue(options.bci_name, parser, 3);
+
+    return seqan::ArgumentParser::PARSE_OK;
+}
 
 int main(int argc, char *argv[]){
 
@@ -18,26 +71,22 @@ if(argc < 5){
   std::cerr << "Usage: ./bcmap readFile1 readFile2 Index_name BCI_name [-flags] \n\n";
   exit(-1);
 }
-// Flags: [-m=35 (mini_window_size) -k=31 (k)]
-unsigned k=31; // length of k-mers in index
-int mini_window_size=35;
+// parsing command line arguments
+bcmapOptions options;
+seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
 
-if(argc > 5){
-  for (int i=5;i!=argc;i++){
-    if (argv[i][1]=='k'){
-      std::string flagk=argv[i];
-      flagk.erase(0,3);
-      k=stoi(flagk);
-    }else if(argv[i][1]=='m'){
-      std::string flagm=argv[i];
-      flagm.erase(0,3);
-      mini_window_size=stoi(flagm);
-    }
-  }
-}
+// If parsing was not successful then exit with code 1 if there were errors.
+// Otherwise, exit with code 0 (e.g. help was printed).
+if (res != seqan::ArgumentParser::PARSE_OK)
+    return res == seqan::ArgumentParser::PARSE_ERROR;
 
-std::cerr << "k: " << k << "\n";
-std::cerr << "m: " << mini_window_size << "\n";
+std::cout << "k        \t" << options.k << '\n'
+          << "m        \t" << options.mini_window_size << '\n'
+          << "readfile1\t" << options.readfile1 << '\n'
+          << "readfile2\t" << options.readfile2 << '\n';
+
+unsigned k = options.k;
+unsigend mini_window_size = options.mini_window_size;
 
 /*
 defining Parameters
@@ -62,11 +111,11 @@ String<unsigned> dir;
 String<std::pair <char,unsigned>> pos;
 String<int long long> C;
 //
-std::string IndPos=argv[3];
+std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
-std::string IndDir=argv[3];
+std::string IndDir=options.index_name;
 IndDir.append("_dir.txt");
-std::string IndC=argv[3];
+std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
 String<std::pair <char,unsigned>, External<ExternalConfigLarge<>> > extpos;
@@ -118,8 +167,8 @@ loading in the reads
 
 
 try {         // opening read-files
-  SeqFileIn file1(argv[1]);
-  SeqFileIn file2(argv[2]);
+  SeqFileIn file1(options.readfile1);
+  SeqFileIn file2(options.readfile2);
   close(file1);
   close(file2);
 }
@@ -153,8 +202,8 @@ CharString id1;
 CharString id2;
 
 // opening read files
-SeqFileIn file1(argv[1]);
-SeqFileIn file2(argv[2]);
+SeqFileIn file1(options.readfile1);
+SeqFileIn file2(options.readfile2);
 
 // preparing barcode Index
 std::vector<std::string> BCI_barcodes;
@@ -230,9 +279,9 @@ close(file2);
 std::cerr << "Writing BarcodeIndex to file ...";
 
 // write Barcode Index to file
-std::string IndBC=argv[4];
+std::string IndBC=options.bci_name;
 IndBC.append("_bc.txt");
-IndPos=argv[4];
+IndPos=options.bci_name;
 IndPos.append("_pos.txt");
 
 std::ofstream file_bc;
@@ -274,7 +323,7 @@ std::cerr << "done!\n";
 //
 // close(file1);
 // close(file2);
-
+return;
 } //main
 
 
@@ -372,13 +421,15 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     /*--------------------------------------------------------------------------------------------------*/
 
 
-    // trimm unused parts of best_windows
+    //filter low quality windows
+    double qualityThreshold=20000;
     if (std::get<0>(*(best_windows.end()-1))!=0) {
-      while(std::get<0>(*best_windows.begin())==0){
+      while(std::get<0>(*best_windows.begin())<qualityThreshold && !best_windows.empty()){
         best_windows.erase(best_windows.begin());
       }
-    }
-    std::cerr << "len before: " << best_windows.size()<< "\t";
+    }else{return;}
+
+    // std::cerr << "len before: " << best_windows.size()<< "\t";
     // filter short windows
     // unsigned lengthThreshold=1000;
     // std::vector<int> toshort;
@@ -392,15 +443,9 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     //   best_windows.erase(best_windows.begin()+toshort[i]);
     // }
 
-    std::cerr << "len during: " << best_windows.size()<< "\t";
-    //filter low quality windows
-    double qualityThreshold=20000;
-    if (std::get<0>(*(best_windows.end()-1))!=0) {
-      while(std::get<0>(*best_windows.begin())<qualityThreshold && !best_windows.empty()){
-        best_windows.erase(best_windows.begin());
-      }
-    }
-    std::cerr << "len after: " << best_windows.size()<< "\t";
+    // std::cerr << "len during: " << best_windows.size()<< "\t";
+
+    // std::cerr << "len after: " << best_windows.size()<< "\t";
 
 
     // std::cerr<<"best_windows found. ";
@@ -438,4 +483,5 @@ void MapKmerList(std::vector<std::tuple<char,unsigned,unsigned,unsigned>> & kmer
     }
     results.close();
     std::cerr<<"\n";
+    return;
   } //MapKmerList
