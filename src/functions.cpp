@@ -41,6 +41,7 @@ void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_b
 
 // retreives all reads of a given barcode using the BarcodeIndex
 void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2){
+  std::cerr << "\n" << __LINE__;
   SeqFileIn file1(readfile1);
   SeqFileIn file2(readfile2);
   std::streampos posfile1;
@@ -48,10 +49,12 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   Dna5String read1;
   Dna5String read2;
   CharString id;
+  std::cerr << "\n" << __LINE__;
   uint_fast32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
   file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
   file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
   std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
+  std::cerr << "\n" << __LINE__;
   while(file1.stream.file.tellg()!=endpos){
     readRecord(id,read1,file1);
     readRecord(id,read2,file2);
