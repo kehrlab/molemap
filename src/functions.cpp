@@ -56,9 +56,10 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
   std::cerr << "\n" << __LINE__;
   while(file1.stream.file.tellg()!=endpos){
+    std::cerr << "\n" << __LINE__;
     readRecord(id,read1,file1);
     readRecord(id,read2,file2);
-
+    std::cerr << "\n" << __LINE__;
     std::cerr << read1 << "\n" << read2 << "\n\n";
   }
   return;
