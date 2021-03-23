@@ -40,7 +40,7 @@ void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_b
 }
 
 // retreives all reads of a given barcode using the BarcodeIndex
-void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, char* readfile1, char* readfile2){
+void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2){
   SeqFileIn file1(readfile1);
   SeqFileIn file2(readfile2);
   std::streampos posfile1;
