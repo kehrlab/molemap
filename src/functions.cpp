@@ -49,8 +49,10 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   results.open(readfile2);
   std::streampos posfile1;
   std::streampos posfile2;
-  Dna5String read1;
-  Dna5String read2;
+  // Dna5String read1;
+  // Dna5String read2;
+  std::string read1;
+  std::string read2;
   CharString id;
   uint_fast32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
   // file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
