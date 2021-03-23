@@ -320,7 +320,7 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fas32_t & max_window_size, uint_fas32_t & max_gap_size, uint_fas8_t & window_count, const char* file, std::string barcode){
+void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fas8_t & window_count, const char* file, std::string barcode){
 
     std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
