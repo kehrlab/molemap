@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
 
   String<uint32_t> dir;
   resize(dir,bucket_number+1,0);
-  String<std::pair <unsigned char,uint32_t>> pos;
+  String<std::pair <uint_least8_t,uint32_t>> pos;
   resize(pos,length(concat(seqs)));   // may be re
   String<int64_t> C;
   resize(C,bucket_number,-1);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[]){
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint64_t c;
-  unsigned char CHROM = 0;
+  uint_least8_t CHROM = 0;
 
 
   std::cerr << "Index prepared. \n";
@@ -160,7 +160,7 @@ int main(int argc, char *argv[]){
   IndC.append("_C.txt");
 
 
-  String<std::pair <unsigned char,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+  String<std::pair <uint_least8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }

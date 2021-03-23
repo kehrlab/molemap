@@ -10,7 +10,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
+void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -104,7 +104,7 @@ std::cerr << "Reading in the k-mer index ";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
-String<std::pair <unsigned char,uint32_t>> pos;
+String<std::pair <uint_least8_t,uint32_t>> pos;
 String<int64_t> C;
 //
 std::string IndPos=options.index_name;
@@ -114,7 +114,7 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-String<std::pair <unsigned char,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+String<std::pair <uint_least8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -182,8 +182,8 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode
-std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
+std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 std::string barcode;
@@ -320,9 +320,9 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode){
+void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode){
 
-    std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
+    std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
     float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
@@ -334,16 +334,16 @@ void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t
     #define ACT(X) std::get<3>(*(X))
 
     // std::cerr<<__LINE__<<"\n";
-    std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
-    std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>>::iterator itrbw;
+    std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
+    std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>>::iterator itrbw;
     // std::cerr<<"iteration prepared. \n";
 
-    unsigned char reference=REF(kmer_list.begin());
-    std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
+    uint_least8_t reference=REF(kmer_list.begin());
+    std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
     uint_fast32_t start_position=POS(kmer_list.begin());
     uint_fast32_t end_position=POS(kmer_list.begin());
     double window_quality=0;
-    std::tuple<double,unsigned char,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
+    std::tuple<double,uint_least8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
     if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
       window_quality+=0.00032*ACT(kmer_list.begin());
