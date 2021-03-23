@@ -44,9 +44,9 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   // SeqFileIn file1(readfile1);
   // SeqFileIn file2(readfile2);
   std::ifstream file1;
-  results.open(readfile1);
+  file1.open(readfile1);
   std::ifstream file2;
-  results.open(readfile2);
+  file2.open(readfile2);
   std::streampos posfile1;
   std::streampos posfile2;
   // Dna5String read1;
