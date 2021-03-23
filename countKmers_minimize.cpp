@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){
   typedef Iterator<String<unsigned>>::Type Titrs;
 
   unsigned long long c;
-  unsigned char CHROM =0;
+  unsigned char CHROM = 0;
 
 
   std::cerr << "Index prepared. \n";
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]){
     }
     c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);       // indexing of the last element
     dir[c+1]+=1;
-
+    CHROM++;
   }
 
   std::cerr << "Index initially filled. \n";
@@ -132,7 +132,7 @@ int main(int argc, char *argv[]){
   std::cerr << "cumulated sum culculation finished. \n";
 
   // iterating over the stringSet (Chromosomes)
-
+  CHROM=0;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
 
     // filling pos
