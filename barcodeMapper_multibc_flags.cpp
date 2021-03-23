@@ -105,7 +105,7 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<unsigned> dir;
 String<std::pair <unsigned char,unsigned>> pos;
-String<int long long> C;
+String<int64_t> C;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
@@ -131,7 +131,7 @@ close(extdir);
 std::cerr <<".";
 
 
-String<int long long, External<> > extC;
+String<int64_t, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -139,15 +139,15 @@ assign(C, extC, Exact());
 close(extC);
 
 
-long long int maxhash;
+int64_t maxhash;
 for (int i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
 }
 
 std::srand(0);
-long long int random_seed=0;
+int64_t random_seed=0;
 for (unsigned i=0;i<k;++i){
-  random_seed= random_seed << 2 | (long long int)(std::rand()%3);
+  random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
 }
 
 unsigned bucket_number=length(C);
@@ -235,9 +235,9 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
-    std::pair <long long int, long long int> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
-    long long int minimizer_position=0;
-    long long int minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
+    std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
+    int64_t minimizer_position=0;
+    int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
     unsigned minimizer_active_bases=1;
     if (length(*it)>mini_window_size){
       for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers

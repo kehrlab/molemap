@@ -50,17 +50,17 @@ int main(int argc, char *argv[]){
 
   unsigned k=std::stoi(argv[2]); // length of k-mer
 
-  // long long int maxhash=pow(2,k*2)-1;
+  // int64_t maxhash=pow(2,k*2)-1;
 
-  long long int maxhash;
+  int64_t maxhash;
   for (unsigned i=0;i<k;i++){
     maxhash= maxhash << 2 | 3;
   }
 
   std::srand(0);
-  long long int random_seed=0;
+  int64_t random_seed=0;
   for (unsigned i=0;i<k;++i){
-    random_seed= random_seed << 2 | (long long int)(std::rand()%3);
+    random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
   }
 
   unsigned bucket_number=std::stoul(argv[3]); // should depend on k and the length of the indexed sequence
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
   resize(dir,bucket_number+1,0);
   String<std::pair <unsigned char,unsigned>> pos;
   resize(pos,length(concat(seqs)));   // may be re
-  String<int long long> C;
+  String<int64_t> C;
   resize(C,bucket_number,-1);
 
   typedef Iterator<String<unsigned>>::Type Titrs;
@@ -95,7 +95,7 @@ int main(int argc, char *argv[]){
     std::cerr << "Chrom: " << (int)CHROM << "\n";
     // counting k-mers
 
-    std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
+    std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // indexing the hashed k-mers
@@ -137,7 +137,7 @@ int main(int argc, char *argv[]){
 
     // filling pos
 
-    std::pair<long long int, long long int> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
+    std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
     for (long long unsigned i = 0;i<length(*seq)-k;++i){
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);   // filling of the position table
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]){
   assign(extdir, dir, Exact());
   close(extdir);
 
-  String<long long int, External<> > extC;
+  String<int64_t, External<> > extC;
   if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
