@@ -82,7 +82,7 @@ void ReportWindow(std::vector<std::tuple<double,unsigned char,unsigned,unsigned>
 }
 
 // randomizes the hashvalues order
-long long int ReturnSmaller(const long long int hash1,const long long int hash2,const long long int random_seed){
+int64_t ReturnSmaller(const int64_t hash1,const int64_t hash2,const int64_t random_seed){
   if ((hash1^random_seed) < (hash2^random_seed)){
     return hash1^random_seed;
   } else {
@@ -91,11 +91,11 @@ long long int ReturnSmaller(const long long int hash1,const long long int hash2,
 }
 
 // initializes the minimizer
-long long int InitMini(const DnaString & string, const unsigned k, std::pair <long long int, long long int> & hash, const long long int & maxhash,const long long int random_seed, long long int & minimizer_position){
-  long long int minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-  // long long int minimizer=std::min(hash.first,hash.second);
+int64_t InitMini(const DnaString & string, const unsigned k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
+  int64_t minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+  // int64_t minimizer=std::min(hash.first,hash.second);
   // std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
-  long long int minimizer_pos=0;
+  int64_t minimizer_pos=0;
   for (unsigned i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
       if (minimizer > (hash.first^random_seed)){
@@ -114,7 +114,7 @@ long long int InitMini(const DnaString & string, const unsigned k, std::pair <lo
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>> & kmer_list, const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       unsigned long long c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
@@ -131,7 +131,7 @@ void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>
 }
 
 // return k-mer positions
-std::vector<std::pair <unsigned char,unsigned>> RetPos(const long long int & hash, const String<int long long> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number){
+std::vector<std::pair <unsigned char,unsigned>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number){
       std::vector<std::pair <unsigned char,unsigned>> positions;
       unsigned c=GetBkt(hash,C,bucket_number);
       for (unsigned i = dir[c];i!=dir[c+1];i++){
@@ -141,17 +141,17 @@ std::vector<std::pair <unsigned char,unsigned>> RetPos(const long long int & has
 }
 
 // Find correct Bucket
-unsigned GetBkt(const long long int & hash, const String<int long long> & C, const unsigned bucket_number){
+unsigned GetBkt(const int64_t & hash, const String<int64_t> & C, const unsigned bucket_number){
   // std::srand(hash);
   // unsigned long long i=std::rand()%bucket_number;
-  long long int i=hash%(long long int)bucket_number;
-  long long int d=0;
+  int64_t i=hash%(int64_t)bucket_number;
+  int64_t d=0;
   // unsigned counter=0;
   while(C[i]!=hash and C[i]!=-1){
     // std::cerr <<counter <<"\n";
     // std::cerr << "i before: " << i << "\n";
     i=(i^(hash>>((d*16)%31)));
-    i=(i+2*d+1)%(long long int)bucket_number;
+    i=(i+2*d+1)%(int64_t)bucket_number;
     // std::cerr << "i after: " << i << "\n";
 
     // counter+=1;
@@ -169,20 +169,20 @@ unsigned GetBkt(const long long int & hash, const String<int long long> & C, con
 }
 
 // Request a Bucket
-unsigned ReqBkt(const long long int & hash, String<int long long> & C, const unsigned bucket_number){
+unsigned ReqBkt(const int64_t & hash, String<int64_t> & C, const unsigned bucket_number){
   unsigned i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
 
 // turn hashvalue into kmer
-DnaString hash2kmer(const long long int & hash,const unsigned k){
+DnaString hash2kmer(const int64_t & hash,const unsigned k){
   DnaString kmer="";
-  long long int temp;
+  int64_t temp;
   for (size_t i = 0; i < k; i++) {
-    temp=(hash>>((k-1-i)*2)) & (long long int)3;
+    temp=(hash>>((k-1-i)*2)) & (int64_t)3;
     // std::cerr << "temp: " << temp <<"\n";
-    if (temp==(long long int)0) {
+    if (temp==(int64_t)0) {
       kmer+="A";
     }else if(temp==1){
       kmer+="C";
@@ -196,19 +196,19 @@ DnaString hash2kmer(const long long int & hash,const unsigned k){
 }
 
 //  Hashfunction for k-mer
-std::pair <long long int, long long int> hashkMer(const DnaString & kmer, const unsigned k){
-  long long int hash=0;
-  long long int hash2=0;
+std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const unsigned k){
+  int64_t hash=0;
+  int64_t hash2=0;
   for (unsigned i=0;i<k;++i){
-    hash= hash << 2 | (long long int)ordValue(kmer[i]);
-    hash2= hash2 << 2 | (long long int)(3-ordValue(kmer[k-1-i]));
+    hash= hash << 2 | (int64_t)ordValue(kmer[i]);
+    hash2= hash2 << 2 | (int64_t)(3-ordValue(kmer[k-1-i]));
   }
   return std::make_pair(hash,hash2);
 }
 
 // Rolling hashfunction for k-mer
-void rollinghashkMer(long long int & oldHash, long long int & oldHash2, const Dna5 & newnuc, const unsigned k, const long long int & maxhash){
-  oldHash=((oldHash << 2) | (long long int)ordValue(newnuc)) & maxhash;
-  oldHash2=(oldHash2 >> 2) | (long long int)(3-ordValue(newnuc)) << (k*2-2);
+void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const unsigned k, const int64_t & maxhash){
+  oldHash=((oldHash << 2) | (int64_t)ordValue(newnuc)) & maxhash;
+  oldHash2=(oldHash2 >> 2) | (int64_t)(3-ordValue(newnuc)) << (k*2-2);
   return;
 }
