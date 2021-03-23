@@ -1,4 +1,4 @@
-uint_fast8_t# include <seqan/seq_io.h>
+# include <seqan/seq_io.h>
 # include <seqan/sequence.h>
 # include <iostream>
 # include <fstream>
