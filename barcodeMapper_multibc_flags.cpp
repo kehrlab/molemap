@@ -17,8 +17,8 @@ struct bcmapOptions{
   std::string readfile2;
   std::string index_name;
   std::string bci_name;
-  uint_fast8_t k;
-  uint_fast8_t mini_window_size;
+  unsigned k;
+  unsigned mini_window_size;
 
   bcmapOptions() :
   k(31), mini_window_size(35)
