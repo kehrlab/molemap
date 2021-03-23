@@ -1,4 +1,4 @@
-# include <seqan/seq_io.h>
+uint_fast8_t# include <seqan/seq_io.h>
 # include <seqan/sequence.h>
 # include <iostream>
 # include <fstream>
@@ -48,7 +48,7 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
   Dna5String read1;
   Dna5String read2;
   CharString id;
-  unsigned pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
+  uint_fast32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
   file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
   file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
   std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
@@ -62,9 +62,8 @@ void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std
 }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
-void ReportWindow(std::vector<std::tuple<double,unsigned char,unsigned,unsigned>> & best_windows, std::tuple<double,unsigned char,unsigned,unsigned> & candidate){
-  std::vector<std::tuple<double,unsigned char,unsigned,unsigned>>::iterator itrbw;
-  unsigned inserted=0;
+void ReportWindow(std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>> & best_windows, std::tuple<double,unsigned char,uint32_t,uint32_t> & candidate){
+  std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>>::iterator itrbw;
   if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
     for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
       if(std::get<0>(candidate) < std::get<0>(*itrbw)){                            // if (as soon as) quality is worse than quality in best_windows
@@ -91,12 +90,12 @@ int64_t ReturnSmaller(const int64_t hash1,const int64_t hash2,const int64_t rand
 }
 
 // initializes the minimizer
-int64_t InitMini(const DnaString & string, const unsigned k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
+int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
   int64_t minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
   // int64_t minimizer=std::min(hash.first,hash.second);
   // std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
   int64_t minimizer_pos=0;
-  for (unsigned i=1;i<length(string)-k+1;i++){
+  for (uint_fast32_t i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
       if (minimizer > (hash.first^random_seed)){
       // if (std::min(minimizer,hash.first)!=minimizer){
@@ -114,16 +113,16 @@ int64_t InitMini(const DnaString & string, const unsigned k, std::pair <int64_t,
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number,unsigned & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <unsigned char,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
-      unsigned long long c=GetBkt(hash,C,bucket_number);
+      uint_fast32_t c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
-      unsigned abundance=dir[c+1]-dir[c];
+      uint_fast32_t abundance=dir[c+1]-dir[c];
       // std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
       // std::cerr << "abundance: " << abundance << "\n";
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
-        for (unsigned i = dir[c];i!=dir[c+1];i++){
+        for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
           kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance,minimizer_active_bases));
         }
       }
@@ -131,19 +130,19 @@ void AppendPos(std::vector<std::tuple <unsigned char,unsigned,unsigned,unsigned>
 }
 
 // return k-mer positions
-std::vector<std::pair <unsigned char,unsigned>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<unsigned> & dir,const String<std::pair <unsigned char,unsigned>> & pos, const unsigned bucket_number){
-      std::vector<std::pair <unsigned char,unsigned>> positions;
-      unsigned c=GetBkt(hash,C,bucket_number);
-      for (unsigned i = dir[c];i!=dir[c+1];i++){
+std::vector<std::pair <unsigned char,uint32_t>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <unsigned char,uint32_t>> & pos, const uint_fast32_t bucket_number){
+      std::vector<std::pair <unsigned char,uint32_t>> positions;
+      uint_fast32_t c=GetBkt(hash,C,bucket_number);
+      for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
       }
       return positions;
 }
 
 // Find correct Bucket
-unsigned GetBkt(const int64_t & hash, const String<int64_t> & C, const unsigned bucket_number){
+uint_fast32_t GetBkt(const int64_t & hash, const String<int64_t> & C, const uint_fast32_t bucket_number){
   // std::srand(hash);
-  // unsigned long long i=std::rand()%bucket_number;
+  // uint64_t i=std::rand()%bucket_number;
   int64_t i=hash%(int64_t)bucket_number;
   int64_t d=0;
   // unsigned counter=0;
@@ -169,14 +168,14 @@ unsigned GetBkt(const int64_t & hash, const String<int64_t> & C, const unsigned 
 }
 
 // Request a Bucket
-unsigned ReqBkt(const int64_t & hash, String<int64_t> & C, const unsigned bucket_number){
-  unsigned i = GetBkt(hash,C,bucket_number);
+uint_fast32_t ReqBkt(const int64_t & hash, String<int64_t> & C, const uint_fast32_t bucket_number){
+  uint_fast32_t i = GetBkt(hash,C,bucket_number);
   C[i]=hash;
   return i;
 }
 
 // turn hashvalue into kmer
-DnaString hash2kmer(const int64_t & hash,const unsigned k){
+DnaString hash2kmer(const int64_t & hash,const uint_fast8_t k){
   DnaString kmer="";
   int64_t temp;
   for (size_t i = 0; i < k; i++) {
@@ -196,10 +195,10 @@ DnaString hash2kmer(const int64_t & hash,const unsigned k){
 }
 
 //  Hashfunction for k-mer
-std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const unsigned k){
+std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const uint_fast8_t k){
   int64_t hash=0;
   int64_t hash2=0;
-  for (unsigned i=0;i<k;++i){
+  for (uint_fast8_t i=0;i<k;++i){
     hash= hash << 2 | (int64_t)ordValue(kmer[i]);
     hash2= hash2 << 2 | (int64_t)(3-ordValue(kmer[k-1-i]));
   }
@@ -207,7 +206,7 @@ std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const unsigned k){
 }
 
 // Rolling hashfunction for k-mer
-void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const unsigned k, const int64_t & maxhash){
+void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const uint_fast8_t k, const int64_t & maxhash){
   oldHash=((oldHash << 2) | (int64_t)ordValue(newnuc)) & maxhash;
   oldHash2=(oldHash2 >> 2) | (int64_t)(3-ordValue(newnuc)) << (k*2-2);
   return;
