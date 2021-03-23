@@ -10,15 +10,15 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file, std::string barcode);
+void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
 
 struct bcmapOptions{
   std::string readfile1;
   std::string readfile2;
   std::string index_name;
   std::string bci_name;
-  unsigned k;
-  unsigned mini_window_size;
+  uint_fast8_t k;
+  uint_fast8_t mini_window_size;
 
   bcmapOptions() :
   k(31), mini_window_size(35)
@@ -83,16 +83,16 @@ std::cout <<'\n'
           << "index_name \t" << options.index_name << '\n'
           << "bci_name   \t" << options.bci_name << "\n\n";
 
-unsigned k = options.k;
-unsigned mini_window_size = options.mini_window_size;
+uint_fast8_t k = options.k;
+uint_fast8_t mini_window_size = options.mini_window_size;
 
 /*
 defining Parameters
 */
 
-unsigned max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
-unsigned max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
-unsigned window_count=100;   // amount of saved candidate windows
+uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
+uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
+uint_fast8_t window_count=100;   // amount of saved candidate windows
 
 const char* resultfile="bc_windows.txt";
 
@@ -103,8 +103,8 @@ reading the Index
 std::cerr << "Reading in the k-mer index ";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<unsigned> dir;
-String<std::pair <unsigned char,unsigned>> pos;
+String<uint32_t> dir;
+String<std::pair <unsigned char,uint32_t>> pos;
 String<int64_t> C;
 //
 std::string IndPos=options.index_name;
@@ -114,7 +114,7 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-String<std::pair <unsigned char,unsigned>, External<ExternalConfigLarge<>> > extpos;
+String<std::pair <unsigned char,uint32_t>, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -122,7 +122,7 @@ assign(pos, extpos, Exact());
 close(extpos);
 std::cerr <<".";
 
-String<unsigned, External<> > extdir;
+String<uint32_t, External<> > extdir;
 if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
@@ -140,17 +140,17 @@ close(extC);
 
 
 int64_t maxhash;
-for (int i=0;i<k;i++){
+for (uint_fast8_t i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
 }
 
 std::srand(0);
 int64_t random_seed=0;
-for (unsigned i=0;i<k;++i){
+for (uint_fast8_t i=0;i<k;++i){
   random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
 }
 
-unsigned bucket_number=length(C);
+uint_fast32_t bucket_number=length(C);
 
 std::cerr <<". done!";
 std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
@@ -182,8 +182,8 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode
-std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>>::const_iterator itrk;
+std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 std::string barcode;
@@ -238,9 +238,9 @@ while (atEnd(file1)!=1) { // proceeding through files
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-    unsigned minimizer_active_bases=1;
+    uint_fast8_t minimizer_active_bases=1;
     if (length(*it)>mini_window_size){
-      for (unsigned t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
+      for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -255,7 +255,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           minimizer_position=t+1;
           hash=hashkMer(infix(*it,t+1,t+1+k),k);
           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-          unsigned minimizer_active_bases=1;
+          minimizer_active_bases=1;
         }
       }
       AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number, minimizer_active_bases);   // append last minimizer                                                                                               // if old minimizer no longer in window
@@ -320,9 +320,9 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>> & kmer_list, unsigned & max_window_size, unsigned & max_gap_size, unsigned & window_count, const char* file, std::string barcode){
+void MapKmerList(std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fas32_t & max_window_size, uint_fas32_t & max_gap_size, uint_fas8_t & window_count, const char* file, std::string barcode){
 
-    std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>>::const_iterator itrk;
+    std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
     float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
@@ -334,16 +334,16 @@ void MapKmerList(std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned
     #define ACT(X) std::get<3>(*(X))
 
     // std::cerr<<__LINE__<<"\n";
-    std::vector<std::tuple<double,unsigned char,unsigned,unsigned>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
-    std::vector<std::tuple<double,unsigned char,unsigned,unsigned>>::iterator itrbw;
+    std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
+    std::vector<std::tuple<double,unsigned char,uint32_t,uint32_t>>::iterator itrbw;
     // std::cerr<<"iteration prepared. \n";
 
     unsigned char reference=REF(kmer_list.begin());
-    std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned>>::const_iterator itrstart=kmer_list.begin();
-    unsigned start_position=POS(kmer_list.begin());
-    unsigned end_position=POS(kmer_list.begin());
+    std::vector<std::tuple<unsigned char,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
+    uint_fast32_t start_position=POS(kmer_list.begin());
+    uint_fast32_t end_position=POS(kmer_list.begin());
     double window_quality=0;
-    std::tuple<double,unsigned char,unsigned,unsigned> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
+    std::tuple<double,unsigned char,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
     if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
       window_quality+=0.00032*ACT(kmer_list.begin());
@@ -424,7 +424,7 @@ void MapKmerList(std::vector<std::tuple<unsigned char,unsigned,unsigned,unsigned
 
     // std::cerr << "len before: " << best_windows.size()<< "\t";
     // filter short windows
-    // unsigned lengthThreshold=1000;
+    // uint32_t lengthThreshold=1000;
     // std::vector<int> toshort;
     // for (int i = best_windows.size()-1; i>=0; i--){
     //   if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){

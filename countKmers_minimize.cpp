@@ -48,43 +48,35 @@ int main(int argc, char *argv[]){
   std::cerr << "Genome read in. \n";
   // defining key parameters
 
-  unsigned k=std::stoi(argv[2]); // length of k-mer
+  uint_fast8_t k=std::stoi(argv[2]); // length of k-mer
 
   // int64_t maxhash=pow(2,k*2)-1;
 
   int64_t maxhash;
-  for (unsigned i=0;i<k;i++){
+  for (uint_fast8_t i=0;i<k;i++){
     maxhash= maxhash << 2 | 3;
   }
 
   std::srand(0);
   int64_t random_seed=0;
-  for (unsigned i=0;i<k;++i){
+  for (uint_fast8_t i=0;i<k;++i){
     random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
   }
 
-  unsigned bucket_number=std::stoul(argv[3]); // should depend on k and the length of the indexed sequence
-  // unsigned maxfreq=std::stoll(argv[4]);
-  // choosing Chromosome
-
-  // Dna5String seq=seqs[36];
-  //
-  // std::cerr << "ID: " << ids[36] << "\n";
-  //
-  // std::cerr << "Chromosome lengths: " << length(seq) << "\n";
+  uint_fast32_t bucket_number=std::stoul(argv[3]); // should depend on k and the length of the indexed sequence
 
   // building index storage
 
-  String<unsigned> dir;
+  String<uint32_t> dir;
   resize(dir,bucket_number+1,0);
-  String<std::pair <unsigned char,unsigned>> pos;
+  String<std::pair <unsigned char,uint32_t>> pos;
   resize(pos,length(concat(seqs)));   // may be re
   String<int64_t> C;
   resize(C,bucket_number,-1);
 
-  typedef Iterator<String<unsigned>>::Type Titrs;
+  typedef Iterator<String<uint32_t>>::Type Titrs;
 
-  unsigned long long c;
+  uint64_t c;
   unsigned char CHROM = 0;
 
 
@@ -97,7 +89,7 @@ int main(int argc, char *argv[]){
 
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
-    for (long long unsigned i = 0;i<length(*seq)-k;++i){
+    for (uint64_t i = 0;i<length(*seq)-k;++i){
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
@@ -118,12 +110,11 @@ int main(int argc, char *argv[]){
 
   // cumulative sum
 
-  long long unsigned sum=length(concat(seqs))-k+1;
-  // std::vector<unsigned> abundance; //tracking k-mer abundances
+  uint64_t sum=length(concat(seqs))-k+1;
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
-      sum-=(long long unsigned)*itrs;
+      sum-=(uint64_t)*itrs;
     }
     // abundance.push_back(*itrs);} //tracking k-mer abundances
     *itrs=sum;
@@ -139,7 +130,7 @@ int main(int argc, char *argv[]){
 
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
-    for (long long unsigned i = 0;i<length(*seq)-k;++i){
+    for (uint64_t i = 0;i<length(*seq)-k;++i){
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);   // filling of the position table
       pos[dir[c+1]]=std::make_pair(CHROM,i);
       dir[c+1]++;
@@ -169,14 +160,14 @@ int main(int argc, char *argv[]){
   IndC.append("_C.txt");
 
 
-  String<std::pair <unsigned char,unsigned>, External<ExternalConfigLarge<>> > extpos;
+  String<std::pair <unsigned char,uint32_t>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(extpos, pos, Exact());
   close(extpos);
 
-  String<unsigned, External<> > extdir;
+  String<uint32_t, External<> > extdir;
   if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }

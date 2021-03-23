@@ -2,7 +2,6 @@
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
 # include <fstream>
-# include "./src/functions.h"
 # include <time.h>
 using namespace seqan;
 
@@ -28,7 +27,7 @@ close(extC);
 
 typedef Iterator<String<int long long>>::Type CIterator;
 
-long long unsigned counter=0;
+uint64_t counter=0;
 
 for (CIterator it=begin(C);it!=end(C);++it){
   if(*it!=-1){
@@ -37,5 +36,6 @@ for (CIterator it=begin(C);it!=end(C);++it){
 }
 
 std::cerr << "\nload factor: " << (long double)counter/length(C) << "\n";
+return 0;
 
 }
