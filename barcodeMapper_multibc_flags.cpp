@@ -67,11 +67,6 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
 int main(int argc, char const ** argv){
 
-// if(argc < 5){
-//   std::cerr << "Usage: ./bcmap readFile1 readFile2 Index_name BCI_name [-flags] \n\n";
-//   exit(-1);
-// }
-
 // parsing command line arguments
 bcmapOptions options;
 seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
@@ -80,7 +75,6 @@ seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
 // Otherwise, exit with code 0 (e.g. help was printed).
 if (res != seqan::ArgumentParser::PARSE_OK)
     return res == seqan::ArgumentParser::PARSE_ERROR;
-
 std::cout <<'\n'
           << "k          \t" << options.k << '\n'
           << "m          \t" << options.mini_window_size << '\n'
@@ -101,8 +95,6 @@ unsigned max_gap_size=20000;     // maximum gap size between two adjacent k_mer 
 unsigned window_count=100;   // amount of saved candidate windows
 
 const char* resultfile="bc_windows.txt";
-
-
 
 /*
 reading the Index
@@ -162,10 +154,10 @@ unsigned bucket_number=length(C);
 
 std::cerr <<". done!";
 std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+
 /*
 loading in the reads
 */
-
 
 // loading reads from fastq/fasta files:
 
