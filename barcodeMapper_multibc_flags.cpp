@@ -300,20 +300,17 @@ std::cerr << "done!\n";
 
 // Kontrollausgabe
 std::cerr << "\nKontrollausgabe:\n";
-std::cerr << "\n" << __LINE__;
 
 BCI_barcodes.clear();
 BCI_positions.clear();
 std::string testbarcode = "AAACACCGTAGATTAG";
 
-std::cerr << "\n" << __LINE__;
-
 LoadBarcodeIndex(options.bci_name,BCI_barcodes,BCI_positions);
-std::cerr << "\n" << __LINE__;
-
-ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,toCString(options.readfile1),toCString(options.readfile2));
-std::cerr << "\n" << __LINE__;
-
+std::vector<std::pair<Dna5String,Dna5String>> barcodedreads;
+barcodedreads=ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,toCString(options.readfile1),toCString(options.readfile2));
+for (int i=0;i<barcodedreads.size();i++){
+  std::cerr << std::get<0>(barcodedreads[i]) << "\n" << std::get<1>(barcodedreads[i]) << "\n\n";
+}
 close(file1);
 close(file2);
 
@@ -335,7 +332,6 @@ void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t
     #define ABU(X) std::get<2>(*(X))
     #define ACT(X) std::get<3>(*(X))
 
-    // std::cerr<<__LINE__<<"\n";
     std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
     std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>>::iterator itrbw;
     // std::cerr<<"iteration prepared. \n";
