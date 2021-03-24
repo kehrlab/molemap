@@ -16,7 +16,8 @@ struct countKOptions{
   std::string reference_file;
   std::string index_name;
   unsigned k;
-  long unsigned bucket_count
+  long unsigned bucket_count;
+
   bcmapOptions():
   k(31), bucket_count(3221225472)
   {}
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]){
             << "k                \t" << options.k << '\n'
             << "bucket_count     \t" << options.bucket_count << '\n'
             << "reference        \t" << options.reference_file << '\n'
-            << "index_name       \t" << options.index_name << '\n'
+            << "index_name       \t" << options.index_name << "\n\n";
 
   uint_fast8_t k = options.k;
   uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
