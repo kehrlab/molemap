@@ -433,19 +433,19 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
     }else{return;}
 
-    // std::cerr << "len before: " << best_windows.size()<< "\t";
-    // filter short windows
-    // uint32_t lengthThreshold=1000;
-    // std::vector<int> toshort;
-    // for (int i = best_windows.size()-1; i>=0; i--){
-    //   if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
-    //     toshort.push_back(i);
-    //   }
-    // }
-    //
-    // for (int i=(toshort.size()-1);i>=0;i--) {
-    //   best_windows.erase(best_windows.begin()+toshort[i]);
-    // }
+    std::cerr << "len before: " << best_windows.size()<< "\t";
+    filter short windows
+    uint32_t lengthThreshold=1000;
+    std::vector<int> toshort;
+    for (int i = best_windows.size()-1; i>=0; i--){
+      if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
+        toshort.push_back(i);
+      }
+    }
+
+    for (int i=(toshort.size()-1);i>=0;i--) {
+      best_windows.erase(best_windows.begin()+toshort[i]);
+    }
 
     // std::cerr << "len during: " << best_windows.size()<< "\t";
 
@@ -464,26 +464,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
       std::string qual=std::to_string(std::get<0>(*itrbw));
-      // for (int i=qual.length();i<=18;i++) {qual+=" ";}
       std::string ref=lookChrom[std::get<1>(*itrbw)];
-      // for (int i=ref.length();i<=8;i++) {ref+=" ";}
       std::string start=std::to_string(std::get<2>(*itrbw));
-      // for (int i=start.length();i<=13;i++) {start+=" ";}
       std::string end=std::to_string(std::get<3>(*itrbw));
-      // for (int i=end.length();i<=13;i++) {end+=" ";}
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-      // for (int i=len.length();i<=13;i++) {len+=" ";}
-      // results.write("\nquality: ",sizeof("\nquality: "));
-      // results.write(&qual[0],sizeof(&qual[0]));
-      // results.write("\tref: ",sizeof("\tref: "));
-      // results.write(&ref[0],sizeof(&ref[0]));
-      // results.write("\tstart: ",sizeof("\tstart: "));
-      // results.write(&start[0],sizeof(&start[0]));
-      // results.write("\tend: ",sizeof("\tend: "));
-      // results.write(&end[0],sizeof(&end[0]));
-      // results.write("\tlength: ",sizeof("\tlength: "));
-      // results.write(&len[0],sizeof(&len[0]));
-      results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
+      results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
+      // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
     results.close();
     return;
