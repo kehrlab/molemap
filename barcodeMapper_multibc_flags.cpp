@@ -286,7 +286,7 @@ if (!kmer_list.empty()) {
 
 close(file1);
 close(file2);
-std::cerr << ".........done."
+std::cerr << ".........done.";
 std::cerr << "Writing BarcodeIndex to file...";
 
 // write Barcode Index to file
