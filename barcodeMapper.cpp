@@ -10,7 +10,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -20,9 +20,10 @@ struct bcmapOptions{
   unsigned k;
   unsigned mini_window_size;
   std::string output_file;
-
+  unsigned q;
+  unsigned l;
   bcmapOptions() :
-  k(31), mini_window_size(35), output_file("barcode_windows.txt")
+  k(31), mini_window_size(35), output_file("barcode_windows.txt"),l(1000) , q(20000)
   {}
   };
 
@@ -51,6 +52,14 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "barcode_windows.txt");
+    addOption(parser, seqan::ArgParseOption(
+        "q", "quality", "quality threshold for genomic windows",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "q", "20000");
+    addOption(parser, seqan::ArgParseOption(
+        "l", "length", "length threshold for genomic windows",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "l", "1000");
 
     setShortDescription(parser, "Map barcodes to reference.");
     setVersion(parser, "0.1");
@@ -95,7 +104,9 @@ std::cout <<'\n'
           << "barcodeindex_name\t" << options.bci_name << '\n'
           << "k                \t" << options.k << '\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
-          << "output file      \t" << options.output_file << "\n\n";
+          << "output file      \t" << options.output_file << '\n'
+          << "quality threshold\t" << options.q << '\n'
+          << "langth threshold \t" << options.l << "\n\n";
 
 uint_fast8_t k = options.k;
 uint_fast8_t mini_window_size = options.mini_window_size;
@@ -237,7 +248,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     // map barcode and clear k_mer list
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
     }
     // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
@@ -278,7 +289,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 }
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
-  MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
+  MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
   // tbegin = std::chrono::high_resolution_clock::now();
 }
@@ -332,7 +343,7 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold){
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -417,54 +428,27 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         start_position=POS(itrstart);
       }
     }
-
     candidate=std::make_tuple(window_quality,REF(itrk),POS(itrstart),POS(itrk));
     ReportWindow(best_windows,candidate); //reporting last window
 
-
-    /*--------------------------------------------------------------------------------------------------*/
-
-
     //filter low quality windows
-    double qualityThreshold=20000;
     if (std::get<0>(*(best_windows.end()-1))!=0) {
       while(std::get<0>(*best_windows.begin())<qualityThreshold && !best_windows.empty()){
         best_windows.erase(best_windows.begin());
       }
     }else{return;}
 
-    std::cerr << "len before: " << best_windows.size()<< "\t";
     // filter short windows
-    uint32_t lengthThreshold=1000;
     std::vector<int> toshort;
     for (int i = 0; i!=best_windows.size(); i++){
       if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
         toshort.push_back(i);
       }
     }
-
-    // std::cerr << "\n\ntoshort: ";
-    // for (int i=0; i!=toshort.size();i++){
-    //     std::cerr << toshort[i] << " ";
-    // }
-    // std::cerr << "\n\n";
-
     for (int i=(toshort.size()-1);i>=0;--i) {
       best_windows.erase(best_windows.begin()+toshort[i]);
     }
 
-    std::cerr << "len after: " << best_windows.size()<< "\n";
-
-    // std::cerr << "len during: " << best_windows.size()<< "\t";
-
-    // std::cerr << "len after: " << best_windows.size()<< "\t";
-
-
-    // std::cerr<<"best_windows found. ";
-    // tend = std::chrono::high_resolution_clock::now();
-    // std::cout <<"\ntime: "<< (float)std::chrono::duration_cast<std::chrono::milliseconds>(tend-tbegin).count()/1000 << " s\n";// << "ns" << std::endl;
-
-    /*--------------------------------------------------------------------------------------------------*/
     // Output
     std::fstream results;
     results.open(file,std::ios::out | std::ios::app);
