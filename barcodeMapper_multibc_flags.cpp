@@ -114,7 +114,7 @@ reading the Index
 */
 
 std::cerr << "Reading in the k-mer index..";
-auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
 String<std::pair <uint_fast8_t,uint32_t>> pos;
@@ -166,7 +166,7 @@ for (uint_fast8_t i=0;i<k;++i){
 uint_fast32_t bucket_number=length(C);
 
 std::cerr <<".done!";
-std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+// std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
 loading in the reads
@@ -220,7 +220,7 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 
-tbegin = std::chrono::high_resolution_clock::now();
+// tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   BCI_pos1=file1.stream.file.tellg();
@@ -240,8 +240,8 @@ while (atEnd(file1)!=1) { // proceeding through files
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
       kmer_list.clear();
     }
-    std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-    tbegin = std::chrono::high_resolution_clock::now();
+    // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+    // tbegin = std::chrono::high_resolution_clock::now();
   }
 
   readRecord(id2, read2, file2);
@@ -279,13 +279,13 @@ while (atEnd(file1)!=1) { // proceeding through files
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
-  std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
-  tbegin = std::chrono::high_resolution_clock::now();
+  // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+  // tbegin = std::chrono::high_resolution_clock::now();
 }
 
 close(file1);
 close(file2);
-std::cerr << ".........done.";
+std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
 
 // write Barcode Index to file
