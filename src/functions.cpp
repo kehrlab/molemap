@@ -40,44 +40,23 @@ void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_b
 }
 
 // retreives all reads of a given barcode using the BarcodeIndex
-void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2){
+std::vector<std::pair<Dna5String,Dna5String>> ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2){
   SeqFileIn file1(readfile1);
   SeqFileIn file2(readfile2);
-  // std::ifstream file1;
-  // file1.open(readfile1);
-  // std::ifstream file2;
-  // file2.open(readfile2);
   Dna5String read1;
   Dna5String read2;
-  // std::string read1;
-  // std::string read2;
   CharString id;
   uint_fast32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
-  // std::cerr << "Barcode: " << BCI_barcodes[pos] << " pos: " << pos << "\n";
   file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
   file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
-  // file1.seekg(std::get<0>(BCI_positions[pos]));
-  // std::cerr << "position: " << file1.tellg() << "\n";
-  // std::getline(file1,read1);
-  // std::cerr << "read1: " << read1 << "\n";
-  // file2.seekg(std::get<1>(BCI_positions[pos]));
   std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
-  // std::cerr << "\nstart: " << std::get<0>(BCI_positions[pos]) << "\tend: " << endpos << "\n";
+  std::vector<std::pair<Dna5String,Dna5String>> reads;
   while(file1.stream.file.tellg()<endpos){
-    // std::cerr << "\n" << __LINE__;
-    // file1.ignore(100000,'\n');
-    // file2.ignore(100000,'\n');
-    // std::getline(file2,read2);
-    // file1.ignore(100000,'\n');
-    // file2.ignore(100000,'\n');
-    // file1.ignore(100000,'\n');
-    // file2.ignore(100000,'\n');
     readRecord(id,read1,file1);
     readRecord(id,read2,file2);
-    // std::cerr << "\n" << __LINE__<<\n;
-    std::cerr << read1 << "\n" << read2 << "\n\n";
+    reads.push_back(std::make_pair(read1,read2));
   }
-  return;
+  return reads;
 }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce

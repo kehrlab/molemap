@@ -7,7 +7,7 @@
 using namespace seqan;
 
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions);
-void ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2);
+std::vector<std::pair<Dna5String,Dna5String>> ReturnBarcodeReads(std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::string & barcode, const char* readfile1, const char* readfile2);
 void ReportWindow(std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>> & best_windows, std::tuple<double,uint_least8_t,uint32_t,uint32_t> & candidate);
 int64_t ReturnSmaller(const int64_t hash1,const int64_t hash2,const int64_t random_seed);
 int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position);
