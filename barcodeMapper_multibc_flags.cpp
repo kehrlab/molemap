@@ -19,9 +19,10 @@ struct bcmapOptions{
   std::string bci_name;
   unsigned k;
   unsigned mini_window_size;
+  std::string output_file
 
   bcmapOptions() :
-  k(31), mini_window_size(35)
+  k(31), mini_window_size(35), output_file("barcode_windows.txt")
   {}
   };
 
@@ -44,7 +45,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         "m", "mini_window_size", "length of minimizing window",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "m", "35");
-
+    addOption(parser, seqan::ArgParseOption(
+        "o", "output", "output file",
+        seqan::ArgParseArgument::STRING, "string"));
+    setDefaultValue(parser, "o", "barcode_windows.txt");
 
     // Parse command line.
     seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
@@ -56,6 +60,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     // Extract option values.
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
+    getOptionValue(options.output_file, parser, "o");
 
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
@@ -76,15 +81,17 @@ seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
 if (res != seqan::ArgumentParser::PARSE_OK)
     return res == seqan::ArgumentParser::PARSE_ERROR;
 std::cout <<'\n'
-          << "k          \t" << options.k << '\n'
-          << "m          \t" << options.mini_window_size << '\n'
-          << "readfile1  \t" << options.readfile1 << '\n'
-          << "readfile2  \t" << options.readfile2 << '\n'
-          << "index_name \t" << options.index_name << '\n'
-          << "bci_name   \t" << options.bci_name << "\n\n";
+          << "k                \t" << options.k << '\n'
+          << "minimizer window \t" << options.mini_window_size << '\n'
+          << "readfile1        \t" << options.readfile1 << '\n'
+          << "readfile2        \t" << options.readfile2 << '\n'
+          << "index_name       \t" << options.index_name << '\n'
+          << "barcodeindex_name\t" << options.bci_name << '\n'
+          << "output file      \t" << options.output_file << "\n\n";
 
 uint_fast8_t k = options.k;
 uint_fast8_t mini_window_size = options.mini_window_size;
+const char* resultfile= options.output_file;
 
 /*
 defining Parameters
@@ -94,7 +101,6 @@ uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic 
 uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
 uint_fast8_t window_count=100;   // amount of saved candidate windows
 
-const char* resultfile="bc_windows.txt";
 
 /*
 reading the Index
@@ -299,20 +305,20 @@ file_pos.close();
 std::cerr << "done!\n";
 
 // Kontrollausgabe
-std::cerr << "\nKontrollausgabe:\n";
-
-BCI_barcodes.clear();
-BCI_positions.clear();
-std::string testbarcode = "AAACACCGTAGATTAG";
-
-LoadBarcodeIndex(options.bci_name,BCI_barcodes,BCI_positions);
-std::vector<std::pair<Dna5String,Dna5String>> barcodedreads;
-barcodedreads=ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,toCString(options.readfile1),toCString(options.readfile2));
-for (int i=0;i<barcodedreads.size();i++){
-  std::cerr << std::get<0>(barcodedreads[i]) << "\n" << std::get<1>(barcodedreads[i]) << "\n\n";
-}
-close(file1);
-close(file2);
+// std::cerr << "\nKontrollausgabe:\n";
+//
+// BCI_barcodes.clear();
+// BCI_positions.clear();
+// std::string testbarcode = "AAACACCGTAGATTAG";
+//
+// LoadBarcodeIndex(options.bci_name,BCI_barcodes,BCI_positions);
+// std::vector<std::pair<Dna5String,Dna5String>> barcodedreads;
+// barcodedreads=ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,toCString(options.readfile1),toCString(options.readfile2));
+// for (int i=0;i<barcodedreads.size();i++){
+//   std::cerr << std::get<0>(barcodedreads[i]) << "\n" << std::get<1>(barcodedreads[i]) << "\n\n";
+// }
+// close(file1);
+// close(file2);
 
 return 0;
 } //main
