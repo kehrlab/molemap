@@ -437,23 +437,23 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     // filter short windows
     uint32_t lengthThreshold=1000;
     std::vector<int> toshort;
-    for (i = 0; i!=bestwindows.size(); i++){
+    for (int i = 0; i!=best_windows.size(); i++){
       if ((std::get<3>(best_windows[i])-std::get<2>(best_windows[i]))<lengthThreshold){
         toshort.push_back(i);
       }
     }
 
     std::cerr << "\n\ntoshort: ";
-    for (i=0; i!=toshort.size();i++){
+    for (int i=0; i!=toshort.size();i++){
         std::cerr << toshort[i] << " ";
     }
     std::cerr << "\n\n";
 
-    for (int i=(toshort.size()-1);i>=0;i--) {
-      best_windows.erase(best_windows.begin()+toshort[i]);
-    }
+    // for (int i=(toshort.size()-1);i>=0;i--) {
+    //   best_windows.erase(best_windows.begin()+toshort[i]);
+    // }
 
-    std::cerr << "len after: " << best_windows.size()<< "\t";
+    // std::cerr << "len after: " << best_windows.size()<< "\t";
 
     // std::cerr << "len during: " << best_windows.size()<< "\t";
 
@@ -467,7 +467,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     /*--------------------------------------------------------------------------------------------------*/
     // Output
     std::fstream results;
-    results.open(file,std::ios::out | std::fstream::trunc);
+    results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
