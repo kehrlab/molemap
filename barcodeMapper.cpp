@@ -442,6 +442,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         toshort.push_back(i);
       }
     }
+    std::cerr << "len after: " << best_windows.size()<< "\t";
 
     for (int i=(toshort.size()-1);i>=0;i--) {
       best_windows.erase(best_windows.begin()+toshort[i]);
@@ -459,7 +460,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     /*--------------------------------------------------------------------------------------------------*/
     // Output
     std::fstream results;
-    results.open(file,std::ios::out | std::ios::app);
+    results.open(file,std::ios::out | std::fstream::trunc);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
