@@ -217,16 +217,18 @@ while (atEnd(file1)!=1) { // proceeding through files
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   // std::cerr << "\n" << new_barcode << "\n";
-  if (barcode!=new_barcode && !kmer_list.empty()) { //If Barcode changes: map kmer_list and reinitialize kmer_list
+  if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     std::cerr << "Barcode: " << new_barcode <<" BCI_pos1: " << BCI_pos1 << "\n";
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
-    sort(kmer_list.begin(),kmer_list.end());
-    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,resultfile,barcode);
-    kmer_list.clear();
+    if (!kmer_list.empty()) {
+      sort(kmer_list.begin(),kmer_list.end());
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,resultfile,barcode);
+      kmer_list.clear();
+    }
     std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
     tbegin = std::chrono::high_resolution_clock::now();
   }
