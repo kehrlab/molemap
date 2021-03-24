@@ -119,7 +119,7 @@ auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
 String<std::pair <uint_fast8_t,uint32_t>> pos;
-String<int64_t> C;
+String<int32_t> C;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
@@ -145,7 +145,7 @@ close(extdir);
 std::cerr <<".";
 
 
-String<int64_t, External<> > extC;
+String<int32_t, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }

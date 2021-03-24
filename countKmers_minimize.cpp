@@ -123,12 +123,12 @@ int main(int argc, char const **argv){
   resize(dir,bucket_number+1,0);
   String<std::pair <uint_fast8_t,uint32_t>> pos;
   resize(pos,length(concat(seqs)));   // may be re
-  String<int64_t> C;
+  String<int32_t> C;
   resize(C,bucket_number,-1);
 
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
-  uint64_t c;
+  uint32_t c;
   uint_fast8_t CHROM = 0;
 
 
@@ -225,7 +225,7 @@ int main(int argc, char const **argv){
   assign(extdir, dir, Exact());
   close(extdir);
 
-  String<int64_t, External<> > extC;
+  String<int32_t, External<> > extC;
   if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }
