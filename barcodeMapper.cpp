@@ -443,17 +443,17 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
     }
 
-    std::cerr << "\n\ntoshort: ";
-    for (int i=0; i!=toshort.size();i++){
-        std::cerr << toshort[i] << " ";
-    }
-    std::cerr << "\n\n";
-
-    // for (int i=(toshort.size()-1);i>=0;i--) {
-    //   best_windows.erase(best_windows.begin()+toshort[i]);
+    // std::cerr << "\n\ntoshort: ";
+    // for (int i=0; i!=toshort.size();i++){
+    //     std::cerr << toshort[i] << " ";
     // }
+    // std::cerr << "\n\n";
 
-    // std::cerr << "len after: " << best_windows.size()<< "\t";
+    for (int i=(toshort.size()-1);i>=0;--i) {
+      best_windows.erase(best_windows.begin()+toshort[i]);
+    }
+
+    std::cerr << "len after: " << best_windows.size()<< "\n";
 
     // std::cerr << "len during: " << best_windows.size()<< "\t";
 
