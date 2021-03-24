@@ -434,7 +434,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }else{return;}
 
     std::cerr << "len before: " << best_windows.size()<< "\t";
-    filter short windows
+    // filter short windows
     uint32_t lengthThreshold=1000;
     std::vector<int> toshort;
     for (int i = best_windows.size()-1; i>=0; i--){
