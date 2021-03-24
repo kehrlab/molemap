@@ -230,7 +230,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     // map barcode and clear k_mer list
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,options.output_file,barcode);
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
       kmer_list.clear();
     }
     std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
@@ -271,7 +271,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 }
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
-  MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,options.output_file,barcode);
+  MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
   std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
   tbegin = std::chrono::high_resolution_clock::now();
 }
