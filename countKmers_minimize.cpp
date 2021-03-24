@@ -57,7 +57,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-int main(int argc, char *argv[]){
+int main(int argc, char const **argv){
 
   // parsing command line arguments
   countKOptions options;
