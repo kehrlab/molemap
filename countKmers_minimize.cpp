@@ -1,5 +1,6 @@
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
+# include <seqan/arg_parse.h>
 # include <map>
 # include <iostream>
 # include <time.h>
@@ -11,20 +12,70 @@ using namespace seqan;
 g++ countKmers.cpp -o countK
 */
 
-/*
-k can be 31 at max because of the hash function
-*/
+struct countKOptions{
+  std::string reference_file;
+  std::string index_name;
+  unsigned k;
+  long unsigned bucket_count
+  bcmapOptions():
+  k(31), bucket_count(3221225472)
+  {}
+  };
+
+seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int argc, char const ** argv){
+    // Setup ArgumentParser.
+    seqan::ArgumentParser parser("countK");
+
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "reference_file"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "index_name"));
+
+    // Define Options
+    addOption(parser, seqan::ArgParseOption(
+        "k", "kmer_length", "length of k-mers in kmer indexed",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "k", "31");
+    addOption(parser, seqan::ArgParseOption(
+        "b", "bucket_count", "number of buckets in index",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "b", "3221225472");
+
+    // Parse command line.
+    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
+
+    // Only extract  options if the program will continue after parseCommandLine()
+    if (res != seqan::ArgumentParser::PARSE_OK){
+        return res;}
+
+    // Extract option values.
+    getOptionValue(options.k, parser, "k");
+    getOptionValue(options.bucket_count, parser, "b");
+
+    getArgumentValue(options.reference_file, parser, 0);
+    getArgumentValue(options.index_name, parser, 1);
+
+    return seqan::ArgumentParser::PARSE_OK;
+}
 
 int main(int argc, char *argv[]){
 
+  // parsing command line arguments
+  countKOptions options;
+  seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
+
+  // If parsing was not successful then exit with code 1 if there were errors.
+  // Otherwise, exit with code 0 (e.g. help was printed).
+  if (res != seqan::ArgumentParser::PARSE_OK)
+      return res == seqan::ArgumentParser::PARSE_ERROR;
+  std::cout <<'\n'
+            << "k                \t" << options.k << '\n'
+            << "bucket_count     \t" << options.bucket_count << '\n'
+            << "reference        \t" << options.reference_file << '\n'
+            << "index_name       \t" << options.index_name << '\n'
+
+  uint_fast8_t k = options.k;
+  uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
+
   // auto begin = std::chrono::high_resolution_clock::now();
-
-  // for (int a=0;a<100;a++){
-
-  if(argc!=5){
-    std::cerr << "Usage: ./countK InputFILE k bucket_number Index_name \n\n";
-    exit(-1);
-  }
 
 // reading the FastQ file
 
@@ -32,7 +83,7 @@ int main(int argc, char *argv[]){
   StringSet<Dna5String> seqs;
 
   try {
-    SeqFileIn file(argv[1]);
+    SeqFileIn file(toCString(options.reference_file));
 
     readRecords(ids, seqs, file);
 
@@ -46,11 +97,6 @@ int main(int argc, char *argv[]){
   }
 
   std::cerr << "Genome read in. \n";
-  // defining key parameters
-
-  uint_fast8_t k=std::stoi(argv[2]); // length of k-mer
-
-  // int64_t maxhash=pow(2,k*2)-1;
 
   int64_t maxhash;
   for (uint_fast8_t i=0;i<k;i++){
@@ -63,7 +109,6 @@ int main(int argc, char *argv[]){
     random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
   }
 
-  uint_fast32_t bucket_number=std::stoul(argv[3]); // should depend on k and the length of the indexed sequence
 
   // building index storage
 
@@ -152,11 +197,11 @@ int main(int argc, char *argv[]){
 
   //write index to file
 
-  std::string IndPos=argv[4];
+  std::string IndPos=options.index_name;
   IndPos.append("_pos.txt");
-  std::string IndDir=argv[4];
+  std::string IndDir=options.index_name;
   IndDir.append("_dir.txt");
-  std::string IndC=argv[4];
+  std::string IndC=options.index_name;
   IndC.append("_C.txt");
 
 
