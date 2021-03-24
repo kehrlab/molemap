@@ -112,7 +112,6 @@ uint_fast8_t window_count=100;   // amount of saved candidate windows
 /*
 reading the Index
 */
-std::cerr << "Writing BarcodeIndex to file...";
 
 std::cerr << "Reading in the k-mer index..";
 auto tbegin = std::chrono::high_resolution_clock::now();

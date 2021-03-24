@@ -121,8 +121,10 @@ int main(int argc, char const **argv){
 
   String<uint32_t> dir;
   resize(dir,bucket_number+1,0);
+  std::cerr << "...";
   String<std::pair <uint_fast8_t,uint32_t>> pos;
-  resize(pos,length(concat(seqs)));   // may be re
+  resize(pos,length(concat(seqs)));
+  std::cerr << "...";
   String<int32_t> C;
   resize(C,bucket_number,-1);
 
@@ -131,14 +133,13 @@ int main(int argc, char const **argv){
   uint32_t c;
   uint_fast8_t CHROM = 0;
 
-
-  std::cerr << "...........done.\nFilling index initially:\n";
+  std::cerr << ".....done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
     std::cerr << "." ;
+    if ((CHROM-4)%29==0) {std::cerr << "\n";}
     // counting k-mers
-
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
     for (uint64_t i = 0;i<length(*seq)-k;++i){
@@ -154,9 +155,10 @@ int main(int argc, char const **argv){
     }
     c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);       // indexing of the last element
     dir[c+1]+=1;
+    CHROM++;
   }
 
-  std::cerr << "\nIndex initially filled. \n";
+  std::cerr << "done. \n";
   std::cerr << "Calculating cumulated sum...";
 
   // cumulative sum
@@ -171,11 +173,14 @@ int main(int argc, char const **argv){
     *itrs=sum;
   }
 
+  CHROM=0;
   std::cerr << ".done.\n";
-  std::cerr << "Writing positions to index:\n";
+
   // iterating over the stringSet (Chromosomes)
+  std::cerr << "Writing positions to index:";
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
     std::cerr << ".";
+    if ((CHROM-1)%29==0) {std::cerr << "\n";}
     // filling pos
 
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -198,7 +203,7 @@ int main(int argc, char const **argv){
     CHROM++;
   }
 
-  std::cerr << "\nIndex build. \n";
+  std::cerr << "done. \n";
 
   //write index to file
 
