@@ -113,7 +113,7 @@ uint_fast8_t window_count=100;   // amount of saved candidate windows
 reading the Index
 */
 
-std::cerr << "Reading in the k-mer index..";
+std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
@@ -165,7 +165,7 @@ for (uint_fast8_t i=0;i<k;++i){
 
 uint_fast32_t bucket_number=length(C);
 
-std::cerr <<".done!";
+std::cerr <<"....done!\n";
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
