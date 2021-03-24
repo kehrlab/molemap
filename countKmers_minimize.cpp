@@ -27,18 +27,25 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("countK");
 
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "reference_file"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "index_name"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to reference.(fastq/fasta)"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
-        "k", "kmer_length", "length of k-mers in kmer indexed",
+        "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "k", "31");
+    setMinValue(parser, "k", "8");
+    setMaxValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
-        "b", "bucket_count", "number of buckets in index",
+        "b", "bucket_count", "Number of buckets in index.",
         seqan::ArgParseArgument::INT64, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
+
+    setShortDescription(parser, "Build index of reference genome-");
+    setVersion(parser, "0.1");
+    setDate(parser, "March 24 2021");
+    addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
 
     // Parse command line.
     seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
@@ -63,15 +70,13 @@ int main(int argc, char const **argv){
   countKOptions options;
   seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
 
-  // If parsing was not successful then exit with code 1 if there were errors.
-  // Otherwise, exit with code 0 (e.g. help was printed).
   if (res != seqan::ArgumentParser::PARSE_OK)
       return res == seqan::ArgumentParser::PARSE_ERROR;
   std::cout <<'\n'
-            << "k                \t" << options.k << '\n'
-            << "bucket_count     \t" << options.bucket_count << '\n'
-            << "reference        \t" << options.reference_file << '\n'
-            << "index_name       \t" << options.index_name << "\n\n";
+            << "reference   \t" << options.reference_file << '\n'
+            << "index_name  \t" << options.index_name << '\n'
+            << "k           \t" << options.k << '\n'
+            << "bucket_count\t" << options.bucket_count << "\n\n";
 
   uint_fast8_t k = options.k;
   uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
@@ -115,7 +120,7 @@ int main(int argc, char const **argv){
 
   String<uint32_t> dir;
   resize(dir,bucket_number+1,0);
-  String<std::pair <uint_least8_t,uint32_t>> pos;
+  String<std::pair <uint_fast8_t,uint32_t>> pos;
   resize(pos,length(concat(seqs)));   // may be re
   String<int64_t> C;
   resize(C,bucket_number,-1);
@@ -123,7 +128,7 @@ int main(int argc, char const **argv){
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint64_t c;
-  uint_least8_t CHROM = 0;
+  uint_fast8_t CHROM = 0;
 
 
   std::cerr << "Index prepared. \n";
@@ -206,7 +211,7 @@ int main(int argc, char const **argv){
   IndC.append("_C.txt");
 
 
-  String<std::pair <uint_least8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+  String<std::pair <uint_fast8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
     throw std::runtime_error("Could not open index counts file." );
   }

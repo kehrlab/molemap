@@ -10,7 +10,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -31,25 +31,36 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     seqan::ArgumentParser parser("bcmap");
 
     // We require one argument.
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile1"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "readfile2"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "index_name"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "bci_name"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile1.fastq"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile2.fastq"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
-        "k", "kmer_length", "length of k-mers in kmer indexed",
+        "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "k", "31");
+    setMinValue(parser, "k", "8");
+    setMaxValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
-        "m", "mini_window_size", "length of minimizing window",
+        "m", "mini_window_size", "Length of minimizing window.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "m", "35");
     addOption(parser, seqan::ArgParseOption(
-        "o", "output", "output file",
-        seqan::ArgParseArgument::STRING, "string"));
+        "o", "output", "Path to the output file.",
+        seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "barcode_windows.txt");
 
+    setShortDescription(parser, "Map barcodes to reference.");
+    setVersion(parser, "0.1");
+    setDate(parser, "March 24 2021");
+    addDescription(parser,
+               "Barcodes will be mapped to reference genome."
+               "Returns genomic windows from which barcoded reads most likely originate."
+               "Each window is rated by a quality score."
+               "Requires readfiles to be sorted by barcode (use bcctools)."
+               "Requires reference to be indexed by 'countK'.");
     // Parse command line.
     seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
 
@@ -75,18 +86,15 @@ int main(int argc, char const ** argv){
 // parsing command line arguments
 bcmapOptions options;
 seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
-
-// If parsing was not successful then exit with code 1 if there were errors.
-// Otherwise, exit with code 0 (e.g. help was printed).
 if (res != seqan::ArgumentParser::PARSE_OK)
     return res == seqan::ArgumentParser::PARSE_ERROR;
 std::cout <<'\n'
-          << "k                \t" << options.k << '\n'
-          << "minimizer window \t" << options.mini_window_size << '\n'
           << "readfile1        \t" << options.readfile1 << '\n'
           << "readfile2        \t" << options.readfile2 << '\n'
           << "index_name       \t" << options.index_name << '\n'
           << "barcodeindex_name\t" << options.bci_name << '\n'
+          << "k                \t" << options.k << '\n'
+          << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << "\n\n";
 
 uint_fast8_t k = options.k;
@@ -109,7 +117,7 @@ std::cerr << "Reading in the k-mer index ";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
-String<std::pair <uint_least8_t,uint32_t>> pos;
+String<std::pair <uint_fast8_t,uint32_t>> pos;
 String<int64_t> C;
 //
 std::string IndPos=options.index_name;
@@ -119,7 +127,7 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-String<std::pair <uint_least8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+String<std::pair <uint_fast8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index position file." );
 }
@@ -187,8 +195,8 @@ Searching for all kmers of reads with the same Barcode
 */
 
 // building the kmer_list for a specific Barcode
-std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
+std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 std::string barcode;
@@ -324,9 +332,9 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode){
 
-    std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
+    std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
     float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
@@ -337,16 +345,16 @@ void MapKmerList(std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t
     #define ABU(X) std::get<2>(*(X))
     #define ACT(X) std::get<3>(*(X))
 
-    std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
-    std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>>::iterator itrbw;
+    std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
+    std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
     // std::cerr<<"iteration prepared. \n";
 
-    uint_least8_t reference=REF(kmer_list.begin());
-    std::vector<std::tuple<uint_least8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
+    uint_fast8_t reference=REF(kmer_list.begin());
+    std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
     uint_fast32_t start_position=POS(kmer_list.begin());
     uint_fast32_t end_position=POS(kmer_list.begin());
     double window_quality=0;
-    std::tuple<double,uint_least8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
+    std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
     if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
       window_quality+=0.00032*ACT(kmer_list.begin());
