@@ -221,7 +221,6 @@ while (atEnd(file1)!=1) { // proceeding through files
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
-    std::cerr << "Barcode: " << new_barcode <<" BCI_pos1: " << BCI_pos1 << "\n";
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
     if (!kmer_list.empty()) {
