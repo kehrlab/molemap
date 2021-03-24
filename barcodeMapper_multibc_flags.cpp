@@ -112,8 +112,9 @@ uint_fast8_t window_count=100;   // amount of saved candidate windows
 /*
 reading the Index
 */
+std::cerr << "Writing BarcodeIndex to file...";
 
-std::cerr << "Reading in the k-mer index ";
+std::cerr << "Reading in the k-mer index..";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
@@ -165,7 +166,7 @@ for (uint_fast8_t i=0;i<k;++i){
 
 uint_fast32_t bucket_number=length(C);
 
-std::cerr <<". done!";
+std::cerr <<".done!";
 std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
@@ -187,8 +188,6 @@ catch (ParseError const & e){
 catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
-
-std::cerr << "read file checked.\n";
 
 /*
 Searching for all kmers of reads with the same Barcode
@@ -220,7 +219,8 @@ std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
 std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
-std::cerr << "Processing read file:\n";
+std::cerr << "Processing read file...";
+
 tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
@@ -241,7 +241,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
       kmer_list.clear();
     }
-    std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+    std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
   }
 
@@ -280,14 +280,14 @@ while (atEnd(file1)!=1) { // proceeding through files
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode);
-  std::cerr << "barcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+  std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
   tbegin = std::chrono::high_resolution_clock::now();
 }
 
 close(file1);
 close(file2);
-
-std::cerr << "Writing BarcodeIndex to file ...";
+std::cerr << ".........done."
+std::cerr << "Writing BarcodeIndex to file...";
 
 // write Barcode Index to file
 std::string IndBC=options.bci_name;
@@ -309,7 +309,7 @@ for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BC
 }
 file_pos.close();
 
-std::cerr << "done!\n";
+std::cerr << ".done!\n";
 
 // Kontrollausgabe
 // std::cerr << "\nKontrollausgabe:\n";

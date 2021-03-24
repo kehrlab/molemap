@@ -42,7 +42,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
         seqan::ArgParseArgument::INT64, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
 
-    setShortDescription(parser, "Build index of reference genome-");
+    setShortDescription(parser, "Build index of reference genome.");
     setVersion(parser, "0.1");
     setDate(parser, "March 24 2021");
     addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
@@ -87,7 +87,7 @@ int main(int argc, char const **argv){
 
   StringSet<CharString> ids;
   StringSet<Dna5String> seqs;
-
+  std::cerr << "Loading reference genome...";
   try {
     SeqFileIn file(toCString(options.reference_file));
 
@@ -102,7 +102,8 @@ int main(int argc, char const **argv){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
-  std::cerr << "Genome read in. \n";
+  std::cerr << "..done.\n";
+  std::cerr << "Preparing index...";
 
   int64_t maxhash;
   for (uint_fast8_t i=0;i<k;i++){
@@ -131,11 +132,11 @@ int main(int argc, char const **argv){
   uint_fast8_t CHROM = 0;
 
 
-  std::cerr << "Index prepared. \n";
+  std::cerr << "...........done.\nFilling index initially:\n";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-    std::cerr << "Chrom: " << (int)CHROM << "\n";
+    std::cerr << "." ;
     // counting k-mers
 
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
@@ -153,11 +154,10 @@ int main(int argc, char const **argv){
     }
     c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);       // indexing of the last element
     dir[c+1]+=1;
-    CHROM++;
   }
 
-  std::cerr << "Index initially filled. \n";
-
+  std::cerr << "\nIndex initially filled. \n";
+  std::cerr << "Calculating cumulated sum...";
 
   // cumulative sum
 
@@ -171,12 +171,11 @@ int main(int argc, char const **argv){
     *itrs=sum;
   }
 
-  std::cerr << "cumulated sum culculation finished. \n";
-
+  std::cerr << ".done.\n";
+  std::cerr << "Writing positions to index:\n";
   // iterating over the stringSet (Chromosomes)
-  CHROM=0;
   for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-
+    std::cerr << ".";
     // filling pos
 
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -199,7 +198,7 @@ int main(int argc, char const **argv){
     CHROM++;
   }
 
-  std::cerr << "Index build. \n";
+  std::cerr << "\nIndex build. \n";
 
   //write index to file
 
@@ -210,6 +209,7 @@ int main(int argc, char const **argv){
   std::string IndC=options.index_name;
   IndC.append("_C.txt");
 
+  std::cerr << "Writing index to file...";
 
   String<std::pair <uint_fast8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
@@ -232,6 +232,7 @@ int main(int argc, char const **argv){
   assign(extC, C, Exact());
   close(extC);
 
-  std::cerr << "Index writen to file.\n";
-
+  std::cerr << ".....done.\n";
+  std::cerr << "Index finished!\n";
+  return 0;
 }
