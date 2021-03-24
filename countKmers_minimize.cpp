@@ -18,7 +18,7 @@ struct countKOptions{
   unsigned k;
   long unsigned bucket_count;
 
-  bcmapOptions():
+  countKOptions():
   k(31), bucket_count(3221225472)
   {}
   };
