@@ -116,7 +116,7 @@ IndC.append("_C.txt");
 
 String<std::pair <uint_least8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index counts file." );
+  throw std::runtime_error("Could not open index position file." );
 }
 assign(pos, extpos, Exact());
 close(extpos);
@@ -124,7 +124,7 @@ std::cerr <<".";
 
 String<uint32_t, External<> > extdir;
 if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index counts file." );
+  throw std::runtime_error("Could not open index directory file." );
 }
 assign(dir, extdir, Exact());
 close(extdir);
@@ -221,6 +221,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
+    std::cerr << "Barcode: " << new_barcode <<" BCI_pos1: " << BCI_pos1 << "\n";
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
     sort(kmer_list.begin(),kmer_list.end());
