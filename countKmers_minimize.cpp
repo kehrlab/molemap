@@ -16,7 +16,7 @@ struct countKOptions{
   std::string reference_file;
   std::string index_name;
   unsigned k;
-  long unsigned bucket_count;
+  int64_t bucket_count;
 
   countKOptions():
   k(31), bucket_count(3221225472)
@@ -37,7 +37,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     setDefaultValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
         "b", "bucket_count", "number of buckets in index",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
+        seqan::ArgParseArgument::UNSIGNED, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
 
     // Parse command line.
