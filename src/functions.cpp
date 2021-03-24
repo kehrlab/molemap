@@ -111,7 +111,7 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       uint_fast32_t c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
@@ -128,7 +128,7 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
 }
 
 // return k-mer positions
-std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number){
+std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number){
       std::vector<std::pair <uint_fast8_t,uint32_t>> positions;
       uint_fast32_t c=GetBkt(hash,C,bucket_number);
       for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
@@ -138,13 +138,13 @@ std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, cons
 }
 
 // Find correct Bucket
-uint_fast32_t GetBkt(const int64_t & hash, const String<int64_t> & C, const uint_fast32_t bucket_number){
+uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number){
   // std::srand(hash);
   // uint64_t i=std::rand()%bucket_number;
   int64_t i=hash%(int64_t)bucket_number;
   int64_t d=0;
   // unsigned counter=0;
-  while(C[i]!=hash and C[i]!=-1){
+  while(C[i]!=hash>>32 and C[i]!=-1){
     // std::cerr <<counter <<"\n";
     // std::cerr << "i before: " << i << "\n";
     i=(i^(hash>>((d*16)%31)));
@@ -166,9 +166,9 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int64_t> & C, const uint
 }
 
 // Request a Bucket
-uint_fast32_t ReqBkt(const int64_t & hash, String<int64_t> & C, const uint_fast32_t bucket_number){
+uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number){
   uint_fast32_t i = GetBkt(hash,C,bucket_number);
-  C[i]=hash;
+  C[i]=hash>>32;
   return i;
 }
 
