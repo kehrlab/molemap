@@ -37,7 +37,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     setDefaultValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
         "b", "bucket_count", "number of buckets in index",
-        seqan::ArgParseArgument::UNSIGNED, "unsigned"));
+        seqan::ArgParseArgument::INT64, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
 
     // Parse command line.
