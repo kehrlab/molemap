@@ -60,8 +60,8 @@ std::vector<std::pair<Dna5String,Dna5String>> ReturnBarcodeReads(std::vector<std
 }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
-void ReportWindow(std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>> & best_windows, std::tuple<double,uint_least8_t,uint32_t,uint32_t> & candidate){
-  std::vector<std::tuple<double,uint_least8_t,uint32_t,uint32_t>>::iterator itrbw;
+void ReportWindow(std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> & best_windows, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate){
+  std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
   if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
     for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
       if(std::get<0>(candidate) < std::get<0>(*itrbw)){                            // if (as soon as) quality is worse than quality in best_windows
@@ -111,7 +111,7 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_least8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_least8_t,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
       // std::cerr <<"\nhash: " << hash << "\n";
       uint_fast32_t c=GetBkt(hash,C,bucket_number);
       // std::cerr << "c: " << c << "\n";
@@ -128,8 +128,8 @@ void AppendPos(std::vector<std::tuple <uint_least8_t,uint32_t,uint32_t,uint32_t>
 }
 
 // return k-mer positions
-std::vector<std::pair <uint_least8_t,uint32_t>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_least8_t,uint32_t>> & pos, const uint_fast32_t bucket_number){
-      std::vector<std::pair <uint_least8_t,uint32_t>> positions;
+std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int64_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number){
+      std::vector<std::pair <uint_fast8_t,uint32_t>> positions;
       uint_fast32_t c=GetBkt(hash,C,bucket_number);
       for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
         positions.push_back(pos[i]);
