@@ -143,7 +143,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
   // uint64_t i=std::rand()%bucket_number;
   int64_t i=hash%(int64_t)bucket_number;
   int64_t d=0;
-  // unsigned counter=0;
+  unsigned counter=0;
   while(C[i]!=hash>>32 and C[i]!=-1){
     // std::cerr <<counter <<"\n";
     // std::cerr << "i before: " << i << "\n";
@@ -151,7 +151,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
     i=(i+2*d+1)%(int64_t)bucket_number;
     // std::cerr << "i after: " << i << "\n";
 
-    // counter+=1;
+    counter+=1;
     d++;
     // if (counter > 100){   // error if bucket_number not high enough
     //   if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";
@@ -160,6 +160,11 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
     //   // if (counter > 1000) {break;}
     // }
   }
+  ofstream tries;
+  tries.open("tries.txt", std::ios::app);
+  tries << counter << " ";
+  tries.close();
+
   // std::cerr << d+1 << " ";
   // std::cerr << "tries: " << counter << "\n";
   return i;
