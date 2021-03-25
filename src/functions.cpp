@@ -139,34 +139,20 @@ std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, cons
 
 // Find correct Bucket
 uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number){
-  // std::srand(hash);
-  // uint64_t i=std::rand()%bucket_number;
   int64_t i=hash%(int64_t)bucket_number;
   int64_t d=0;
-  unsigned counter=0;
+  // unsigned counter=0;
   while(C[i]!=hash>>32 and C[i]!=-1){
-    // std::cerr <<counter <<"\n";
-    // std::cerr << "i before: " << i << "\n";
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
-    // std::cerr << "i after: " << i << "\n";
-
-    counter+=1;
+    // counter+=1;
     d++;
-    // if (counter > 100){   // error if bucket_number not high enough
-    //   if (counter==101) {std::cerr<<"\nERROR: Bucket number to small.\n";
-    //   std::cerr << " hash: " << hash << " seq: " << hash2kmer(hash,31) <<"\n";
-    //   }
-    //   // if (counter > 1000) {break;}
-    // }
   }
-  ofstream tries;
-  tries.open("tries.txt", std::ios::app);
-  tries << counter << " ";
-  tries.close();
+  // ofstream tries;
+  // tries.open("tries.txt", std::ios::app);
+  // tries << counter << " ";
+  // tries.close();
 
-  // std::cerr << d+1 << " ";
-  // std::cerr << "tries: " << counter << "\n";
   return i;
 }
 
@@ -183,7 +169,6 @@ DnaString hash2kmer(const int64_t & hash,const uint_fast8_t k){
   int64_t temp;
   for (size_t i = 0; i < k; i++) {
     temp=(hash>>((k-1-i)*2)) & (int64_t)3;
-    // std::cerr << "temp: " << temp <<"\n";
     if (temp==(int64_t)0) {
       kmer+="A";
     }else if(temp==1){
