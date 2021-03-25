@@ -23,7 +23,7 @@ struct bcmapOptions{
   unsigned q;
   unsigned l;
   bcmapOptions() :
-  k(31), mini_window_size(35), output_file("barcode_windows.txt"),l(1000) , q(20000)
+  k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000)
   {}
   };
 
@@ -51,13 +51,13 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addOption(parser, seqan::ArgParseOption(
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
-    setDefaultValue(parser, "o", "barcode_windows.txt");
+    setDefaultValue(parser, "o", "barcode_windows.bed");
     addOption(parser, seqan::ArgParseOption(
-        "q", "quality", "quality threshold for genomic windows",
+        "q", "quality", "Quality threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "q", "20000");
     addOption(parser, seqan::ArgParseOption(
-        "l", "length", "length threshold for genomic windows",
+        "l", "length", "Length threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "l", "1000");
 
@@ -106,7 +106,7 @@ std::cout <<'\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << '\n'
           << "quality threshold\t" << options.q << '\n'
-          << "langth threshold \t" << options.l << "\n\n";
+          << "length threshold \t" << options.l << "\n\n";
 
 uint_fast8_t k = options.k;
 uint_fast8_t mini_window_size = options.mini_window_size;
@@ -455,7 +455,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
-      std::string qual=std::to_string(std::get<0>(*itrbw));
+      std::string qual=std::to_string((int)std::get<0>(*itrbw));
       std::string ref=lookChrom[std::get<1>(*itrbw)];
       std::string start=std::to_string(std::get<2>(*itrbw));
       std::string end=std::to_string(std::get<3>(*itrbw));
