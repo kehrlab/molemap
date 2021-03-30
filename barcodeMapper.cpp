@@ -246,12 +246,14 @@ std::cerr << "Processing read file...";
 // tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
+  std::cerr << __LINE__ << "\n";
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
   assignValue(reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   // std::cerr << "\n" << new_barcode << "\n";
+  std::cerr << __LINE__ << "\n";
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
@@ -266,18 +268,23 @@ while (atEnd(file1)!=1) { // proceeding through files
     // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     // tbegin = std::chrono::high_resolution_clock::now();
   }
+  std::cerr << __LINE__ << "\n";
 
   readRecord(id2, read2, file2);
   assignValue(reads,1,read2);
   barcode=new_barcode;
+
+  std::cerr << __LINE__ << "\n";
 
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
     uint_fast8_t minimizer_active_bases=1;
+    std::cerr << __LINE__ << "\n";
     if (length(*it)>mini_window_size){
-      for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){                                                   // iterating over all kmers
+      for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
+        std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -298,6 +305,8 @@ while (atEnd(file1)!=1) { // proceeding through files
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   }
+  std::cerr << __LINE__ << "\n";
+
 }
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
@@ -305,6 +314,7 @@ if (!kmer_list.empty()) {
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
   // tbegin = std::chrono::high_resolution_clock::now();
 }
+std::cerr << __LINE__ << "\n";
 
 close(file1);
 close(file2);
