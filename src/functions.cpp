@@ -147,7 +147,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
   // std::cerr << __LINE__ << "\n";
   std::cerr << "hash: " << hash << "\n";
   std::cerr << "buckets: " << bucket_number << "\n";
-  uint64_t i=hash%(int64_t)bucket_number;
+  int64_t i=hash%(int64_t)bucket_number;
   // std::cerr << __LINE__ << "\n";
   int64_t d=0;
   // std::cerr << __LINE__ << "\n";
