@@ -287,6 +287,7 @@ while (atEnd(file1)!=1) { // proceeding through files
         std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
+          std::cerr << __LINE__ << "\n";
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -295,6 +296,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           }
           minimizer_active_bases++;
         }else{
+          std::cerr << __LINE__ << "\n";
           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
           hash=hashkMer(infix(*it,t+1,t+1+k),k);
