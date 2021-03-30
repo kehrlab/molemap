@@ -243,7 +243,7 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 
-// tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__ << "\n";
@@ -265,8 +265,8 @@ while (atEnd(file1)!=1) { // proceeding through files
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
     }
-    // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-    // tbegin = std::chrono::high_resolution_clock::now();
+    std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+    tbegin = std::chrono::high_resolution_clock::now();
   }
   // std::cerr << __LINE__ << "\n";
 
