@@ -297,11 +297,16 @@ while (atEnd(file1)!=1) { // proceeding through files
           minimizer_active_bases++;
         }else{
           std::cerr << __LINE__ << "\n";
-          AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);                                                                                                  // if old minimizer no longer in window
+          AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
+          std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
+          std::cerr << __LINE__ << "\n";
           hash=hashkMer(infix(*it,t+1,t+1+k),k);
+          std::cerr << __LINE__ << "\n";
           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
+          std::cerr << __LINE__ << "\n";
           minimizer_active_bases=1;
+          std::cerr << __LINE__ << "\n";
         }
       }
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
