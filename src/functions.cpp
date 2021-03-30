@@ -113,22 +113,22 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const uint_fast8_t k_2){
       // std::cerr <<"\nhash: " << hash << "\n";
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       // std::cerr << "c: " << c << "\n";
       uint_fast32_t abundance=dir[c+1]-dir[c];
       // std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
       // std::cerr << "abundance: " << abundance << "\n";
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
         for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
       }
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       return;
 }
 
@@ -144,11 +144,11 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
 
 // Find correct Bucket
 uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
-  std::cerr << __LINE__ << "\n";
-  int64_t i=hash%(int64_t)bucket_number;
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
+  uint64_t i=hash%(int64_t)bucket_number;
+  // std::cerr << __LINE__ << "\n";
   int64_t d=0;
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   // unsigned counter=0;
   std::cerr << "i: " << i << "\n";
   std::cerr << "K_2: " << k_2 << "\n";
@@ -159,7 +159,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
     // counter+=1;
     d++;
   }
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   // ofstream tries;
   // tries.open("tries.txt", std::ios::app);
   // tries << counter << " ";
