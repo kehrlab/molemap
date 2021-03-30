@@ -111,7 +111,7 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const uint_fast8_t k_2){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2){
       // std::cerr <<"\nhash: " << hash << "\n";
       // std::cerr << __LINE__ << "\n";
       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
@@ -143,7 +143,7 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
 // }
 
 // Find correct Bucket
-uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
+uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
   // std::cerr << __LINE__ << "\n";
   std::cerr << "hash: " << hash << "\n";
   std::cerr << "buckets: " << bucket_number << "\n";
@@ -153,7 +153,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
   // std::cerr << __LINE__ << "\n";
   // unsigned counter=0;
   std::cerr << "i: " << i << "\n";
-  std::cerr << "K_2: " << (int)k_2 << "\n";
+  std::cerr << "K_2: " << k_2 << "\n";
   while(C[i]!=(hash>>k_2) and C[i]!=-1){
     std::cerr << __LINE__ << "\n";
     i=(i^(hash>>((d*16)%31)));
@@ -171,7 +171,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
 }
 
 // Request a Bucket
-uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
+uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
   uint_fast32_t i = GetBkt(hash,C,bucket_number,k_2);
   C[i]=hash>>k_2;
   return i;
