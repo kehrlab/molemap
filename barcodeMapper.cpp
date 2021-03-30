@@ -109,7 +109,7 @@ std::cout <<'\n'
           << "length threshold \t" << options.l << "\n\n";
 
 uint_fast8_t k = options.k;
-uint_fast8_t k_2 = k+1;
+int k_2 = k+1;
 
 uint_fast8_t mini_window_size = options.mini_window_size;
 

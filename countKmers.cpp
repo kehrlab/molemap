@@ -79,7 +79,7 @@ int main(int argc, char const **argv){
             << "bucket_count\t" << options.bucket_count << "\n\n";
 
   uint_fast8_t k = options.k;
-  uint_fast8_t k_2 = k+1;
+  int k_2 = k+1;
   uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
 
   // auto begin = std::chrono::high_resolution_clock::now();
