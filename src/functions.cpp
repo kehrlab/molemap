@@ -145,17 +145,17 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
 // Find correct Bucket
 uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
   // std::cerr << __LINE__ << "\n";
-  std::cerr << "hash: " << hash << "\n";
-  std::cerr << "buckets: " << bucket_number << "\n";
+  // std::cerr << "hash: " << hash << "\n";
+  // std::cerr << "buckets: " << bucket_number << "\n";
   uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
   // std::cerr << __LINE__ << "\n";
   int64_t d=0;
   // std::cerr << __LINE__ << "\n";
   // unsigned counter=0;
-  std::cerr << "i: " << i << "\n";
-  std::cerr << "K_2: " << k_2 << "\n";
+  // std::cerr << "i: " << i << "\n";
+  // std::cerr << "K_2: " << k_2 << "\n";
   while(C[i]!=(hash>>k_2) and C[i]!=-1){
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
     // counter+=1;
