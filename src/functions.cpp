@@ -111,9 +111,9 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const uint_fast8_t k_2){
       // std::cerr <<"\nhash: " << hash << "\n";
-      uint_fast32_t c=GetBkt(hash,C,bucket_number);
+      uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
       // std::cerr << "c: " << c << "\n";
       uint_fast32_t abundance=dir[c+1]-dir[c];
       // std::cerr << "dir[c+1]: " << dir[c+1] << " dir[c]: " << dir[c] << "\n";
@@ -121,28 +121,28 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
       kmer_list.reserve(kmer_list.size()+abundance);
       if (abundance<=10){
         for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-          kmer_list.push_back(std::make_tuple(pos[i].first,pos[i].second,abundance,minimizer_active_bases));
+          kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
       }
       return;
 }
 
-// return k-mer positions
-std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir,const String<std::pair <uint_fast8_t,uint32_t>> & pos, const uint_fast32_t bucket_number){
-      std::vector<std::pair <uint_fast8_t,uint32_t>> positions;
-      uint_fast32_t c=GetBkt(hash,C,bucket_number);
-      for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-        positions.push_back(pos[i]);
-      }
-      return positions;
-}
+// // return k-mer positions
+// std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
+//       std::vector<std::pair <uint_fast8_t,uint32_t>> positions;
+//       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
+//       for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
+//         positions.push_back(std::make_pair(ref[i],pos[i]);
+//       }
+//       return positions;
+// }
 
 // Find correct Bucket
-uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number){
+uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
   int64_t i=hash%(int64_t)bucket_number;
   int64_t d=0;
   // unsigned counter=0;
-  while(C[i]!=hash>>32 and C[i]!=-1){
+  while(C[i]!=hash>>k_2 and C[i]!=-1){
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
     // counter+=1;
@@ -157,9 +157,9 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
 }
 
 // Request a Bucket
-uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number){
-  uint_fast32_t i = GetBkt(hash,C,bucket_number);
-  C[i]=hash>>32;
+uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
+  uint_fast32_t i = GetBkt(hash,C,bucket_number,k_2);
+  C[i]=hash>>k_2;
   return i;
 }
 
