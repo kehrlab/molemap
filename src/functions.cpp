@@ -153,7 +153,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
   // std::cerr << __LINE__ << "\n";
   // unsigned counter=0;
   std::cerr << "i: " << i << "\n";
-  std::cerr << "K_2: " << k_2 << "\n";
+  std::cerr << "K_2: " << (int)k_2 << "\n";
   while(C[i]!=(hash>>k_2) and C[i]!=-1){
     std::cerr << __LINE__ << "\n";
     i=(i^(hash>>((d*16)%31)));
