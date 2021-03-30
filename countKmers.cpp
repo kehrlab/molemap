@@ -79,6 +79,7 @@ int main(int argc, char const **argv){
             << "bucket_count\t" << options.bucket_count << "\n\n";
 
   uint_fast8_t k = options.k;
+  uint_fast8_t k_2 = k+1;
   uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
 
   // auto begin = std::chrono::high_resolution_clock::now();
@@ -121,10 +122,13 @@ int main(int argc, char const **argv){
 
   String<uint32_t> dir;
   resize(dir,bucket_number+1,0);
-  std::cerr << "...";
-  String<std::pair <uint_fast8_t,uint32_t>> pos;
+  std::cerr << "..";
+  String<uint32_t> pos;
   resize(pos,length(concat(seqs)));
-  std::cerr << "...";
+  std::cerr << "..";
+  String<uint_fast8_t> ref;
+  resize(ref,length(concat(seqs)));
+  std::cerr << "..";
   String<int32_t> C;
   resize(C,bucket_number,-1);
 
@@ -143,7 +147,7 @@ int main(int argc, char const **argv){
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
     for (uint64_t i = 0;i<length(*seq)-k;++i){
-      c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // indexing the hashed k-mers
+      c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
       dir[c+1]+=1;
       if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
         rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -153,7 +157,7 @@ int main(int argc, char const **argv){
         hash=hashkMer(infix(*seq,i,i+k),k);
       }
     }
-    c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);       // indexing of the last element
+    c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
     dir[c+1]+=1;
     CHROM++;
   }
@@ -186,8 +190,9 @@ int main(int argc, char const **argv){
     std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
 
     for (uint64_t i = 0;i<length(*seq)-k;++i){
-      c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);   // filling of the position table
-      pos[dir[c+1]]=std::make_pair(CHROM,i);
+      c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
+      pos[dir[c+1]]=i;
+      ref[dir[c+1]]=CHROM;
       dir[c+1]++;
       if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
         rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -197,8 +202,9 @@ int main(int argc, char const **argv){
         hash=hashkMer(infix(*seq,i,i+k),k);
       }
     }
-    c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number);     // filling the position table for the last element
-    pos[dir[c+1]]=std::make_pair(CHROM,length(*seq)-k);
+    c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
+    pos[dir[c+1]]=length(*seq)-k;
+    ref[dir[c+1]]=CHROM;
     dir[c+1]++;
     CHROM++;
   }
@@ -209,6 +215,8 @@ int main(int argc, char const **argv){
 
   std::string IndPos=options.index_name;
   IndPos.append("_pos.txt");
+  std::string IndRef=options.index_name;
+  IndRef.append("_ref.txt");
   std::string IndDir=options.index_name;
   IndDir.append("_dir.txt");
   std::string IndC=options.index_name;
@@ -216,16 +224,23 @@ int main(int argc, char const **argv){
 
   std::cerr << "Writing index to file...";
 
-  String<std::pair <uint_fast8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+  String<uint32_t, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index counts file." );
+    throw std::runtime_error("Could not open index positions file." );
   }
   assign(extpos, pos, Exact());
   close(extpos);
 
+  String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+  if (!open(extref, IndRef.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+    throw std::runtime_error("Could not open index reference file." );
+  }
+  assign(extref, ref, Exact());
+  close(extref);
+
   String<uint32_t, External<> > extdir;
   if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index counts file." );
+    throw std::runtime_error("Could not open index directory file." );
   }
   assign(extdir, dir, Exact());
   close(extdir);

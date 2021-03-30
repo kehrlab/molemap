@@ -109,6 +109,8 @@ std::cout <<'\n'
           << "length threshold \t" << options.l << "\n\n";
 
 uint_fast8_t k = options.k;
+uint_fast8_t k_2 = k+1;
+
 uint_fast8_t mini_window_size = options.mini_window_size;
 
 /*
@@ -128,22 +130,33 @@ std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
-String<std::pair <uint_fast8_t,uint32_t>> pos;
+String<uint32_t> pos;
+String<uint_fast8_t> ref;
 String<int32_t> C;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
+std::string IndRef=options.index_name;
+IndRef.append("_ref.txt");
 std::string IndDir=options.index_name;
 IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-String<std::pair <uint_fast8_t,uint32_t>, External<ExternalConfigLarge<>> > extpos;
+String<uint32_t, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index position file." );
 }
 assign(pos, extpos, Exact());
 close(extpos);
+std::cerr <<".";
+
+String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
+assign(ref, extref, Exact());
+close(extref);
 std::cerr <<".";
 
 String<uint32_t, External<> > extdir;
@@ -153,7 +166,6 @@ if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
 assign(dir, extdir, Exact());
 close(extdir);
 std::cerr <<".";
-
 
 String<int32_t, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
@@ -176,7 +188,7 @@ for (uint_fast8_t i=0;i<k;++i){
 
 uint_fast32_t bucket_number=length(C);
 
-std::cerr <<"....done.\n";
+std::cerr <<"...done.\n";
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
@@ -269,21 +281,21 @@ while (atEnd(file1)!=1) { // proceeding through files
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
-            AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number,minimizer_active_bases);
+            AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
             minimizer_position=t+1+mini_window_size-k;
             minimizer_active_bases=0;
           }
           minimizer_active_bases++;
         }else{
-          AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number, minimizer_active_bases);                                                                                                  // if old minimizer no longer in window
+          AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
           hash=hashkMer(infix(*it,t+1,t+1+k),k);
           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
           minimizer_active_bases=1;
         }
       }
-      AppendPos(kmer_list, minimizer, C, dir, pos, bucket_number, minimizer_active_bases);   // append last minimizer                                                                                               // if old minimizer no longer in window
+      AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   }
 }
