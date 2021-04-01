@@ -162,7 +162,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
     d++;
   }
   // std::cerr << __LINE__ << "\n";
-  ofstream tries;
+  std::ofstream tries;
   tries.open("tries.txt", std::ios::app);
   tries << counter << " ";
   tries.close();
