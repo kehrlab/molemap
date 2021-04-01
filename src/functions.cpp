@@ -151,21 +151,21 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
   // std::cerr << __LINE__ << "\n";
   int64_t d=0;
   // std::cerr << __LINE__ << "\n";
-  unsigned counter=0;
+  // unsigned counter=0;
   // std::cerr << "i: " << i << "\n";
   // std::cerr << "K_2: " << k_2 << "\n";
   while(C[i]!=(hash>>k_2) and C[i]!=-1){
     // std::cerr << __LINE__ << "\n";
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
-    counter+=1;
+    // counter+=1;
     d++;
   }
   // std::cerr << __LINE__ << "\n";
-  std::ofstream tries;
-  tries.open("tries.txt", std::ios::app);
-  tries << counter << " ";
-  tries.close();
+  // std::ofstream tries;
+  // tries.open("tries.txt", std::ios::app);
+  // tries << counter << " ";
+  // tries.close();
 
   return i;
 }
