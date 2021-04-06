@@ -92,6 +92,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 }
 
 void *ReadPosThread(std::string IndPos){
+  String<uint32_t> pos;
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
@@ -103,6 +104,7 @@ void *ReadPosThread(std::string IndPos){
 }
 
 void *ReadRefThread(std::sting IndRef){
+  String<uint_fast8_t> ref;
   String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
   if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
@@ -111,10 +113,10 @@ void *ReadRefThread(std::sting IndRef){
   close(extref);
   std::cerr <<".";
   pthread_exit(NULL);
-
 }
 
 void *ReadDirThread(std::string IndDir){
+  String<uint32_t> dir;
   String<uint32_t, External<> > extdir;
   if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index directory file." );
@@ -125,7 +127,8 @@ void *ReadDirThread(std::string IndDir){
   pthread_exit(NULL);
 }
 
-void *ReadCThread(std:string IndC){
+void *ReadCThread(std::string IndC){
+  String<int32_t> C;
   String<int32_t, External<> > extC;
   if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index counts file." );
@@ -174,10 +177,6 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<uint32_t> dir;
-String<uint32_t> pos;
-String<uint_fast8_t> ref;
-String<int32_t> C;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
@@ -211,10 +210,10 @@ if(ret != 0) {
         exit(EXIT_FAILURE);
 }
 
-pthread_join(mythread[1]), (void **)&ret);
-pthread_join(mythread[2]), (void **)&ret);
-pthread_join(mythread[3]), (void **)&ret);
-pthread_join(mythread[4]), (void **)&ret);
+pthread_join(my_thread[1]), (void **)&ret);
+pthread_join(my_thread[2]), (void **)&ret);
+pthread_join(my_thread[3]), (void **)&ret);
+pthread_join(my_thread[4]), (void **)&ret);
 
 
 int64_t maxhash;
