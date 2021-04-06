@@ -94,7 +94,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 void *ReadPosThread(std::string arg){
   String<uint32_t> pos;
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  std::string IndPos=arg;
+  std::string *IndPos=arg;
   if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
@@ -107,7 +107,7 @@ void *ReadPosThread(std::string arg){
 void *ReadRefThread(std::string arg){
   String<uint_fast8_t> ref;
   String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-  std::string IndRef=arg;
+  std::string *IndRef=arg;
   if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
@@ -120,7 +120,7 @@ void *ReadRefThread(std::string arg){
 void *ReadDirThread(std::string arg){
   String<uint32_t> dir;
   String<uint32_t, External<> > extdir;
-  std::string IndDir=arg;
+  std::string *IndDir=arg;
   if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index directory file." );
   }
@@ -133,7 +133,7 @@ void *ReadDirThread(std::string arg){
 void *ReadCThread(std::string arg){
   String<int32_t> C;
   String<int32_t, External<> > extC;
-  std::string IndC=arg;
+  std::string *IndC=arg;
   if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index counts file." );
   }
