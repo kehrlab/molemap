@@ -91,10 +91,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-void *ReadPosThread(void *arg){
+void *ReadPosThread(std::string arg){
   String<uint32_t> pos;
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  std::string IndPos=(std::string)*arg;
+  std::string IndPos=arg;
   if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
@@ -193,7 +193,7 @@ IndC.append("_C.txt");
 
 
 pthread_t my_thread[4];
-int ret =  pthread_create(&my_thread[1], NULL, ReadPosThread, (void *)IndPos);
+int ret =  pthread_create(&my_thread[1], NULL, ReadPosThread, IndPos);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
