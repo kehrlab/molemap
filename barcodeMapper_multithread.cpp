@@ -91,10 +91,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-void *ReadPosThread(std::string IndPos){
+void *ReadPosThread(void *IndPos){
   String<uint32_t> pos;
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+  if (!open(extpos, (std::string)IndPos.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
   assign(pos, extpos, Exact());
@@ -103,10 +103,10 @@ void *ReadPosThread(std::string IndPos){
   pthread_exit(NULL);
 }
 
-void *ReadRefThread(std::string IndRef){
+void *ReadRefThread(void *IndRef){
   String<uint_fast8_t> ref;
   String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-  if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+  if (!open(extref, (std::string)IndRef.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
   assign(ref, extref, Exact());
@@ -115,10 +115,10 @@ void *ReadRefThread(std::string IndRef){
   pthread_exit(NULL);
 }
 
-void *ReadDirThread(std::string IndDir){
+void *ReadDirThread(void *IndDir){
   String<uint32_t> dir;
   String<uint32_t, External<> > extdir;
-  if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+  if (!open(extdir, (std::string)IndDir.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index directory file." );
   }
   assign(dir, extdir, Exact());
@@ -127,10 +127,10 @@ void *ReadDirThread(std::string IndDir){
   pthread_exit(NULL);
 }
 
-void *ReadCThread(std::string IndC){
+void *ReadCThread(void *IndC){
   String<int32_t> C;
   String<int32_t, External<> > extC;
-  if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+  if (!open(extC, (std::string)IndC.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(C, extC, Exact());
@@ -189,22 +189,22 @@ IndC.append("_C.txt");
 
 
 pthread_t my_thread[4];
-int ret =  pthread_create(&my_thread[1], NULL, ReadPosThread, IndPos);
+int ret =  pthread_create(&my_thread[1], NULL, ReadPosThread, (void *)IndPos);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my_thread[2], NULL, ReadRefThread, IndRef);
+ret =  pthread_create(&my_thread[2], NULL, ReadRefThread, (void *)IndRef);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my_thread[3], NULL, ReadDirThread, IndDir);
+ret =  pthread_create(&my_thread[3], NULL, ReadDirThread, (void *)IndDir);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my_thread[4], NULL, ReadCThread, IndC);
+ret =  pthread_create(&my_thread[4], NULL, ReadCThread, (void *)IndC);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
