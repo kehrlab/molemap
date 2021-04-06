@@ -91,10 +91,11 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-void *ReadPosThread(void *IndPos){
+void *ReadPosThread(void *arg){
   String<uint32_t> pos;
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  if (!open(extpos, ((std::string)IndPos).c_str(), OPEN_RDONLY)){
+  std::string IndPos=(std::string)arg;
+  if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
   assign(pos, extpos, Exact());
@@ -103,10 +104,11 @@ void *ReadPosThread(void *IndPos){
   pthread_exit(NULL);
 }
 
-void *ReadRefThread(void *IndRef){
+void *ReadRefThread(void *arg){
   String<uint_fast8_t> ref;
   String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-  if (!open(extref, ((std::string)IndRef).c_str(), OPEN_RDONLY)){
+  std::string IndRef=(std::string)arg;
+  if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index position file." );
   }
   assign(ref, extref, Exact());
@@ -115,10 +117,11 @@ void *ReadRefThread(void *IndRef){
   pthread_exit(NULL);
 }
 
-void *ReadDirThread(void *IndDir){
+void *ReadDirThread(void *arg){
   String<uint32_t> dir;
   String<uint32_t, External<> > extdir;
-  if (!open(extdir, ((std::string)IndDir).c_str(), OPEN_RDONLY)){
+  std::string IndDir=(std::string)arg;
+  if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index directory file." );
   }
   assign(dir, extdir, Exact());
@@ -127,10 +130,11 @@ void *ReadDirThread(void *IndDir){
   pthread_exit(NULL);
 }
 
-void *ReadCThread(void *IndC){
+void *ReadCThread(void *arg){
   String<int32_t> C;
   String<int32_t, External<> > extC;
-  if (!open(extC, ((std::string)IndC).c_str(), OPEN_RDONLY)){
+  std::string IndC=(std::string)arg;
+  if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index counts file." );
   }
   assign(C, extC, Exact());
