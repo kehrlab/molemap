@@ -182,9 +182,8 @@ std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 //
-char IndPos[]=options.index_name;
-// IndPos.append("_pos.txt");
-IndPos+="_pos.txt";
+std::string IndPos=options.index_name;
+IndPos.append("_pos.txt");
 std::string IndRef=options.index_name;
 IndRef.append("_ref.txt");
 std::string IndDir=options.index_name;
