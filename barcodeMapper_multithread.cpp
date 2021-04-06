@@ -103,7 +103,7 @@ void *ReadPosThread(std::string IndPos){
   pthread_exit(NULL);
 }
 
-void *ReadRefThread(std::sting IndRef){
+void *ReadRefThread(std::string IndRef){
   String<uint_fast8_t> ref;
   String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
   if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
@@ -189,22 +189,22 @@ IndC.append("_C.txt");
 
 
 pthread_t my_thread[4];
-int ret =  pthread_create(&my;_thread[1], NULL, &ReadPosThread, IndPos);
+int ret =  pthread_create(&my_thread[1], NULL, &ReadPosThread, IndPos);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my;_thread[2], NULL, &ReadRefThread, IndRef);
+ret =  pthread_create(&my_thread[2], NULL, &ReadRefThread, IndRef);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my;_thread[3], NULL, &ReadDirThread, IndDir);
+ret =  pthread_create(&my_thread[3], NULL, &ReadDirThread, IndDir);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&my;_thread[4], NULL, &ReadCThread, IndC);
+ret =  pthread_create(&my_thread[4], NULL, &ReadCThread, IndC);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
