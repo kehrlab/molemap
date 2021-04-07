@@ -151,9 +151,9 @@ IndC.append("_C.txt");
 
 pthread_t my_thread[5];
 
-std::string  id="hallo!";
+std::string  str="hallo!";
 for(int id = 1; id <= 5; id++) {
-        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)id);
+        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)str);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
                 exit(EXIT_FAILURE);
