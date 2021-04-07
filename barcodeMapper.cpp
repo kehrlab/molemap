@@ -270,12 +270,12 @@ while (atEnd(file1)!=1) { // proceeding through files
       kmer_list.clear();
       std::cerr << "\nList mapped in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s";
       tbegin2 = std::chrono::high_resolution_clock::now();
+      std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum-tstart).count()/1000 << "s";
+      tsum = std::chrono::high_resolution_clock::now();
+      tstart = std::chrono::high_resolution_clock::now();
     }
     std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
-    std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum-tstart).count()/1000 << "s";
-    auto tsum = std::chrono::high_resolution_clock::now();
-    auto tstart = std::chrono::high_resolution_clock::now();
   }
   // std::cerr << __LINE__ << "\n";
 
