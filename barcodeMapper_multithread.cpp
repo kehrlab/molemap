@@ -5,7 +5,6 @@
 # include <fstream>
 # include "./src/functions.h"
 # include <time.h>
-# include <pthread.h>
 using namespace seqan;
 
 /*
@@ -91,55 +90,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-void *ReadPosThread(void *arg){
-  String<uint32_t> pos;
-  String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  std::string *IndPos=(std::string *)arg;
-  if (!open(extpos, (*IndPos).c_str(), OPEN_RDONLY)){
-    throw std::runtime_error("Could not open index position file." );
-  }
-  assign(pos, extpos, Exact());
-  close(extpos);
-  std::cerr <<".";
-  pthread_exit(NULL);
-}
-
-void *ReadRefThread(void *arg){
-  String<uint_fast8_t> ref;
-  String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-  std::string *IndRef=(std::string *)arg;
-  if (!open(extref, (*IndRef).c_str(), OPEN_RDONLY)){
-    throw std::runtime_error("Could not open index position file." );
-  }
-  assign(ref, extref, Exact());
-  close(extref);
-  std::cerr <<".";
-  pthread_exit(NULL);
-}
-
-void *ReadDirThread(void *arg){
-  String<uint32_t> dir;
-  String<uint32_t, External<> > extdir;
-  std::string *IndDir=(std::string *)arg;
-  if (!open(extdir, (*IndDir).c_str(), OPEN_RDONLY)){
-    throw std::runtime_error("Could not open index directory file." );
-  }
-  assign(dir, extdir, Exact());
-  close(extdir);
-  std::cerr <<".";
-  pthread_exit(NULL);
-}
-
-void *ReadCThread(void *arg){
-  String<int32_t> C;
-  String<int32_t, External<> > extC;
-  std::string *IndC=(std::string *)arg;
-  if (!open(extC, (*IndC).c_str(), OPEN_RDONLY)){
-    throw std::runtime_error("Could not open index counts file." );
-  }
-  assign(C, extC, Exact());
-  close(extC);
-  pthread_exit(NULL);
+void *worker_thread(void *arg)
+{
+        std::cerr << "This is worker_thread \n" << (int)arg << "\n";
+        pthread_exit(NULL);
 }
 
 int main(int argc, char const ** argv){
@@ -181,6 +135,10 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
+String<uint32_t> dir;
+String<uint32_t> pos;
+String<uint_fast8_t> ref;
+String<int32_t> C;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
@@ -191,33 +149,47 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
+pthread_t my_thread[N];
 
-pthread_t my_thread[4];
-int ret =  pthread_create(&my_thread[1], NULL, ReadPosThread, (void*) IndPos);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
-}
-ret =  pthread_create(&my_thread[2], NULL, ReadRefThread, (void*) IndRef);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
-}
-ret =  pthread_create(&my_thread[3], NULL, ReadDirThread, (void*) IndDir);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
-}
-ret =  pthread_create(&my_thread[4], NULL, ReadCThread, (void*) IndC);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
+int id;
+for(id = 1; id <= 5; id++) {
+        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)id);
+        if(ret != 0) {
+                printf("Error: pthread_create() failed\n");
+                exit(EXIT_FAILURE);
+        }
 }
 
-pthread_join(my_thread[1]), (void **)&ret);
-pthread_join(my_thread[2]), (void **)&ret);
-pthread_join(my_thread[3]), (void **)&ret);
-pthread_join(my_thread[4]), (void **)&ret);
+String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
+assign(pos, extpos, Exact());
+close(extpos);
+std::cerr <<".";
+
+String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
+assign(ref, extref, Exact());
+close(extref);
+std::cerr <<".";
+
+String<uint32_t, External<> > extdir;
+if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index directory file." );
+}
+assign(dir, extdir, Exact());
+close(extdir);
+std::cerr <<".";
+
+String<int32_t, External<> > extC;
+if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
+}
+assign(C, extC, Exact());
+close(extC);
 
 
 int64_t maxhash;
@@ -289,6 +261,9 @@ std::streampos BCI_pos2;
 std::cerr << "Processing read file...";
 
 // auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tsum = std::chrono::high_resolution_clock::now();
+// auto tstart = std::chrono::high_resolution_clock::now();
+// auto tcumul = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__ << "\n";
@@ -300,6 +275,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << "\n" << new_barcode << "\n";
   // std::cerr << __LINE__ << "\n";
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
+    // auto tbegin2 = std::chrono::high_resolution_clock::now();
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
@@ -309,6 +285,11 @@ while (atEnd(file1)!=1) { // proceeding through files
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
+      // std::cerr << "\nList mapped in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s";
+      // tbegin2 = std::chrono::high_resolution_clock::now();
+      // std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum-tstart).count()/1000 << "s";
+      // tsum = std::chrono::high_resolution_clock::now();
+      // tstart = std::chrono::high_resolution_clock::now();
     }
     // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     // tbegin = std::chrono::high_resolution_clock::now();
@@ -320,7 +301,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   // std::cerr << __LINE__ << "\n";
-
+  // tcumul = std::chrono::high_resolution_clock::now();
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
@@ -357,6 +338,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   }
+  // tsum+=std::chrono::high_resolution_clock::now()-tcumul;
   // std::cerr << __LINE__ << "\n";
 
 }
