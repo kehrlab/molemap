@@ -343,6 +343,7 @@ kmer_list_struct.random_seed=random_seed;
 kmer_list_struct.mini_window_size=mini_window_size;
 kmer_list_struct.bucket_number=bucket_number;
 
+pthread_t list_thread;
 while (atEnd(file1)!=1) { // proceeding through files
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
@@ -369,7 +370,6 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   //start new thread here
-  pthread_t list_thread;
   ret =  pthread_create(&list_thread, NULL, &fillList, &kmer_list_struct);
   if(ret != 0) {
           printf("Error: pthread_create() failed\n");
