@@ -125,7 +125,7 @@ void *readPos(void *arg){
 }
 
 void *readC(void *arg){
-    thread_in_C_t *data = (thread_in_t *)arg;
+    thread_in_C_t *data = (thread_in_C_t *)arg;
     String<int32_t, External<> > extC;
     if (!open(extC, data.Name.c_str(), OPEN_RDONLY)){
       throw std::runtime_error("Could not open index counts file." );
