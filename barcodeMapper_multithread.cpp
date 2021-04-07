@@ -89,16 +89,17 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     return seqan::ArgumentParser::PARSE_OK;
 }
-template <typename templ>;
-typedef struct thread_in_t{
-        String<templ> Str;
-        int32_t id;
-        std::string str;
-} thread_in_t;
+
+template <typename templ>
 
 void *worker_thread(void *arg)
 {
-    thread_in_t *data = (thread_in_t *)arg;
+    struct data{
+            String<templ> Str;
+            int32_t id;
+            std::string str;
+    };
+    *data = arg;
     std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
     std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[1]<<"]\n";
     pthread_exit(NULL);
@@ -161,7 +162,12 @@ std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
 pthread_t my_thread[5];
-thread_in_t thread_input;
+
+struct thread_input{
+        String<templ> Str;
+        int32_t id;
+        std::string str;
+};
 std::string  str="hallo!";
 thread_input.str=str;
 thread_input.Str=dir;
