@@ -91,7 +91,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 }
 
 typedef struct{
-        String<uint32_t> String;
+        String<uint32_t> ind_string;
         std::string Name;
 } thread_in_Dir_t;
 
@@ -106,7 +106,7 @@ void *readDir(void *arg){
     if (!open(extpos, data->Name.c_str(), OPEN_RDONLY)){
       throw std::runtime_error("Could not open index position file." );
     }
-    assign(data->String, extpos, Exact());
+    assign(data->ind_string, extpos, Exact());
     close(extpos);
     std::cerr <<".";
 
@@ -177,9 +177,9 @@ pthread_t my_thread[3];
 thread_in_Dir_t thread_input_Dir[2];
 // thread_in_C_t thread_input_C;
 thread_input_Dir[0].Name=IndDir;
-thread_input_Dir[0].String=dir;
+thread_input_Dir[0].ind_string=dir;
 thread_input_Dir[1].Name=IndPos;
-thread_input_Dir[1].String=pos;
+thread_input_Dir[1].ind_string=pos;
 // thread_input_C.Name=IndC;
 // thread_input_C.String=C;
 for(int i = 1; i <= 2; i++) {
