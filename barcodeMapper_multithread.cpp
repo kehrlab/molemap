@@ -372,7 +372,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     for (uint_fast8_t i; i!=thread_count; i++) {
       if (active_threads[i]==true){
         pthread_join(list_thread[i],NULL);
-        thread_active[i]=false;
+        active_threads[i]=false;
       }
       std::cerr << __LINE__ << "\n";
     }
