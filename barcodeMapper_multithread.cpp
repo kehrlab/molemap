@@ -89,9 +89,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     return seqan::ArgumentParser::PARSE_OK;
 }
-
+template <typename templ>
 typedef struct
 {
+        String<templ> Str;
         int32_t id;
         std::string str;
 } thread_in_t;
@@ -100,6 +101,7 @@ void *worker_thread(void *arg)
 {
     thread_in_t *data = (thread_in_t *)arg;
     std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
+    std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[0]<<"]\n";
     pthread_exit(NULL);
 }
 
@@ -142,7 +144,7 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<uint32_t> dir;
+String<uint32_t> dir = [12,9];
 String<uint32_t> pos;
 String<uint_fast8_t> ref;
 String<int32_t> C;
@@ -160,6 +162,7 @@ pthread_t my_thread[5];
 thread_in_t thread_input;
 std::string  str="hallo!";
 thread_input.str=str;
+thread_input.Str=dir;
 for(int id = 1; id <= 5; id++) {
         thread_input.id=id;
         int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, &thread_input);
