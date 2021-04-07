@@ -98,7 +98,7 @@ typedef struct
 void *worker_thread(void *arg)
 {
     thread_in_t *data = (thread_in_t *)arg;
-    std::cerr << "This is worker_thread " << data.str << "\n";
+    std::cerr << "This is worker_thread " << data->str << "\n";
     pthread_exit(NULL);
 }
 
