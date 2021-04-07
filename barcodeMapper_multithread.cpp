@@ -391,7 +391,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   //start new thread here
-  std::cerr << "thread: " << thread << "\n";
+  std::cerr << "thread: " << (int)thread << "\n";
   if (active_threads[thread]==true) {
     std::cerr << __LINE__ << "\n";
 
