@@ -109,7 +109,7 @@ void *readDir(void *arg){
   assign(data->ind_string, extdir, Exact());
   close(extdir);
   std::cerr <<".";
-  pthread_exit(data->ind_string);
+  pthread_exit(&data->ind_string);
 }
 
 void *readPos(void *arg){
@@ -247,7 +247,7 @@ if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
 assign(C, extC, Exact());
 close(extC);
 
-pthread_join(dir_thread,dir);
+pthread_join(dir_thread,&dir);
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
