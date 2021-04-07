@@ -89,7 +89,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     return seqan::ArgumentParser::PARSE_OK;
 }
-template <typename templ>
+template <typename templ>;
 typedef struct thread_in_t{
         String<templ> Str;
         int32_t id;
