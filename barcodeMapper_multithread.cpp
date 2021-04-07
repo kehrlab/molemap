@@ -149,7 +149,7 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-pthread_t my_thread[N];
+pthread_t my_thread[5];
 
 int id;
 for(id = 1; id <= 5; id++) {
