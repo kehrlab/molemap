@@ -160,7 +160,7 @@ thread_in_t thread_input;
 std::string  str="hallo!";
 thread_input.str=str;
 for(int id = 1; id <= 5; id++) {
-        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)thread_input);
+        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, &thread_input);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
                 exit(EXIT_FAILURE);
