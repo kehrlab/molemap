@@ -95,10 +95,22 @@ typedef struct{
         std::string Name;
 } thread_in_Dir_t;
 
-// typedef struct{
-//         String<int32_t> Str;
-//         std::string str;
-// } thread_in_C_t;
+typedef struct{
+        String<int32_t> ind_string;
+        std::string Name;
+} thread_in_C_t;
+
+void *readDir(void *arg){
+  thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
+  String<uint32_t, External<> > extdir;
+  if (!open(extdir, data->Name.c_str(), OPEN_RDONLY)){
+    throw std::runtime_error("Could not open index directory file." );
+  }
+  assign(data->ind_string, extdir, Exact());
+  close(extdir);
+  std::cerr <<".";
+  pthread_exit(NULL);
+}
 
 void *readPos(void *arg){
     thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
@@ -109,16 +121,19 @@ void *readPos(void *arg){
     assign(data->ind_string, extpos, Exact());
     close(extpos);
     std::cerr <<".";
-
     pthread_exit(NULL);
 }
 
-// void *readC(void *arg){
-//     thread_in_C_t *data = (thread_in_t *)arg;
-//     std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
-//     std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[1]<<"]\n";
-//     pthread_exit(NULL);
-// }
+void *readC(void *arg){
+    thread_in_C_t *data = (thread_in_t *)arg;
+    String<int32_t, External<> > extC;
+    if (!open(extC, data.Name.c_str(), OPEN_RDONLY)){
+      throw std::runtime_error("Could not open index counts file." );
+    }
+    assign(data->ind_string, extC, Exact());
+    close(extC);
+    pthread_exit(NULL);
+}
 
 int main(int argc, char const ** argv){
 
@@ -173,26 +188,33 @@ IndRef.append("_ref.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
+pthread_t dir_thread;
 pthread_t pos_thread;
+pthread_t C_thread;
+thread_in_Dir_t thread_input_Dir;
 thread_in_Dir_t thread_input_Pos;
-// thread_in_C_t thread_input_C;
-// thread_input_Dir[0].Name=IndDir;
-// thread_input_Dir[0].ind_string=dir;
+thread_in_C_t thread_input_C;
+thread_input_Dir.Name=IndDir;
+thread_input_Dir.ind_string=dir;
 thread_input_Pos.Name=IndPos;
 thread_input_Pos.ind_string=pos;
-// thread_input_C.Name=IndC;
-// thread_input_C.String=C;
+thread_input_C.Name=IndC;
+thread_input_C.ind_string=C;
+int ret =  pthread_create(&dir_thread, NULL, &readDir, &thread_input_Dir);
+if(ret != 0) {
+  printf("Error: pthread_create() failed\n");
+  exit(EXIT_FAILURE);
+}
 int ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-// int ret =  pthread_create(&my_thread[2], NULL, &readC, &thread_input_C);
-// if(ret != 0) {
-//         printf("Error: pthread_create() failed\n");
-//         exit(EXIT_FAILURE);
-// }
-
+int ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
+if(ret != 0) {
+        printf("Error: pthread_create() failed\n");
+        exit(EXIT_FAILURE);
+}
 
 // String<uint32_t, External<ExternalConfigLarge<>> > extpos;
 // if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
@@ -210,20 +232,20 @@ assign(ref, extref, Exact());
 close(extref);
 std::cerr <<".";
 
-String<uint32_t, External<> > extdir;
-if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index directory file." );
-}
-assign(dir, extdir, Exact());
-close(extdir);
-std::cerr <<".";
+// String<uint32_t, External<> > extdir;
+// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index directory file." );
+// }
+// assign(dir, extdir, Exact());
+// close(extdir);
+// std::cerr <<".";
 
-String<int32_t, External<> > extC;
-if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index counts file." );
-}
-assign(C, extC, Exact());
-close(extC);
+// String<int32_t, External<> > extC;
+// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index counts file." );
+// }
+// assign(C, extC, Exact());
+// close(extC);
 
 
 int64_t maxhash;
