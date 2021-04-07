@@ -92,13 +92,14 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
 typedef struct
 {
+        int32_t id;
         std::string str;
 } thread_in_t;
 
 void *worker_thread(void *arg)
 {
     thread_in_t *data = (thread_in_t *)arg;
-    std::cerr << "This is worker_thread " << data->str << "\n";
+    std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
     pthread_exit(NULL);
 }
 
@@ -160,6 +161,7 @@ thread_in_t thread_input;
 std::string  str="hallo!";
 thread_input.str=str;
 for(int id = 1; id <= 5; id++) {
+        thread_input.id=id;
         int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, &thread_input);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
