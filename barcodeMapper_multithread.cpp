@@ -101,7 +101,7 @@ void *worker_thread(void *arg)
 {
     thread_in_t *data = (thread_in_t *)arg;
     std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
-    std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[0]<<"]\n";
+    std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[1]<<"]\n";
     pthread_exit(NULL);
 }
 
@@ -144,7 +144,10 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<uint32_t> dir = [12,9];
+String<uint32_t> dir;
+appendValue(dir,12);
+appendValue(dir,9);
+
 String<uint32_t> pos;
 String<uint_fast8_t> ref;
 String<int32_t> C;
