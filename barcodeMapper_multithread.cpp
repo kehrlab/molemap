@@ -247,7 +247,9 @@ if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
 assign(C, extC, Exact());
 close(extC);
 
+void *ret_dir;
 pthread_join(dir_thread,&dir);
+dir=(String<uint32_t> *)ret_dir;
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
