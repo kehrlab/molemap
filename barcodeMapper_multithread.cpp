@@ -388,6 +388,10 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   //start new thread here
+  if (thread_active==true) {
+    pthread_join(list_thread,NULL);
+  }
+
   ret =  pthread_create(&list_thread, NULL, &fillList, &kmer_list_struct);
   if(ret != 0) {
           printf("Error: pthread_create() failed\n");
