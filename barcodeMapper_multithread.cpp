@@ -345,7 +345,7 @@ kmer_list_struct.bucket_number=bucket_number;
 std::cerr << __LINE__ << "\n";
 
 pthread_t list_thread;
-bool thread_active;
+bool thread_active=false;
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
 
