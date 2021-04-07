@@ -149,7 +149,7 @@ typedef struct{
   int64_t random_seed;
   uint_fast8_t mini_window_size;
   uint_fast32_t bucket_number;
-}kmer_list_struct_t
+} kmer_list_struct_t;
 
 void *fillList(void *arg){
     kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
@@ -333,7 +333,7 @@ std::streampos BCI_pos2;
 std::cerr << "Processing read file...";
 
 kmer_list_struct_t kmer_list_struct;
-std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
+// std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
 resize(kmer_list_struct.reads, 2, Exact());
 kmer_list_struct.Index=&Index;
 kmer_list_struct.k=k;
