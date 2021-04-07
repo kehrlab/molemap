@@ -205,12 +205,12 @@ if(ret != 0) {
   printf("Error: pthread_create() failed\n");
   exit(EXIT_FAILURE);
 }
-int ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
+ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
 }
-int ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
+ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
 if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
