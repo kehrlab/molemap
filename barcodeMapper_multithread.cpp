@@ -406,7 +406,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 
 }
 if (!kmer_list_struct.kmer_list.empty()) {
-  sort(kmer_list_struct.kmer_list.begin(),kmer_list.end());
+  sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
   MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
 }
 
