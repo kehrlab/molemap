@@ -81,6 +81,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
+    getOptionValue(options.q, parser, "q");
+    getOptionValue(options.l, parser, "l");
 
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
@@ -100,16 +102,6 @@ typedef struct{
   std::string ref_name;
   std::string C_name;
 } Index_t;
-
-typedef struct{
-        String<uint32_t> ind_string;
-        std::string Name;
-} thread_in_Dir_t;
-
-typedef struct{
-        String<int32_t> ind_string;
-        std::string Name;
-} thread_in_C_t;
 
 void *readDir(void *arg){
   Index_t *Index = (Index_t *)arg;
@@ -181,16 +173,11 @@ uint_fast8_t window_count=100;   // amount of saved candidate windows
 /*
 reading the Index
 */
-
 std::cerr << "Reading in the k-mer index";
-// auto tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 Index_t Index;
-// String<uint32_t> dir;
-// String<uint32_t> pos;
-// String<uint_fast8_t> ref;
-// String<int32_t> C;
-//
+
 Index.dir_name=options.index_name;
 Index.dir_name.append("_dir.txt");
 Index.pos_name=options.index_name;
@@ -255,6 +242,9 @@ pthread_join(dir_thread,NULL);
 pthread_join(pos_thread,NULL);
 pthread_join(C_thread,NULL);
 
+std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+
+
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
   maxhash= maxhash << 2 | 3;
@@ -276,7 +266,6 @@ loading in the reads
 */
 
 // loading reads from fastq/fasta files:
-
 
 try {         // opening read-files
   SeqFileIn file1(toCString(options.readfile1));
