@@ -392,9 +392,13 @@ while (atEnd(file1)!=1) { // proceeding through files
 
   //start new thread here
   if (active_threads[thread]==true) {
+    std::cerr << __LINE__ << "\n";
+
     pthread_join(list_thread[thread],NULL);
     active_threads[thread]=false;
   }
+  std::cerr << __LINE__ << "\n";
+
   ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_struct);
   if(ret != 0) {
           printf("Error: pthread_create() failed\n");
@@ -402,6 +406,8 @@ while (atEnd(file1)!=1) { // proceeding through files
   }
   active_threads[thread]=true;
   thread=(thread+1)%(thread_count-1);
+  std::cerr << __LINE__ << "\n";
+
 
   // for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   //   std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
