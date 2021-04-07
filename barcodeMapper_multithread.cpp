@@ -100,7 +100,7 @@ typedef struct{
 //         std::string str;
 // } thread_in_C_t;
 
-void *readDir(void *arg){
+void *readPos(void *arg){
     thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
     String<uint32_t, External<ExternalConfigLarge<>> > extpos;
     if (!open(extpos, data->Name.c_str(), OPEN_RDONLY)){
@@ -173,21 +173,19 @@ IndRef.append("_ref.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-pthread_t my_thread[3];
-thread_in_Dir_t thread_input_Dir[2];
+pthread_t pos_thread;
+thread_in_Dir_t thread_input_Pos;
 // thread_in_C_t thread_input_C;
-thread_input_Dir[0].Name=IndDir;
-thread_input_Dir[0].ind_string=dir;
-thread_input_Dir[1].Name=IndPos;
-thread_input_Dir[1].ind_string=pos;
+// thread_input_Dir[0].Name=IndDir;
+// thread_input_Dir[0].ind_string=dir;
+thread_input_Pos.Name=IndPos;
+thread_input_Pos.ind_string=pos;
 // thread_input_C.Name=IndC;
 // thread_input_C.String=C;
-for(int i = 1; i <= 2; i++) {
-        int ret =  pthread_create(&my_thread[i], NULL, &readDir, &thread_input_Dir[i]);
-        if(ret != 0) {
-                printf("Error: pthread_create() failed\n");
-                exit(EXIT_FAILURE);
-        }
+int ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
+if(ret != 0) {
+        printf("Error: pthread_create() failed\n");
+        exit(EXIT_FAILURE);
 }
 // int ret =  pthread_create(&my_thread[2], NULL, &readC, &thread_input_C);
 // if(ret != 0) {
@@ -206,19 +204,19 @@ for(int i = 1; i <= 2; i++) {
 
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
 if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index position file." );
+  throw std::runtime_error("Could not open index reference file." );
 }
 assign(ref, extref, Exact());
 close(extref);
 std::cerr <<".";
 
-// String<uint32_t, External<> > extdir;
-// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index directory file." );
-// }
-// assign(dir, extdir, Exact());
-// close(extdir);
-// std::cerr <<".";
+String<uint32_t, External<> > extdir;
+if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index directory file." );
+}
+assign(dir, extdir, Exact());
+close(extdir);
+std::cerr <<".";
 
 String<int32_t, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
