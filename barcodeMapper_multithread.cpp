@@ -266,7 +266,7 @@ for (uint_fast8_t i=0;i<k;++i){
   random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
 }
 
-uint_fast32_t bucket_number=length(C);
+uint_fast32_t bucket_number=length(Index.C);
 
 std::cerr <<"...done.\n";
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
@@ -421,7 +421,7 @@ std::cerr << "Writing BarcodeIndex to file...";
 // write Barcode Index to file
 std::string IndBC=options.bci_name;
 IndBC.append("_bc.txt");
-IndPos=options.bci_name;
+std::string IndPos=options.bci_name;
 IndPos.append("_pos.txt");
 
 std::ofstream file_bc;
