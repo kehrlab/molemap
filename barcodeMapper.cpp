@@ -243,7 +243,7 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 
-// auto tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__ << "\n";
@@ -261,12 +261,15 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
     if (!kmer_list.empty()) {
+      auto tbegin2 = std::chrono::high_resolution_clock::now();
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
+      std::cerr << "\nList mapped in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s";
+      tbegin2 = std::chrono::high_resolution_clock::now();
     }
-    // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-    // tbegin = std::chrono::high_resolution_clock::now();
+    std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+    tbegin = std::chrono::high_resolution_clock::now();
   }
   // std::cerr << __LINE__ << "\n";
 
