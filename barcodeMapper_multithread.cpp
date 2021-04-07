@@ -90,10 +90,16 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
+typedef struct
+{
+        std::string str;
+} thread_in_t;
+
 void *worker_thread(void *arg)
 {
-        std::cerr << "This is worker_thread " << (std::string)arg << "\n";
-        pthread_exit(NULL);
+    thread_in_t *data = (thread_in_t *)arg;
+    std::cerr << "This is worker_thread " << data.str << "\n";
+    pthread_exit(NULL);
 }
 
 int main(int argc, char const ** argv){
@@ -150,10 +156,11 @@ std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
 pthread_t my_thread[5];
-
+thread_in_t thread_input;
 std::string  str="hallo!";
+thread_input.str=str;
 for(int id = 1; id <= 5; id++) {
-        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)str);
+        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)thread_input);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
                 exit(EXIT_FAILURE);
