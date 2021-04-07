@@ -249,7 +249,7 @@ close(extC);
 
 void *ret_dir;
 pthread_join(dir_thread,&ret_dir);
-dir=(String<uint32_t> *)ret_dir;
+dir*=(String<uint32_t> *)ret_dir;
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
