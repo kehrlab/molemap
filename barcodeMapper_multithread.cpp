@@ -92,7 +92,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
 void *worker_thread(void *arg)
 {
-        std::cerr << "This is worker_thread \n" << (long)arg << "\n";
+        std::cerr << "This is worker_thread " << (std::string)arg << "\n";
         pthread_exit(NULL);
 }
 
@@ -151,8 +151,8 @@ IndC.append("_C.txt");
 
 pthread_t my_thread[5];
 
-long id;
-for(id = 1; id <= 5; id++) {
+std::string  id="hallo!";
+for(int id = 1; id <= 5; id++) {
         int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, (void*)id);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
