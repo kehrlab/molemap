@@ -344,8 +344,12 @@ kmer_list_struct.mini_window_size=mini_window_size;
 kmer_list_struct.bucket_number=bucket_number;
 std::cerr << __LINE__ << "\n";
 
-pthread_t list_thread;
-bool thread_active=false;
+uint_fast8_t thread=0;
+uint_fast8_t thread_count=3;
+pthread_t list_thread[thread_count];
+std::vector<bool> active_threads;
+resize(active_threads,thread_count,false);
+
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
 
@@ -365,21 +369,20 @@ while (atEnd(file1)!=1) { // proceeding through files
 
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
-    if (thread_active==true) {
-      std::cerr << __LINE__ << "\n";
-      pthread_join(list_thread,NULL);
-      std::cerr << __LINE__ << "\n";
-      thread_active=false;
-      std::cerr << __LINE__ << "\n";
-
-      if (!kmer_list_struct.kmer_list.empty()) {
-        std::cerr << __LINE__ << "\n";
-        sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
-        MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-        kmer_list_struct.kmer_list.clear();
-        std::cerr << __LINE__ << "\n";
-
+    for (uint_fast8_t i; i!=thread_count; i++) {
+      if (active_threads[i]==true){
+        pthread_join(list_thread[i],NULL);
+        thread_active[i]=false;
       }
+      std::cerr << __LINE__ << "\n";
+    }
+    if (!kmer_list_struct.kmer_list.empty()) {
+      std::cerr << __LINE__ << "\n";
+      sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
+      MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+      kmer_list_struct.kmer_list.clear();
+      std::cerr << __LINE__ << "\n";
+
     }
   }
   std::cerr << __LINE__ << "\n";
@@ -388,16 +391,17 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   //start new thread here
-  if (thread_active==true) {
+  if (active_threads[thread]==true) {
     pthread_join(list_thread,NULL);
+    active_threads[thread]=false;
   }
-
-  ret =  pthread_create(&list_thread, NULL, &fillList, &kmer_list_struct);
+  ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_struct);
   if(ret != 0) {
           printf("Error: pthread_create() failed\n");
           exit(EXIT_FAILURE);
   }
-  thread_active=true;
+  active_threads[thread]=true;
+  thread=(thread+1)%(thread_count-1);
 
   // for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   //   std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
