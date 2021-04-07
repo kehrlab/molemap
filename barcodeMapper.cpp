@@ -244,6 +244,9 @@ std::streampos BCI_pos2;
 std::cerr << "Processing read file...";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
+auto tsum = std::chrono::high_resolution_clock::now();
+auto tcumul = std::chrono::high_resolution_clock::now();
+tsum = 0;
 
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__ << "\n";
@@ -255,13 +258,13 @@ while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << "\n" << new_barcode << "\n";
   // std::cerr << __LINE__ << "\n";
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
+    auto tbegin2 = std::chrono::high_resolution_clock::now();
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
     if (!kmer_list.empty()) {
-      auto tbegin2 = std::chrono::high_resolution_clock::now();
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
@@ -270,6 +273,8 @@ while (atEnd(file1)!=1) { // proceeding through files
     }
     std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
+    std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum).count()/1000 << "s";
+    tsum = 0;
   }
   // std::cerr << __LINE__ << "\n";
 
@@ -278,7 +283,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   barcode=new_barcode;
 
   // std::cerr << __LINE__ << "\n";
-
+  tcumul = std::chrono::high_resolution_clock::now();
   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
@@ -315,6 +320,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   }
+  tsum+=std::chrono::high_resolution_clock::now()-tcumul;
   // std::cerr << __LINE__ << "\n";
 
 }
