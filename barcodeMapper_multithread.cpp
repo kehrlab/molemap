@@ -392,7 +392,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 
   //start new thread here
   if (active_threads[thread]==true) {
-    pthread_join(list_thread,NULL);
+    pthread_join(list_thread[thread],NULL);
     active_threads[thread]=false;
   }
   ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_struct);
