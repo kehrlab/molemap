@@ -175,13 +175,13 @@ IndC.append("_C.txt");
 
 pthread_t my_thread[3];
 thread_in_Dir_t thread_input_Dir[2];
-thread_in_C_t thread_input_C;
-thread_input_Dir[0].name=IndDir;
+// thread_in_C_t thread_input_C;
+thread_input_Dir[0].Name=IndDir;
 thread_input_Dir[0].String=dir;
-thread_input_Dir[1].name=IndPos;
+thread_input_Dir[1].Name=IndPos;
 thread_input_Dir[1].String=pos;
-thread_input_C.name=IndC;
-thread_input_C.String=C;
+// thread_input_C.Name=IndC;
+// thread_input_C.String=C;
 for(int i = 1; id <= 2; id++) {
         int ret =  pthread_create(&my_thread[i], NULL, &readDir, &thread_input_Dir[i]);
         if(ret != 0) {
