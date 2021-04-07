@@ -364,16 +364,19 @@ while (atEnd(file1)!=1) { // proceeding through files
 
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
-    pthread_join(list_thread,NULL);
-    std::cerr << __LINE__ << "\n";
-
-    if (!kmer_list_struct.kmer_list.empty()) {
-      std::cerr << __LINE__ << "\n";
-      sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
-      MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-      kmer_list_struct.kmer_list.clear();
+    if (thread_active==true) {
+      pthread_join(list_thread,NULL);
+      thread_active=false;
       std::cerr << __LINE__ << "\n";
 
+      if (!kmer_list_struct.kmer_list.empty()) {
+        std::cerr << __LINE__ << "\n";
+        sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
+        MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+        kmer_list_struct.kmer_list.clear();
+        std::cerr << __LINE__ << "\n";
+
+      }
     }
   }
   std::cerr << __LINE__ << "\n";
@@ -387,6 +390,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           printf("Error: pthread_create() failed\n");
           exit(EXIT_FAILURE);
   }
+  bool thread_active=true;
 
   // for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   //   std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
