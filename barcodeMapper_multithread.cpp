@@ -91,6 +91,17 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 }
 
 typedef struct{
+  String<uint32_t> dir;
+  String<uint32_t> pos;
+  String<uint_fast8_t> ref;
+  String<int32_t> C;
+  std::string dir_name;
+  std::string pos_name;
+  std::string ref_name;
+  std::string C_name;
+} Index_t;
+
+typedef struct{
         String<uint32_t> ind_string;
         std::string Name;
 } thread_in_Dir_t;
@@ -101,36 +112,36 @@ typedef struct{
 } thread_in_C_t;
 
 void *readDir(void *arg){
-  thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
+  Index_t *Index = (Index_t *)arg;
   String<uint32_t, External<> > extdir;
-  if (!open(extdir, data->Name.c_str(), OPEN_RDONLY)){
+  if (!open(extdir, Index->dir_name.c_str(), OPEN_RDONLY)){
     throw std::runtime_error("Could not open index directory file." );
   }
-  assign(data->ind_string, extdir, Exact());
+  assign(Index->dir, extdir, Exact());
   close(extdir);
   std::cerr <<".";
   pthread_exit(NULL);
 }
 
 void *readPos(void *arg){
-    thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
+    Index_t *Index = (Index_t *)arg;
     String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-    if (!open(extpos, data->Name.c_str(), OPEN_RDONLY)){
+    if (!open(extpos, Index->pos_name.c_str(), OPEN_RDONLY)){
       throw std::runtime_error("Could not open index position file." );
     }
-    assign(data->ind_string, extpos, Exact());
+    assign(Index->pos, extpos, Exact());
     close(extpos);
     std::cerr <<".";
     pthread_exit(NULL);
 }
 
 void *readC(void *arg){
-    thread_in_C_t *data = (thread_in_C_t *)arg;
+    Index_t *Index = (Index_t *)arg;
     String<int32_t, External<> > extC;
-    if (!open(extC, data->Name.c_str(), OPEN_RDONLY)){
+    if (!open(extC, Index->C_name.c_str(), OPEN_RDONLY)){
       throw std::runtime_error("Could not open index counts file." );
     }
-    assign(data->ind_string, extC, Exact());
+    assign(Index->C, extC, Exact());
     close(extC);
     pthread_exit(NULL);
 }
@@ -174,47 +185,40 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<uint32_t> dir;
-String<uint32_t> pos;
-String<uint_fast8_t> ref;
-String<int32_t> C;
+Index_t Index;
+// String<uint32_t> dir;
+// String<uint32_t> pos;
+// String<uint_fast8_t> ref;
+// String<int32_t> C;
 //
-std::string IndDir=options.index_name;
-IndDir.append("_dir.txt");
-std::string IndPos=options.index_name;
-IndPos.append("_pos.txt");
-std::string IndRef=options.index_name;
-IndRef.append("_ref.txt");
-std::string IndC=options.index_name;
-IndC.append("_C.txt");
+Index.dir_name=options.index_name;
+Index.dir_name.append("_dir.txt");
+Index.pos_name=options.index_name;
+Index.pos_name.append("_pos.txt");
+Index.ref_name=options.index_name;
+Index.ref_name.append("_ref.txt");
+Index.C_name=options.index_name;
+Index.C_name.append("_C.txt");
 
 pthread_t dir_thread;
 pthread_t pos_thread;
 pthread_t C_thread;
-thread_in_Dir_t thread_input_Dir;
-thread_in_Dir_t thread_input_Pos;
-thread_in_C_t thread_input_C;
-thread_input_Dir.Name=IndDir;
-thread_input_Dir.ind_string=dir;
-thread_input_Pos.Name=IndPos;
-thread_input_Pos.ind_string=pos;
-thread_input_C.Name=IndC;
-thread_input_C.ind_string=C;
-int ret =  pthread_create(&dir_thread, NULL, &readDir, &thread_input_Dir);
+
+int ret =  pthread_create(&dir_thread, NULL, &readDir, &Index);
 if(ret != 0) {
   printf("Error: pthread_create() failed\n");
   exit(EXIT_FAILURE);
 }
-// ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
-// if(ret != 0) {
-//         printf("Error: pthread_create() failed\n");
-//         exit(EXIT_FAILURE);
-// }
-// ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
-// if(ret != 0) {
-//         printf("Error: pthread_create() failed\n");
-//         exit(EXIT_FAILURE);
-// }
+ret =  pthread_create(&pos_thread, NULL, &readPos, &Index);
+if(ret != 0) {
+        printf("Error: pthread_create() failed\n");
+        exit(EXIT_FAILURE);
+}
+ret =  pthread_create(&C_thread, NULL, &readC, &Index);
+if(ret != 0) {
+        printf("Error: pthread_create() failed\n");
+        exit(EXIT_FAILURE);
+}
 
 // String<uint32_t, External<> > extdir;
 // if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
@@ -224,31 +228,32 @@ if(ret != 0) {
 // close(extdir);
 // std::cerr <<".";
 
-String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index position file." );
-}
-assign(pos, extpos, Exact());
-close(extpos);
-std::cerr <<".";
+// String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index position file." );
+// }
+// assign(pos, extpos, Exact());
+// close(extpos);
+// std::cerr <<".";
 
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+if (!open(extref, Index.ref_name.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index reference file." );
 }
-assign(ref, extref, Exact());
+assign(Index.ref, extref, Exact());
 close(extref);
 std::cerr <<".";
 
-String<int32_t, External<> > extC;
-if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index counts file." );
-}
-assign(C, extC, Exact());
-close(extC);
+// String<int32_t, External<> > extC;
+// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index counts file." );
+// }
+// assign(C, extC, Exact());
+// close(extC);
 
 pthread_join(dir_thread,NULL);
-dir=thread_input_Dir.ind_string;
+pthread_join(pos_thread,NULL);
+pthread_join(C_thread,NULL);
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
@@ -373,7 +378,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
           // std::cerr << __LINE__ << "\n";
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
-            AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
+            AppendPos(kmer_list, minimizer, Index.C, Index.dir, Index.ref, Index.pos, bucket_number,minimizer_active_bases,k_2);
             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
             minimizer_position=t+1+mini_window_size-k;
             minimizer_active_bases=0;
@@ -381,7 +386,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           minimizer_active_bases++;
         }else{
           // std::cerr << __LINE__ << "\n";
-          AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
+          AppendPos(kmer_list, minimizer, Index.C, Index.dir, Index.ref, Index.pos, bucket_number, minimizer_active_bases,k_2);
           // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
           // std::cerr << __LINE__ << "\n";
@@ -393,7 +398,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           // std::cerr << __LINE__ << "\n";
         }
       }
-      AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
+      AppendPos(kmer_list, minimizer, Index.C, Index.dir, Index.ref, Index.pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   }
   // tsum+=std::chrono::high_resolution_clock::now()-tcumul;
