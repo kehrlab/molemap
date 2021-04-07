@@ -366,7 +366,9 @@ while (atEnd(file1)!=1) { // proceeding through files
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
     if (thread_active==true) {
+      std::cerr << __LINE__ << "\n";
       pthread_join(list_thread,NULL);
+      std::cerr << __LINE__ << "\n";
       thread_active=false;
       std::cerr << __LINE__ << "\n";
 
