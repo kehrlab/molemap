@@ -101,7 +101,7 @@ typedef struct{
 // } thread_in_C_t;
 
 void *readDir(void *arg){
-    thread_in_Dir_t *data = (thread_in_t *)arg;
+    thread_in_Dir_t *data = (thread_in_Dir_t *)arg;
     String<uint32_t, External<ExternalConfigLarge<>> > extpos;
     if (!open(extpos, data->Name.c_str(), OPEN_RDONLY)){
       throw std::runtime_error("Could not open index position file." );
@@ -182,7 +182,7 @@ thread_input_Dir[1].Name=IndPos;
 thread_input_Dir[1].String=pos;
 // thread_input_C.Name=IndC;
 // thread_input_C.String=C;
-for(int i = 1; id <= 2; id++) {
+for(int i = 1; i <= 2; i++) {
         int ret =  pthread_create(&my_thread[i], NULL, &readDir, &thread_input_Dir[i]);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
