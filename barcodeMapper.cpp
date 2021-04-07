@@ -245,8 +245,8 @@ std::cerr << "Processing read file...";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
 auto tsum = std::chrono::high_resolution_clock::now();
+auto tstart = std::chrono::high_resolution_clock::now();
 auto tcumul = std::chrono::high_resolution_clock::now();
-tsum = 0;
 
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__ << "\n";
@@ -273,8 +273,9 @@ while (atEnd(file1)!=1) { // proceeding through files
     }
     std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
     tbegin = std::chrono::high_resolution_clock::now();
-    std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum).count()/1000 << "s";
-    tsum = 0;
+    std::cerr << "\ntsum: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(tsum-tstart).count()/1000 << "s";
+    auto tsum = std::chrono::high_resolution_clock::now();
+    auto tstart = std::chrono::high_resolution_clock::now();
   }
   // std::cerr << __LINE__ << "\n";
 
