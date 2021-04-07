@@ -345,6 +345,7 @@ kmer_list_struct.bucket_number=bucket_number;
 std::cerr << __LINE__ << "\n";
 
 pthread_t list_thread;
+bool thread_active;
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
 
@@ -390,7 +391,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           printf("Error: pthread_create() failed\n");
           exit(EXIT_FAILURE);
   }
-  bool thread_active=true;
+  thread_active=true;
 
   // for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
   //   std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
