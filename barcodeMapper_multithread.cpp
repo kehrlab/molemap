@@ -331,7 +331,7 @@ std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
-
+std::cerr << __LINE__ << "\n";
 kmer_list_struct_t kmer_list_struct;
 // std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
 resize(kmer_list_struct.reads, 2, Exact());
@@ -342,29 +342,41 @@ kmer_list_struct.maxhash=maxhash;
 kmer_list_struct.random_seed=random_seed;
 kmer_list_struct.mini_window_size=mini_window_size;
 kmer_list_struct.bucket_number=bucket_number;
+std::cerr << __LINE__ << "\n";
 
 pthread_t list_thread;
 while (atEnd(file1)!=1) { // proceeding through files
+  std::cerr << __LINE__ << "\n";
+
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
   assignValue(kmer_list_struct.reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+  std::cerr << __LINE__ << "\n";
+
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+    std::cerr << __LINE__ << "\n";
+
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
     pthread_join(list_thread,NULL);
+    std::cerr << __LINE__ << "\n";
+
     if (!kmer_list_struct.kmer_list.empty()) {
+      std::cerr << __LINE__ << "\n";
       sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
       MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list_struct.kmer_list.clear();
+      std::cerr << __LINE__ << "\n";
+
     }
   }
-
+  std::cerr << __LINE__ << "\n";
   readRecord(id2, read2, file2);
   assignValue(kmer_list_struct.reads,1,read2);
   barcode=new_barcode;
