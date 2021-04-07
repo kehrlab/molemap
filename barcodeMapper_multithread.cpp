@@ -90,20 +90,35 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-typedef struct
-{
-        String<uint32_t> Str;
-        int32_t id;
-        std::string str;
-} thread_in_t;
+typedef struct{
+        String<uint32_t> String;
+        std::string Name;
+} thread_in_Dir_t;
 
-void *worker_thread(void *arg)
-{
-    thread_in_t *data = (thread_in_t *)arg;
-    std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
-    std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[1]<<"]\n";
+// typedef struct{
+//         String<int32_t> Str;
+//         std::string str;
+// } thread_in_C_t;
+
+void *readDir(void *arg){
+    thread_in_Dir_t *data = (thread_in_t *)arg;
+    String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+    if (!open(extpos, data->Name.c_str(), OPEN_RDONLY)){
+      throw std::runtime_error("Could not open index position file." );
+    }
+    assign(data->String, extpos, Exact());
+    close(extpos);
+    std::cerr <<".";
+
     pthread_exit(NULL);
 }
+
+// void *readC(void *arg){
+//     thread_in_C_t *data = (thread_in_t *)arg;
+//     std::cerr << "This is worker_thread: " << data->id << " " << data->str << "\n";
+//     std::cerr << "dir: [" << data->Str[0] << ", " << data->Str[1]<<"]\n";
+//     pthread_exit(NULL);
+// }
 
 int main(int argc, char const ** argv){
 
@@ -145,43 +160,49 @@ std::cerr << "Reading in the k-mer index";
 // auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
-appendValue(dir,12);
-appendValue(dir,9);
-
 String<uint32_t> pos;
 String<uint_fast8_t> ref;
 String<int32_t> C;
 //
+std::string IndDir=options.index_name;
+IndDir.append("_dir.txt");
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
 std::string IndRef=options.index_name;
 IndRef.append("_ref.txt");
-std::string IndDir=options.index_name;
-IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-pthread_t my_thread[5];
-thread_in_t thread_input;
-std::string  str="hallo!";
-thread_input.str=str;
-thread_input.Str=dir;
-for(int id = 1; id <= 5; id++) {
-        thread_input.id=id;
-        int ret =  pthread_create(&my_thread[id], NULL, &worker_thread, &thread_input);
+pthread_t my_thread[3];
+thread_in_Dir_t thread_input_Dir[2];
+thread_in_C_t thread_input_C;
+thread_input_Dir[0].name=IndDir;
+thread_input_Dir[0].String=dir;
+thread_input_Dir[1].name=IndPos;
+thread_input_Dir[1].String=pos;
+thread_input_C.name=IndC;
+thread_input_C.String=C;
+for(int i = 1; id <= 2; id++) {
+        int ret =  pthread_create(&my_thread[i], NULL, &readDir, &thread_input_Dir[i]);
         if(ret != 0) {
                 printf("Error: pthread_create() failed\n");
                 exit(EXIT_FAILURE);
         }
 }
+// int ret =  pthread_create(&my_thread[2], NULL, &readC, &thread_input_C);
+// if(ret != 0) {
+//         printf("Error: pthread_create() failed\n");
+//         exit(EXIT_FAILURE);
+// }
 
-String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index position file." );
-}
-assign(pos, extpos, Exact());
-close(extpos);
-std::cerr <<".";
+
+// String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index position file." );
+// }
+// assign(pos, extpos, Exact());
+// close(extpos);
+// std::cerr <<".";
 
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
 if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
@@ -191,13 +212,13 @@ assign(ref, extref, Exact());
 close(extref);
 std::cerr <<".";
 
-String<uint32_t, External<> > extdir;
-if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index directory file." );
-}
-assign(dir, extdir, Exact());
-close(extdir);
-std::cerr <<".";
+// String<uint32_t, External<> > extdir;
+// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index directory file." );
+// }
+// assign(dir, extdir, Exact());
+// close(extdir);
+// std::cerr <<".";
 
 String<int32_t, External<> > extC;
 if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
