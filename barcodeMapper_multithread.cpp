@@ -109,7 +109,7 @@ void *readDir(void *arg){
   assign(data->ind_string, extdir, Exact());
   close(extdir);
   std::cerr <<".";
-  pthread_exit(NULL);
+  pthread_exit(data->ind_string);
 }
 
 void *readPos(void *arg){
@@ -205,32 +205,16 @@ if(ret != 0) {
   printf("Error: pthread_create() failed\n");
   exit(EXIT_FAILURE);
 }
-ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
-}
-ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
-if(ret != 0) {
-        printf("Error: pthread_create() failed\n");
-        exit(EXIT_FAILURE);
-}
-
-// String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index position file." );
+// ret =  pthread_create(&pos_thread, NULL, &readPos, &thread_input_Pos);
+// if(ret != 0) {
+//         printf("Error: pthread_create() failed\n");
+//         exit(EXIT_FAILURE);
 // }
-// assign(pos, extpos, Exact());
-// close(extpos);
-// std::cerr <<".";
-
-String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index reference file." );
-}
-assign(ref, extref, Exact());
-close(extref);
-std::cerr <<".";
+// ret =  pthread_create(&C_thread, NULL, &readC, &thread_input_C);
+// if(ret != 0) {
+//         printf("Error: pthread_create() failed\n");
+//         exit(EXIT_FAILURE);
+// }
 
 // String<uint32_t, External<> > extdir;
 // if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
@@ -240,13 +224,30 @@ std::cerr <<".";
 // close(extdir);
 // std::cerr <<".";
 
-// String<int32_t, External<> > extC;
-// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index counts file." );
-// }
-// assign(C, extC, Exact());
-// close(extC);
+String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
+assign(pos, extpos, Exact());
+close(extpos);
+std::cerr <<".";
 
+String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index reference file." );
+}
+assign(ref, extref, Exact());
+close(extref);
+std::cerr <<".";
+
+String<int32_t, External<> > extC;
+if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
+}
+assign(C, extC, Exact());
+close(extC);
+
+pthread_join(dir_thread,dir);
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
