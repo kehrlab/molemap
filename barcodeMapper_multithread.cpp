@@ -406,7 +406,7 @@ while (atEnd(file1)!=1) { // proceeding through files
           exit(EXIT_FAILURE);
   }
   active_threads[thread]=true;
-  thread=(thread+1)%(thread_count-1);
+  thread=(thread+1)%(thread_count);
   std::cerr << __LINE__ << "\n";
 
 
