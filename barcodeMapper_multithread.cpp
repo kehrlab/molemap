@@ -174,7 +174,7 @@ uint_fast8_t window_count=100;   // amount of saved candidate windows
 reading the Index
 */
 std::cerr << "Reading in the k-mer index";
-auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tbegin = std::chrono::high_resolution_clock::now();
 
 Index_t Index;
 
@@ -207,22 +207,6 @@ if(ret != 0) {
         exit(EXIT_FAILURE);
 }
 
-// String<uint32_t, External<> > extdir;
-// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index directory file." );
-// }
-// assign(dir, extdir, Exact());
-// close(extdir);
-// std::cerr <<".";
-
-// String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index position file." );
-// }
-// assign(pos, extpos, Exact());
-// close(extpos);
-// std::cerr <<".";
-
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
 if (!open(extref, Index.ref_name.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index reference file." );
@@ -231,19 +215,11 @@ assign(Index.ref, extref, Exact());
 close(extref);
 std::cerr <<".";
 
-// String<int32_t, External<> > extC;
-// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index counts file." );
-// }
-// assign(C, extC, Exact());
-// close(extC);
-
 pthread_join(dir_thread,NULL);
 pthread_join(pos_thread,NULL);
 pthread_join(C_thread,NULL);
 
-std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
-
+// std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 int64_t maxhash;
 for (uint_fast8_t i=0;i<k;i++){
@@ -257,6 +233,7 @@ for (uint_fast8_t i=0;i<k;++i){
 }
 
 uint_fast32_t bucket_number=length(Index.C);
+std::cerr << "bucket_number: " << bucket_number << "\n";
 
 std::cerr <<"...done.\n";
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
