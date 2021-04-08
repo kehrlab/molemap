@@ -192,7 +192,7 @@ std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
 std::cerr <<"...done.\n";
-std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+// std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
 loading in the reads
