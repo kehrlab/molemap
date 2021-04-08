@@ -388,11 +388,11 @@ std::vector<bool> active_threads;             //info about started threads
 resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
 
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
@@ -411,7 +411,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       pthread_join(list_thread[thread],NULL);
       active_threads[thread]=false;
     }
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
 
     ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
     if(ret != 0) {
@@ -420,17 +420,17 @@ while (atEnd(file1)!=1) { // proceeding through files
     }
     active_threads[thread]=true;
     thread=(thread+1)%(thread_count);
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
   readRecord(id2, read2, file2);
   appendValue(kmer_list_structs[thread].reads,read1);
   appendValue(kmer_list_structs[thread].reads,read2);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
 }
 std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 tbegin = std::chrono::high_resolution_clock::now();
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
   if (active_threads[i]==true){
