@@ -348,10 +348,15 @@ uint_fast8_t thread=0;                        //currently selected thread
 uint_fast8_t thread_count=3;                  //number of used threads on top of main thread
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
 std::vector<bool> active_threads;
+std::cerr << __LINE__ << "\n";
 resize(active_threads,thread_count,false);
+std::cerr << __LINE__ << "\n";
 std::vector<kmer_list_struct_t> kmer_list_structs;
+std::cerr << __LINE__ << "\n";
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
+std::cerr << __LINE__ << "\n";
 delete &kmer_list_struct_template;
+std::cerr << __LINE__ << "\n";
 
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
@@ -372,7 +377,7 @@ while (atEnd(file1)!=1) { // proceeding through files
 
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
-    for (uint_fast8_t i; i!=thread_count; i++) {
+    for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
       if (active_threads[i]==true){
         pthread_join(list_thread[i],NULL);
         active_threads[i]=false;
@@ -441,6 +446,12 @@ while (atEnd(file1)!=1) { // proceeding through files
   //   }
   // }
 
+}
+for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
+  if (active_threads[i]==true){
+    pthread_join(list_thread[i],NULL);
+    active_threads[i]=false;
+  }
 }
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
