@@ -351,7 +351,7 @@ std::vector<bool> active_threads;
 resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs;
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
-delete kmer_list_struct_template;
+delete &kmer_list_struct_template;
 
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
