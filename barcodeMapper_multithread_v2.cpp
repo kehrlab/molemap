@@ -390,7 +390,7 @@ std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 // std::cerr << __LINE__<<"\n";
 
-// auto tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__<<"\n";
 
@@ -410,6 +410,8 @@ while (atEnd(file1)!=1) { // proceeding through files
 
       pthread_join(list_thread[thread],NULL);
       active_threads[thread]=false;
+      std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+      tbegin = std::chrono::high_resolution_clock::now();
     }
     // std::cerr << __LINE__<<"\n";
 
