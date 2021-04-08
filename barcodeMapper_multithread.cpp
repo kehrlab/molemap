@@ -215,7 +215,7 @@ std::cout <<'\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << '\n'
           << "quality threshold\t" << options.q << '\n'
-          << "length threshold \t" << options.l << '\n';
+          << "length threshold \t" << options.l << '\n'
           << "threads          \t" << options.threads <<"\n\n";
 
 uint_fast8_t k = options.k;
