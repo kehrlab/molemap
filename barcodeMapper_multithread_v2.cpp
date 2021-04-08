@@ -403,11 +403,11 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
-
+    std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcode=barcode;
     //start new thread here
     if (active_threads[thread]==true) {
-
+      std::cerr << __LINE__<<"\n";
       pthread_join(list_thread[thread],NULL);
       active_threads[thread]=false;
     }
