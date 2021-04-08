@@ -158,6 +158,12 @@ typedef struct{
   int64_t random_seed;
   uint_fast8_t mini_window_size;
   uint_fast32_t bucket_number;
+  uint_fast32_t max_window_size;
+  uint_fast32_t max_gap_size;
+  uint_fast8_t window_count;
+  std::string output_file;
+  std::string barcode;
+
 } kmer_list_struct_t;
 
 void *fillList(void *arg){
@@ -198,7 +204,7 @@ void *fillList(void *arg){
     }
     if (!(kmer_list).empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+      MapKmerList(kmer_list,data->max_window_size,data->max_gap_size,data->window_count,toCString(data->output_file),data->barcode, options.q, options.l);
       kmer_list.clear();
     }
     clear(data->reads);
@@ -364,6 +370,10 @@ kmer_list_struct_template.maxhash=maxhash;
 kmer_list_struct_template.random_seed=random_seed;
 kmer_list_struct_template.mini_window_size=mini_window_size;
 kmer_list_struct_template.bucket_number=bucket_number;
+kmer_list_struct_template.max_window_size=max_window_size;  //5000;   // maximum size of the genomic windows to wich the reads are matched
+kmer_list_struct_template.max_gap_size=max_gap_size;     // maximum gap size between two adjacent k_mer hits
+kmer_list_struct_template.window_count=window_count;
+kmer_list_struct_template.output_file=options.output_file;
 // std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
@@ -390,6 +400,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 
+    kmer_list_structs[thread].barcode=barcode;
     //start new thread here
     if (active_threads[thread]==true) {
 
