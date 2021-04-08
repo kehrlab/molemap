@@ -140,7 +140,7 @@ void *readC(void *arg){
 }
 
 typedef struct{
-  std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
+  std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> *kmer_list;
   StringSet<Dna5String> reads;
   Index_t *Index;
   uint_fast8_t k;
@@ -333,8 +333,8 @@ std::streampos BCI_pos2;
 std::cerr << "Processing read file...";
 std::cerr << __LINE__ << "\n";
 kmer_list_struct_t kmer_list_struct;
-// std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
-resize(kmer_list_struct.reads, 2, Exact());
+std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
+kmer_list_struct.kmer_list=&kmer_list;
 kmer_list_struct.Index=&Index;
 kmer_list_struct.k=k;
 kmer_list_struct.k_2=k_2;
@@ -376,11 +376,11 @@ while (atEnd(file1)!=1) { // proceeding through files
       }
       std::cerr << __LINE__ << "\n";
     }
-    if (!kmer_list_struct.kmer_list.empty()) {
+    if (!(*kmer_list_struct.kmer_list).empty()) {
       std::cerr << __LINE__ << "\n";
-      sort(kmer_list_struct.kmer_list.begin(),kmer_list_struct.kmer_list.end());
-      MapKmerList(kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-      kmer_list_struct.kmer_list.clear();
+      sort(kmer_list_struct.*kmer_list.begin(),kmer_list_struct.kmer_list.end());
+      MapKmerList(*kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+      (*kmer_list_struct.kmer_list).clear();
       std::cerr << __LINE__ << "\n";
 
     }
