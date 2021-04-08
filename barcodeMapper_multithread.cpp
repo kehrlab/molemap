@@ -332,30 +332,33 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 std::cerr << __LINE__ << "\n";
-kmer_list_struct_t kmer_list_struct;
+kmer_list_struct_t kmer_list_struct_template; // filling template struct with constant parameters
 std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
-kmer_list_struct.kmer_list=&kmer_list;
-kmer_list_struct.Index=&Index;
-kmer_list_struct.k=k;
-kmer_list_struct.k_2=k_2;
-kmer_list_struct.maxhash=maxhash;
-kmer_list_struct.random_seed=random_seed;
-kmer_list_struct.mini_window_size=mini_window_size;
-kmer_list_struct.bucket_number=bucket_number;
+kmer_list_struct_template.kmer_list=&kmer_list;
+kmer_list_struct_template.Index=&Index;
+kmer_list_struct_template.k=k;
+kmer_list_struct_template.k_2=k_2;
+kmer_list_struct_template.maxhash=maxhash;
+kmer_list_struct_template.random_seed=random_seed;
+kmer_list_struct_template.mini_window_size=mini_window_size;
+kmer_list_struct_template.bucket_number=bucket_number;
 std::cerr << __LINE__ << "\n";
 
-uint_fast8_t thread=0;
-uint_fast8_t thread_count=3;
-pthread_t list_thread[thread_count];
+uint_fast8_t thread=0;                        //currently selected thread
+uint_fast8_t thread_count=3;                  //number of used threads on top of main thread
+pthread_t list_thread[thread_count];          //thread for creating kmer_list
 std::vector<bool> active_threads;
 resize(active_threads,thread_count,false);
+kmer_list_struct_t kmer_list_structs;
+resize(kmer_list_structs,thread_count,kmer_list_struct_template);
+delete kmer_list_struct_template;
 
 while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
 
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
-  assignValue(kmer_list_struct.reads,0,read1);
+  assignValue(kmer_list_structs[thread].reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   std::cerr << __LINE__ << "\n";
@@ -376,18 +379,18 @@ while (atEnd(file1)!=1) { // proceeding through files
       }
       std::cerr << __LINE__ << "\n";
     }
-    if (!(*kmer_list_struct.kmer_list).empty()) {
+    if (!(kmer_list).empty()) {
       std::cerr << __LINE__ << "\n";
-      sort((*kmer_list_struct.kmer_list).begin(),(*kmer_list_struct.kmer_list).end());
-      MapKmerList(*kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-      (*kmer_list_struct.kmer_list).clear();
+      sort(kmer_list.begin(),kmer_list.end());
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+      kmer_list.clear();
       std::cerr << __LINE__ << "\n";
 
     }
   }
   std::cerr << __LINE__ << "\n";
   readRecord(id2, read2, file2);
-  assignValue(kmer_list_struct.reads,1,read2);
+  assignValue(kmer_list_structs[thread].reads,1,read2);
   barcode=new_barcode;
 
   //start new thread here
@@ -400,7 +403,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   }
   std::cerr << __LINE__ << "\n";
 
-  ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_struct);
+  ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
   if(ret != 0) {
           printf("Error: pthread_create() failed\n");
           exit(EXIT_FAILURE);
@@ -439,9 +442,9 @@ while (atEnd(file1)!=1) { // proceeding through files
   // }
 
 }
-if (!(*kmer_list_struct.kmer_list).empty()) {
-  sort((*kmer_list_struct.kmer_list).begin(),(*kmer_list_struct.kmer_list).end());
-  MapKmerList(*kmer_list_struct.kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+if (!kmer_list.empty()) {
+  sort(kmer_list.begin(),kmer_list.end());
+  MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
 }
 
 close(file1);
