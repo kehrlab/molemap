@@ -127,7 +127,7 @@ reading the Index
 */
 
 std::cerr << "Reading in the k-mer index";
-auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
 String<uint32_t> pos;
