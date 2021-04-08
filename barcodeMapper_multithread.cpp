@@ -163,21 +163,21 @@ void *fillList(void *arg){
           if (t!=minimizer_position){                 // if old minimizer in current window
             rollinghashkMer(hash.first,hash.second,(*it)[t+data->mini_window_size],data->k,data->maxhash); // inline?!
             if (minimizer > ReturnSmaller(hash.first,hash.second,data->random_seed)){ // if new value replaces current minimizer
-              AppendPos(data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number,minimizer_active_bases,data->k_2);
+              AppendPos(*data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number,minimizer_active_bases,data->k_2);
               minimizer=ReturnSmaller(hash.first,hash.second,data->random_seed);
               minimizer_position=t+1+data->mini_window_size-data->k;
               minimizer_active_bases=0;
             }
             minimizer_active_bases++;
           }else{
-            AppendPos(data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number, minimizer_active_bases,data->k_2);
+            AppendPos(*data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number, minimizer_active_bases,data->k_2);
             minimizer_position=t+1;
             hash=hashkMer(infix(*it,t+1,t+1+data->k),data->k);
             minimizer=InitMini(infix(*it,t+1,t+1+data->mini_window_size), data->k, hash, data->maxhash, data->random_seed, minimizer_position); // find minimizer in current window by reinitialization
             minimizer_active_bases=1;
           }
         }
-        AppendPos(data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number, minimizer_active_bases,data->k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
+        AppendPos(*data->kmer_list, minimizer, (data->Index)->C, (data->Index)->dir, (data->Index)->ref, (data->Index)->pos, data->bucket_number, minimizer_active_bases,data->k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
       }
     }
     pthread_exit(NULL);
