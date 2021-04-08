@@ -163,6 +163,8 @@ typedef struct{
   uint_fast8_t window_count;
   std::string output_file;
   std::string barcode;
+  unsigned q;
+  unsigned l;
 
 } kmer_list_struct_t;
 
@@ -204,7 +206,7 @@ void *fillList(void *arg){
     }
     if (!(kmer_list).empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,data->max_window_size,data->max_gap_size,data->window_count,toCString(data->output_file),data->barcode, options.q, options.l);
+      MapKmerList(kmer_list,data->max_window_size,data->max_gap_size,data->window_count,toCString(data->output_file),data->barcode, data->q, data->l);
       kmer_list.clear();
     }
     clear(data->reads);
@@ -374,6 +376,8 @@ kmer_list_struct_template.max_window_size=max_window_size;  //5000;   // maximum
 kmer_list_struct_template.max_gap_size=max_gap_size;     // maximum gap size between two adjacent k_mer hits
 kmer_list_struct_template.window_count=window_count;
 kmer_list_struct_template.output_file=options.output_file;
+kmer_list_struct_template.q=options.q;
+kmer_list_struct_template.l=options.l;
 // std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
