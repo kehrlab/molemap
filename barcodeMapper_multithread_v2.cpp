@@ -392,7 +392,7 @@ resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 
 auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
 
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
@@ -411,7 +411,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       pthread_join(list_thread[thread],NULL);
       active_threads[thread]=false;
     }
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
 
     ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
     if(ret != 0) {
