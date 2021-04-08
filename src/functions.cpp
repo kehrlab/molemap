@@ -111,16 +111,16 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2,pthread_mutex_t *lock){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2/*,pthread_mutex_t *lock*/){
       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
       uint_fast32_t abundance=dir[c+1]-dir[c];
       if (abundance<=10){
-        pthread_mutex_lock(lock);
+        // pthread_mutex_lock(lock);
         kmer_list.reserve(kmer_list.size()+abundance);
         for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
           kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
-        pthread_mutex_unlock(lock);
+        // pthread_mutex_unlock(lock);
       }
       return;
 }
