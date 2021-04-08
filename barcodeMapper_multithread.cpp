@@ -333,6 +333,7 @@ std::streampos BCI_pos2;
 std::cerr << "Processing read file...";
 std::cerr << __LINE__ << "\n";
 kmer_list_struct_t kmer_list_struct_template; // filling template struct with constant parameters
+resize(kmer_list_struct_template.reads,2,Exact());
 std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
 kmer_list_struct_template.kmer_list=&kmer_list;
 kmer_list_struct_template.Index=&Index;
