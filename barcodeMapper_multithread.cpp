@@ -65,6 +65,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         "t", "threads", "available threads for multithreading.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "4");
+    setMinValue(parser, "t", "2");
 
     setShortDescription(parser, "Map barcodes to reference.");
     setVersion(parser, "0.1");
@@ -364,7 +365,7 @@ kmer_list_struct_template.bucket_number=bucket_number;
 
 uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
-std::cerr << "thread count: " << thread_count<<"\n";
+// std::cerr << "thread count: " << thread_count<<"\n";
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
 std::vector<bool> active_threads;             //info about started threads
 resize(active_threads,thread_count,false);
@@ -372,7 +373,7 @@ std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 // std::cerr << __LINE__<<"\n";
 
-auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__<<"\n";
 
@@ -407,8 +408,8 @@ while (atEnd(file1)!=1) { // proceeding through files
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
       pthread_mutex_unlock(&lock);
-      std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-      tbegin = std::chrono::high_resolution_clock::now();
+      // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+      // tbegin = std::chrono::high_resolution_clock::now();
     }
   }
   readRecord(id2, read2, file2);
@@ -474,8 +475,8 @@ for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to fin
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-  std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
-  tbegin = std::chrono::high_resolution_clock::now();
+  // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+  // tbegin = std::chrono::high_resolution_clock::now();
 }
 
 close(file1);
