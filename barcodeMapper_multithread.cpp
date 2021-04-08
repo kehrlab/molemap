@@ -359,7 +359,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   assignValue(kmer_list_structs[thread].reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-
+  auto tbegin = std::chrono::high_resolution_clock::now();
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
@@ -378,7 +378,8 @@ while (atEnd(file1)!=1) { // proceeding through files
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
       kmer_list.clear();
-
+      std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+      tbegin = std::chrono::high_resolution_clock::now();
     }
   }
   readRecord(id2, read2, file2);
