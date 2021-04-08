@@ -360,7 +360,7 @@ kmer_list_struct_template.maxhash=maxhash;
 kmer_list_struct_template.random_seed=random_seed;
 kmer_list_struct_template.mini_window_size=mini_window_size;
 kmer_list_struct_template.bucket_number=bucket_number;
-std::cerr << __LINE__<<"\n";
+// std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
@@ -370,11 +370,11 @@ std::vector<bool> active_threads;             //info about started threads
 resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
-std::cerr << __LINE__<<"\n";
+// std::cerr << __LINE__<<"\n";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
 
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
@@ -389,17 +389,17 @@ while (atEnd(file1)!=1) { // proceeding through files
 
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     for (uint32_t i=0; i!=thread_count; i++) { //waiting for active threads to finish
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
       if (active_threads[i]==true){
-        std::cerr << __LINE__<<"\n";
+        // std::cerr << __LINE__<<"\n";
         pthread_join(list_thread[i],NULL);
-        std::cerr << __LINE__<<"\n";
+        // std::cerr << __LINE__<<"\n";
         active_threads[i]=false;
       }
     }
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
 
     if (!(kmer_list).empty()) {
       pthread_mutex_lock(&lock);
@@ -414,7 +414,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   readRecord(id2, read2, file2);
   assignValue(kmer_list_structs[thread].reads,1,read2);
   barcode=new_barcode;
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
 
   //start new thread here
   if (active_threads[thread]==true) {
@@ -422,7 +422,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     pthread_join(list_thread[thread],NULL);
     active_threads[thread]=false;
   }
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
 
   ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
   if(ret != 0) {
@@ -462,14 +462,14 @@ while (atEnd(file1)!=1) { // proceeding through files
   // }
 
 }
-std::cerr << __LINE__<<"\n";
+// std::cerr << __LINE__<<"\n";
 for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
   if (active_threads[i]==true){
     pthread_join(list_thread[i],NULL);
     active_threads[i]=false;
   }
 }
-std::cerr << __LINE__<<"\n";
+// std::cerr << __LINE__<<"\n";
 
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
