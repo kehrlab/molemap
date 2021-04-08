@@ -368,12 +368,15 @@ while (atEnd(file1)!=1) { // proceeding through files
 
     // map barcode and clear k_mer list
     // map barcode as soon as all k-mer mapping threads are finished
+    std::cerr << __LINE__<<"\n";
     for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
       if (active_threads[i]==true){
         pthread_join(list_thread[i],NULL);
         active_threads[i]=false;
       }
     }
+    std::cerr << __LINE__<<"\n";
+
     if (!(kmer_list).empty()) {
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
@@ -385,6 +388,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   readRecord(id2, read2, file2);
   assignValue(kmer_list_structs[thread].reads,1,read2);
   barcode=new_barcode;
+  std::cerr << __LINE__<<"\n";
 
   //start new thread here
   if (active_threads[thread]==true) {
@@ -392,6 +396,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     pthread_join(list_thread[thread],NULL);
     active_threads[thread]=false;
   }
+  std::cerr << __LINE__<<"\n";
 
   ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
   if(ret != 0) {
@@ -431,12 +436,15 @@ while (atEnd(file1)!=1) { // proceeding through files
   // }
 
 }
+std::cerr << __LINE__<<"\n";
 for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
   if (active_threads[i]==true){
     pthread_join(list_thread[i],NULL);
     active_threads[i]=false;
   }
 }
+std::cerr << __LINE__<<"\n";
+
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
