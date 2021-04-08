@@ -356,9 +356,13 @@ while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__ << "\n";
 
   BCI_pos1=file1.stream.file.tellg();
+  std::cerr << __LINE__ << "\n";
   readRecord(id1, read1, file1);
+  std::cerr << __LINE__ << "\n";
   assignValue(kmer_list_structs[thread].reads,0,read1);
+  std::cerr << __LINE__ << "\n";
   meta=toCString(id1);
+  std::cerr << __LINE__ << "\n";
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   std::cerr << __LINE__ << "\n";
 
