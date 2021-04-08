@@ -352,6 +352,7 @@ resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 
+auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
 
   BCI_pos1=file1.stream.file.tellg();
@@ -359,7 +360,6 @@ while (atEnd(file1)!=1) { // proceeding through files
   assignValue(kmer_list_structs[thread].reads,0,read1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  auto tbegin = std::chrono::high_resolution_clock::now();
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
