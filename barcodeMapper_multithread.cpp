@@ -364,6 +364,7 @@ std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
+std::cerr << "thread count: " << thread_count<<"\n";
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
 std::vector<bool> active_threads;             //info about started threads
 resize(active_threads,thread_count,false);
@@ -390,8 +391,11 @@ while (atEnd(file1)!=1) { // proceeding through files
     // map barcode as soon as all k-mer mapping threads are finished
     std::cerr << __LINE__<<"\n";
     for (uint32_t i; i!=thread_count; i++) { //waiting for active threads to finish
+      std::cerr << __LINE__<<"\n";
       if (active_threads[i]==true){
+        std::cerr << __LINE__<<"\n";
         pthread_join(list_thread[i],NULL);
+        std::cerr << __LINE__<<"\n";
         active_threads[i]=false;
       }
     }
