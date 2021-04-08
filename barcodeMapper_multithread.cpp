@@ -22,8 +22,9 @@ struct bcmapOptions{
   std::string output_file;
   unsigned q;
   unsigned l;
+  unsigned threads;
   bcmapOptions() :
-  k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000)
+  k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000), threads(3)
   {}
   };
 
@@ -60,6 +61,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         "l", "length", "Length threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "l", "1000");
+    addOption(parser, seqan::ArgParseOption(
+        "t", "threads", "available threads for multithreading.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "t", "4");
 
     setShortDescription(parser, "Map barcodes to reference.");
     setVersion(parser, "0.1");
@@ -83,6 +88,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.output_file, parser, "o");
     getOptionValue(options.q, parser, "q");
     getOptionValue(options.l, parser, "l");
+    getOptionValue(options.threads, parser, "t");
 
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
@@ -209,7 +215,8 @@ std::cout <<'\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << '\n'
           << "quality threshold\t" << options.q << '\n'
-          << "length threshold \t" << options.l << "\n\n";
+          << "length threshold \t" << options.l << '\n';
+          << "threads          \t" << options.threads <<"\n\n";
 
 uint_fast8_t k = options.k;
 int k_2 = k+1;
@@ -355,7 +362,7 @@ kmer_list_struct_template.mini_window_size=mini_window_size;
 kmer_list_struct_template.bucket_number=bucket_number;
 
 uint32_t thread=0;                        //currently selected thread
-uint32_t thread_count=3;                  //number of used threads on top of main thread
+uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
 std::vector<bool> active_threads;             //info about started threads
 resize(active_threads,thread_count,false);
