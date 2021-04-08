@@ -440,6 +440,8 @@ for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to fin
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+  std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+  tbegin = std::chrono::high_resolution_clock::now();
 }
 
 close(file1);
