@@ -430,7 +430,6 @@ while (atEnd(file1)!=1) { // proceeding through files
     //start new thread here
     // if (active_threads[thread]==true) {
       // std::cerr << __LINE__<<"\n";
-      // std::cerr << "joining thread " << (int)list_thread[thread] << "\n";
       // active_threads[thread]=false;
     // }
     // std::cerr << __LINE__<<"\n";
@@ -440,6 +439,7 @@ while (atEnd(file1)!=1) { // proceeding through files
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
       }
+      std::cerr << "joining thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
       pthread_join(list_thread[thread],NULL);
