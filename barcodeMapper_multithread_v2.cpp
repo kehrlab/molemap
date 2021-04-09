@@ -391,7 +391,7 @@ pthread_t list_thread[thread_count];          //thread for creating kmer_list
 // resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
-for (unsigned i=0; i!=thread_count; i++) {
+for (uint32_t i=0; i!=thread_count; i++) {
   pthread_create(&list_thread[thread], NULL, &initializeThread, NULL);
 }
 // std::cerr << __LINE__<<"\n";
@@ -439,11 +439,11 @@ std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std
 tbegin = std::chrono::high_resolution_clock::now();
 // std::cerr << __LINE__<<"\n";
 
-for (uint_fast8_t i; i!=thread_count; i++) { //waiting for active threads to finish
-  if (active_threads[i]==true){
+for (uint32_t i; i!=thread_count; i++) { //waiting for active threads to finish
+  // if (active_threads[i]==true){
     pthread_join(list_thread[i],NULL);
-    active_threads[i]=false;
-  }
+    // active_threads[i]=false;
+  // }
 }
 // std::cerr << __LINE__<<"\n";
 
