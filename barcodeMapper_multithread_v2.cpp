@@ -396,7 +396,7 @@ std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 for (uint32_t i=0; i!=thread_count; i++) {
   pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
-  std::cerr << "thread " << i << " initialized!\n";
+  std::cerr << "thread " << (int)list_thread[thread] << " initialized!\n";
 }
 // std::cerr << __LINE__<<"\n";
 
@@ -418,7 +418,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     //start new thread here
     // if (active_threads[thread]==true) {
       std::cerr << __LINE__<<"\n";
-      std::cerr << "joining thread " << thread << "\n";
+      std::cerr << "joining thread " << (int)list_thread[thread] << "\n";
       pthread_join(list_thread[thread],NULL);
       // active_threads[thread]=false;
     // }
@@ -610,7 +610,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     // Output
     std::fstream results;
     pthread_mutex_lock(&lock);
-    std::cerr << "locked!\n";
+    // std::cerr << "locked!\n";
     results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
@@ -625,7 +625,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
     results.close();
     pthread_mutex_unlock(&lock);
-    std::cerr << "unlocked!\n";
+    // std::cerr << "unlocked!\n";
 
     return;
   } //MapKmerList
