@@ -427,7 +427,9 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcodes.push_back(barcode);
+    std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].reads.push_back({});
+    std::cerr << __LINE__<<"\n";
     barcode_count++;
     //start new thread here
     // if (active_threads[thread]==true) {
