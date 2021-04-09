@@ -439,7 +439,9 @@ while (atEnd(file1)!=1) { // proceeding through files
   }
   std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
+  std::cerr << __LINE__<<"\n";
   appendValue(kmer_list_structs[thread].reads,read1);
+  std::cerr << __LINE__<<"\n";
   appendValue(kmer_list_structs[thread].reads,read2);
   std::cerr << __LINE__<<"\n";
 }
