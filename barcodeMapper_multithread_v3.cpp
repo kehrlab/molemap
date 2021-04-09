@@ -425,7 +425,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // std::cerr << __LINE__<<"\n";
-    kmer_list_structs[thread].barcode[barcode_count]=barcode;
+    kmer_list_structs[thread].barcodes[barcode_count]=barcode;
     barcode_count++;
     //start new thread here
     // if (active_threads[thread]==true) {
@@ -461,7 +461,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << __LINE__<<"\n";
   read_count++;
 }
-kmer_list_structs[thread].barcode[barcode_count]=new_barcode;
+kmer_list_structs[thread].barcodes[barcode_count]=new_barcode;
 ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
 if(ret != 0) {
   printf("Error: pthread_create() failed\n");
