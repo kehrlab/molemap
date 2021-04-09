@@ -396,6 +396,7 @@ std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 for (uint32_t i=0; i!=thread_count; i++) {
   pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
+  std::cerr << "thread " << i << " initialized!\n";
 }
 // std::cerr << __LINE__<<"\n";
 
@@ -417,6 +418,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     //start new thread here
     // if (active_threads[thread]==true) {
       std::cerr << __LINE__<<"\n";
+      std::cerr << "joining thread " << thread << "\n";
       pthread_join(list_thread[thread],NULL);
       // active_threads[thread]=false;
     // }
