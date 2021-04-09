@@ -150,7 +150,7 @@ void *readC(void *arg){
 }
 
 typedef struct{
-  std::vector<StringSet<Dna5String>> reads;
+  std::vector<std::vector<Dna5String>> reads;
   Index_t *Index;
   uint_fast8_t k;
   uint_fast8_t k_2;
@@ -171,10 +171,11 @@ typedef struct{
 void *fillList(void *arg){
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   std::vector<std::string>::iterator itrbarcodes=(data->barcodes).begin();
-  std::vector<StringSet<Dna5String>>::iterator itrreads;
+  std::vector<std::vector<Dna5String>>::iterator itrreads;
+  std::vector<Dna5String>::iterator it;
   for (itrreads=(data->reads).begin(); itrreads!=(data->reads).end(); itrreads++){
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
-    for (TStringSetIterator it = begin(*itrreads); it!=end(*itrreads); ++it){                                            // Iterating over the reads
+    for (it = begin(*itrreads); it!=end(*itrreads); ++it){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,data->k),data->k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(*it,0,data->mini_window_size), data->k, hash, data->maxhash, data->random_seed, minimizer_position);          // calculating the minimizer of the first window
@@ -460,9 +461,11 @@ while (atEnd(file1)!=1) { // proceeding through files
   // std::cerr << "thread: " << thread << "\n";
   // std::cerr << "read1:  " << read1 << "\n";
   // std::cerr << "reads.size: " << kmer_list_structs[thread].reads.size() << "\n";
-  appendValue(kmer_list_structs[thread].reads[barcode_count],read1);
+  // appendValue(kmer_list_structs[thread].reads[barcode_count],read1);
+  kmer_list_structs[thread].reads[barcode_count].push_back(read1);
+  kmer_list_structs[thread].reads[barcode_count].push_back(read2);
   // std::cerr << __LINE__<<"\n";
-  appendValue(kmer_list_structs[thread].reads[barcode_count],read2);
+  // appendValue(kmer_list_structs[thread].reads[barcode_count],read2);
   std::cerr << __LINE__<<"\n";
   read_count++;
 }
