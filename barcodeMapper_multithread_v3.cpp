@@ -173,13 +173,16 @@ void *fillList(void *arg){
   std::vector<std::string>::iterator itrbarcodes=(data->barcodes).begin();
   std::vector<std::vector<Dna5String>>::iterator itrreads;
   std::vector<Dna5String>::iterator it;
+  std::cerr << __LINE__ << "\n";
   for (itrreads=(data->reads).begin(); itrreads!=(data->reads).end(); itrreads++){
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
+    std::cerr << __LINE__ << "\n";
     for (it = (*itrreads).begin(); it!=(*itrreads).end(); ++it){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,data->k),data->k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(*it,0,data->mini_window_size), data->k, hash, data->maxhash, data->random_seed, minimizer_position);          // calculating the minimizer of the first window
       uint_fast8_t minimizer_active_bases=1;
+      std::cerr << __LINE__ << "\n";
       if (length(*it)>data->mini_window_size){
         for (uint_fast32_t t=0;t<(length(*it)-1-data->mini_window_size);t++){
           if (t!=minimizer_position){                 // if old minimizer in current window
@@ -215,6 +218,7 @@ void *fillList(void *arg){
     }
     itrbarcodes++;
   }
+  std::cerr << __LINE__ << "\n";
   data->reads.clear();
   data->barcodes.clear();
   pthread_exit(NULL);
@@ -425,18 +429,18 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcodes.push_back(barcode);
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].reads.push_back({});
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     barcode_count++;
     //start new thread here
     // if (active_threads[thread]==true) {
       // std::cerr << __LINE__<<"\n";
       // active_threads[thread]=false;
     // }
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
@@ -446,7 +450,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       kmer_list_structs[thread].reads.push_back({});
@@ -455,10 +459,10 @@ while (atEnd(file1)!=1) { // proceeding through files
       // std::cerr << __LINE__<<"\n";
 
     }
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
   // std::cerr << __LINE__<<"\n";
   // std::cerr << "thread: " << thread << "\n";
@@ -470,7 +474,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   kmer_list_structs[thread].reads[barcode_count].push_back(read2);
   // std::cerr << __LINE__<<"\n";
   // appendValue(kmer_list_structs[thread].reads[barcode_count],read2);
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
   read_count++;
 }
 kmer_list_structs[thread].barcodes.push_back(new_barcode);
