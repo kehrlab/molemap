@@ -386,7 +386,7 @@ kmer_list_struct_template.l=options.l;
 uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
 // std::cerr << "thread count: " << thread_count<<"\n";
-std::std::vector<pthread_t> list_thread;
+std::vector<pthread_t> list_thread;
 resize(list_thread,thread_count);
 // pthread_t list_thread[thread_count];          //thread for creating kmer_list
 pthread_attr_t attr;
