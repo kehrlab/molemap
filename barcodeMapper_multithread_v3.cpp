@@ -99,7 +99,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
+// typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
 
 pthread_mutex_t lock;
 
@@ -458,9 +458,10 @@ while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
   // std::cerr << __LINE__<<"\n";
-  // std::cerr << "thread: " << thread << "\n";
-  // std::cerr << "read1:  " << read1 << "\n";
-  // std::cerr << "reads.size: " << kmer_list_structs[thread].reads.size() << "\n";
+  std::cerr << "thread: " << thread << "\n";
+  std::cerr << "read1:  " << read1 << "\n";
+  std::cerr << "barcode_count: " << barcode_count << "\n";
+  std::cerr << "reads.size: " << kmer_list_structs[thread].reads.size() << "\n";
   // appendValue(kmer_list_structs[thread].reads[barcode_count],read1);
   kmer_list_structs[thread].reads[barcode_count].push_back(read1);
   kmer_list_structs[thread].reads[barcode_count].push_back(read2);
