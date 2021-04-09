@@ -608,6 +608,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     // Output
     std::fstream results;
     pthread_mutex_lock(&lock);
+    std::cerr << "locked!\n";
     results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
@@ -622,5 +623,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
     results.close();
     pthread_mutex_unlock(&lock);
+    std::cerr << "unlocked!\n";
+
     return;
   } //MapKmerList
