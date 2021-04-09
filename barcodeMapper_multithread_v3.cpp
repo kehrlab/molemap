@@ -412,7 +412,7 @@ pthread_join(list_thread[thread],NULL);
 // std::cerr << __LINE__<<"\n";
 int32_t barcode_count=-1;
 int32_t read_count=0;
-auto tbegin = std::chrono::high_resolution_clock::now();
+// auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
 
   BCI_pos1=file1.stream.file.tellg();
@@ -488,8 +488,8 @@ for (int i; i!=thread_count; i++) { //waiting for active threads to finish
 
 close(file1);
 close(file2);
-std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-tbegin = std::chrono::high_resolution_clock::now();
+// std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+// tbegin = std::chrono::high_resolution_clock::now();
 std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
 
