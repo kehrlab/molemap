@@ -447,6 +447,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
+      kmer_list_structs[thread].reads.push_back({});
       read_count=0;
       barcode_count=0;
       std::cerr << __LINE__<<"\n";
