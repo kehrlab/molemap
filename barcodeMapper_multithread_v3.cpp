@@ -435,7 +435,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       // active_threads[thread]=false;
     // }
     // std::cerr << __LINE__<<"\n";
-    if (read_count>1000) {
+    if (read_count>10000) {
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
