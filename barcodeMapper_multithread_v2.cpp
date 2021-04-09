@@ -434,18 +434,18 @@ while (atEnd(file1)!=1) { // proceeding through files
     }
     // active_threads[thread]=true;
     thread=(thread+1)%(thread_count);
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
   appendValue(kmer_list_structs[thread].reads,read1);
   appendValue(kmer_list_structs[thread].reads,read2);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
 }
 std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 tbegin = std::chrono::high_resolution_clock::now();
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
@@ -453,7 +453,7 @@ for (int i; i!=thread_count; i++) { //waiting for active threads to finish
     // active_threads[i]=false;
   // }
 }
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 close(file1);
 close(file2);
