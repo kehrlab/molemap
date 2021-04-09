@@ -165,14 +165,12 @@ typedef struct{
   std::string barcode;
   unsigned q;
   unsigned l;
-  pthread_mutex_t threadlock;
 
 } kmer_list_struct_t;
 
 void *fillList(void *arg){
-    kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
-    pthread_mutex_lock(&(data->threadlock));
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
+    kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
     for (TStringSetIterator it = begin(data->reads); it!=end(data->reads); ++it){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,data->k),data->k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
@@ -212,8 +210,6 @@ void *fillList(void *arg){
       kmer_list.clear();
     }
     clear(data->reads);
-    pthread_detach(pthread_self());
-    pthread_mutex_unlock(&(data->threadlock));
     pthread_exit(NULL);
 }
 
@@ -394,17 +390,13 @@ pthread_t list_thread[thread_count];          //thread for creating kmer_list
 pthread_attr_t attr;
 pthread_attr_init(&attr);
 pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-pthread_mutex_t threadlock[thread_count];
 // std::vector<bool> active_threads;             //info about started threads
 // resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 for (uint32_t i=0; i!=thread_count; i++) {
-  kmer_list_structs[i].threadlock=threadlock[i];
+  pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
 }
-// for (uint32_t i=0; i!=thread_count; i++) {
-//   pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
-// }
 // std::cerr << __LINE__<<"\n";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
@@ -425,9 +417,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     //start new thread here
     // if (active_threads[thread]==true) {
       std::cerr << __LINE__<<"\n";
-      pthread_mutex_lock(&threadlock[thread]);
-      pthread_mutex_unlock(&threadlock[thread]);
-      // pthread_join(list_thread[thread],NULL);
+      pthread_join(list_thread[thread],NULL);
       // active_threads[thread]=false;
     // }
     std::cerr << __LINE__<<"\n";
@@ -454,9 +444,7 @@ tbegin = std::chrono::high_resolution_clock::now();
 
 for (uint32_t i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
-  pthread_mutex_lock(&threadlock[i]);
-  pthread_mutex_unlock(&threadlock[i]);
-    // pthread_join(list_thread[i],NULL);
+    pthread_join(list_thread[i],NULL);
     // active_threads[i]=false;
   // }
 }
