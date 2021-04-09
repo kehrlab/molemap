@@ -213,6 +213,9 @@ void *fillList(void *arg){
     pthread_exit(NULL);
 }
 
+void *initializeThread(void *arg){
+  pthread_exit(NULL);
+}
 
 int main(int argc, char const ** argv){
 
@@ -384,10 +387,13 @@ uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
 // std::cerr << "thread count: " << thread_count<<"\n";
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
-std::vector<bool> active_threads;             //info about started threads
-resize(active_threads,thread_count,false);
+// std::vector<bool> active_threads;             //info about started threads
+// resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
+for (unsigned i=0; i!=thread_count; i++) {
+  pthread_create(&list_thread[thread], NULL, &initializeThread, NULL);
+}
 // std::cerr << __LINE__<<"\n";
 
 auto tbegin = std::chrono::high_resolution_clock::now();
@@ -406,11 +412,11 @@ while (atEnd(file1)!=1) { // proceeding through files
     std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcode=barcode;
     //start new thread here
-    if (active_threads[thread]==true) {
+    // if (active_threads[thread]==true) {
       std::cerr << __LINE__<<"\n";
       pthread_join(list_thread[thread],NULL);
-      active_threads[thread]=false;
-    }
+      // active_threads[thread]=false;
+    // }
     std::cerr << __LINE__<<"\n";
 
     ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
@@ -418,7 +424,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       printf("Error: pthread_create() failed\n");
       exit(EXIT_FAILURE);
     }
-    active_threads[thread]=true;
+    // active_threads[thread]=true;
     thread=(thread+1)%(thread_count);
     // std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
