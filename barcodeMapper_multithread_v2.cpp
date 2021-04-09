@@ -396,7 +396,7 @@ pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 // resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
-for (uint32_t i=0; i!=thread_count; i++) {
+for (int i=0; i!=thread_count; i++) {
   list_thread[i]=i;
   pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
   std::cerr << "thread " << (int)list_thread[thread] << " initialized!\n";
