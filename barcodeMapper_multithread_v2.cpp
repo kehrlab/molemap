@@ -449,17 +449,22 @@ while (atEnd(file1)!=1) { // proceeding through files
   appendValue(kmer_list_structs[thread].reads,read2);
   // std::cerr << __LINE__<<"\n";
 }
-std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-tbegin = std::chrono::high_resolution_clock::now();
-std::cerr << __LINE__<<"\n";
+kmer_list_structs[thread].barcode=new_barcode;
+ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
+if(ret != 0) {
+  printf("Error: pthread_create() failed\n");
+  exit(EXIT_FAILURE);
+}
+// std::cerr << __LINE__<<"\n";
 
 for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
-    pthread_join(list_thread[i],NULL);
-    // active_threads[i]=false;
+  pthread_join(list_thread[i],NULL);
+  // active_threads[i]=false;
   // }
 }
-std::cerr << __LINE__<<"\n";
+std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+tbegin = std::chrono::high_resolution_clock::now();
 
 close(file1);
 close(file2);
