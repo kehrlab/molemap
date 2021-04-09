@@ -470,7 +470,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   std::cerr << __LINE__<<"\n";
   read_count++;
 }
-kmer_list_structs[thread].barcodes[barcode_count]=new_barcode;
+kmer_list_structs[thread].barcodes.push_back(new_barcode);
 ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
 if(ret != 0) {
   printf("Error: pthread_create() failed\n");
