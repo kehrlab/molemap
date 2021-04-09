@@ -447,7 +447,7 @@ std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std
 tbegin = std::chrono::high_resolution_clock::now();
 // std::cerr << __LINE__<<"\n";
 
-for (uint32_t i; i!=thread_count; i++) { //waiting for active threads to finish
+for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
     pthread_join(list_thread[i],NULL);
     // active_threads[i]=false;
