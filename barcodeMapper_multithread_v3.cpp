@@ -175,7 +175,7 @@ void *fillList(void *arg){
   std::vector<Dna5String>::iterator it;
   for (itrreads=(data->reads).begin(); itrreads!=(data->reads).end(); itrreads++){
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;
-    for (it = *itrreads.begin(); it!=*itrreads.end(); ++it){                                            // Iterating over the reads
+    for (it = (*itrreads).begin(); it!=(*itrreads).end(); ++it){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,data->k),data->k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(*it,0,data->mini_window_size), data->k, hash, data->maxhash, data->random_seed, minimizer_position);          // calculating the minimizer of the first window
