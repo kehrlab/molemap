@@ -387,12 +387,15 @@ uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
 // std::cerr << "thread count: " << thread_count<<"\n";
 pthread_t list_thread[thread_count];          //thread for creating kmer_list
+pthread_attr_t attr;
+pthread_attr_init(&attr);
+pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 // std::vector<bool> active_threads;             //info about started threads
 // resize(active_threads,thread_count,false);
 std::vector<kmer_list_struct_t> kmer_list_structs; // input structs for threads
 resize(kmer_list_structs,thread_count,kmer_list_struct_template);
 for (uint32_t i=0; i!=thread_count; i++) {
-  pthread_create(&list_thread[thread], NULL, &initializeThread, NULL);
+  pthread_create(&list_thread[thread], &attr, &initializeThread, NULL);
 }
 // std::cerr << __LINE__<<"\n";
 
@@ -419,7 +422,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     // }
     std::cerr << __LINE__<<"\n";
 
-    ret =  pthread_create(&list_thread[thread], NULL, &fillList, &kmer_list_structs[thread]);
+    ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
     if(ret != 0) {
       printf("Error: pthread_create() failed\n");
       exit(EXIT_FAILURE);
