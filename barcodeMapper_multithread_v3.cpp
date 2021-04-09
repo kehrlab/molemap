@@ -410,7 +410,7 @@ for (int i=0; i!=thread_count; i++) {
 }
 pthread_join(list_thread[thread],NULL);
 std::cerr << __LINE__<<"\n";
-int32_t barcode_count=0;
+int32_t barcode_count=-1;
 int32_t read_count=0;
 auto tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
