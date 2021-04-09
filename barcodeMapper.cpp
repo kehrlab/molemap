@@ -329,12 +329,12 @@ if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
 }
-std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-tbegin = std::chrono::high_resolution_clock::now();
 // std::cerr << __LINE__ << "\n";
 
 close(file1);
 close(file2);
+std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+tbegin = std::chrono::high_resolution_clock::now();
 std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
 

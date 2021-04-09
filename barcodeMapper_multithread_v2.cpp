@@ -463,11 +463,11 @@ for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // active_threads[i]=false;
   // }
 }
-std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-tbegin = std::chrono::high_resolution_clock::now();
 
 close(file1);
 close(file2);
+std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+tbegin = std::chrono::high_resolution_clock::now();
 std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
 
