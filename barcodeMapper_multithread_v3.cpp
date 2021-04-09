@@ -425,7 +425,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcodes.push_back(barcode);
     kmer_list_structs[thread].reads.push_back({});
     barcode_count++;
@@ -434,17 +434,17 @@ while (atEnd(file1)!=1) { // proceeding through files
       // std::cerr << __LINE__<<"\n";
       // active_threads[thread]=false;
     // }
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
       }
-      std::cerr << "starting thread " << (int)thread << "\n";
+      // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      // std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       kmer_list_structs[thread].reads.push_back({});
@@ -453,10 +453,10 @@ while (atEnd(file1)!=1) { // proceeding through files
       // std::cerr << __LINE__<<"\n";
 
     }
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
   // std::cerr << __LINE__<<"\n";
   // std::cerr << "thread: " << thread << "\n";
@@ -468,7 +468,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   kmer_list_structs[thread].reads[barcode_count].push_back(read2);
   // std::cerr << __LINE__<<"\n";
   // appendValue(kmer_list_structs[thread].reads[barcode_count],read2);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   read_count++;
 }
 kmer_list_structs[thread].barcodes.push_back(new_barcode);
