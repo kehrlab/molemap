@@ -409,7 +409,7 @@ for (int i=0; i!=thread_count; i++) {
   // std::cerr << "thread " << (int)list_thread[i] << " initialized!\n";
 }
 pthread_join(list_thread[thread],NULL);
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 int32_t barcode_count=0;
 int32_t read_count=0;
 auto tbegin = std::chrono::high_resolution_clock::now();
@@ -419,19 +419,19 @@ while (atEnd(file1)!=1) { // proceeding through files
   readRecord(id1, read1, file1);
   meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
     BCI_pos2=file2.stream.file.tellg();
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcodes.push_back(barcode);
     kmer_list_structs[thread].reads.push_back({});
     barcode_count++;
     //start new thread here
     // if (active_threads[thread]==true) {
-      // std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
       // active_threads[thread]=false;
     // }
     // std::cerr << __LINE__<<"\n";
@@ -441,21 +441,21 @@ while (atEnd(file1)!=1) { // proceeding through files
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
       }
-      // std::cerr << "starting thread " << (int)thread << "\n";
+      std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      // std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       read_count=0;
       barcode_count=0;
-      // std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
     }
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   readRecord(id2, read2, file2);
   // std::cerr << __LINE__<<"\n";
   // std::cerr << "thread: " << thread << "\n";
@@ -464,7 +464,7 @@ while (atEnd(file1)!=1) { // proceeding through files
   // appendValue(kmer_list_structs[thread].reads[barcode_count],read1);
   kmer_list_structs[thread].reads[barcode_count].push_back(read1);
   kmer_list_structs[thread].reads[barcode_count].push_back(read2);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   // appendValue(kmer_list_structs[thread].reads[barcode_count],read2);
   std::cerr << __LINE__<<"\n";
   read_count++;
@@ -475,7 +475,7 @@ if(ret != 0) {
   printf("Error: pthread_create() failed\n");
   exit(EXIT_FAILURE);
 }
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
