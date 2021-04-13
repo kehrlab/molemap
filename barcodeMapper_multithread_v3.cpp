@@ -215,7 +215,7 @@ void *fillList(void *arg){
     }
     itrbarcodes++;
   }
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   data->reads.clear();
   data->barcodes.clear();
   pthread_exit(NULL);
@@ -429,7 +429,6 @@ while (atEnd(file1)!=1) { // proceeding through files
     // std::cerr << __LINE__<<"\n";
     kmer_list_structs[thread].barcodes.push_back(barcode);
     // std::cerr << __LINE__<<"\n";
-    kmer_list_structs[thread].reads.push_back({});
     // std::cerr << __LINE__<<"\n";
     barcode_count++;
     //start new thread here
@@ -444,18 +443,18 @@ while (atEnd(file1)!=1) { // proceeding through files
         printf("Error: pthread_create() failed\n");
         exit(EXIT_FAILURE);
       }
-      std::cerr << "starting thread " << (int)thread << "\n";
+      // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
       // std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
-      kmer_list_structs[thread].reads.push_back({});
+      // kmer_list_structs[thread].reads.push_back({});
       read_count=0;
       barcode_count=0;
       // std::cerr << __LINE__<<"\n";
-
     }
+    kmer_list_structs[thread].reads.push_back({});
     // std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
