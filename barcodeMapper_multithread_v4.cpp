@@ -412,6 +412,10 @@ kmer_list_struct_template.readfile1=options.readfile1;
 kmer_list_struct_template.readfile2=options.readfile2;
 kmer_list_struct_template.q=options.q;
 kmer_list_struct_template.l=options.l;
+kmer_list_struct_template.barcodes={};
+kmer_list_struct_template.reads={};
+kmer_list_struct_template.BCI={};
+
 //std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
