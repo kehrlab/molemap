@@ -459,6 +459,9 @@ while (std::getline(file1,meta)) { // proceeding through files
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
       std::cerr << __LINE__<<"\n";
+      std::vector<std::pair<std::streampos,std::streampos>> BCItest;
+      BCItest.insert(BCItest.begin(),itrBCI,BCI_positions.end());
+      std::cerr << __LINE__<<"\n";      
       kmer_list_structs[thread].BCI.insert(kmer_list_structs[thread].BCI.begin(),itrBCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
       itrBCI=BCI_positions.end()-1;
