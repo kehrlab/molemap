@@ -367,7 +367,7 @@ CharString id2;
 std::ifstream file1;
 file1.open(toCString(options.readfile1));
 std::ifstream file2;
-file2.open(toCString(options.readfile2);
+file2.open(toCString(options.readfile2));
 // SeqFileIn file1(toCString(options.readfile1));
 // SeqFileIn file2(toCString(options.readfile2));
 
