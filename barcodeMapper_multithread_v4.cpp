@@ -405,7 +405,7 @@ kmer_list_struct_template.readfile1=options.readfile1;
 kmer_list_struct_template.readfile2=options.readfile2;
 kmer_list_struct_template.q=options.q;
 kmer_list_struct_template.l=options.l;
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 uint32_t thread=0;                        //currently selected thread
 uint32_t thread_count=options.threads-1;                  //number of used threads on top of main thread
@@ -426,7 +426,7 @@ for (int i=0; i!=thread_count; i++) {
   // std::cerr << "thread " << (int)list_thread[i] << " initialized!\n";
 }
 pthread_join(list_thread[thread],NULL);
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 int32_t barcode_count=-1;
 int32_t read_count=0;
 itrBCI=BCI_positions.begin();
@@ -437,7 +437,7 @@ while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
   file1.ignore(10000,'\n');
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  // std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   // analyse barcode using standard functions. not seqan
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
@@ -449,9 +449,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     BCI_pos1=file1.tellg();
-    // std::cerr << __LINE__<<"\n";
-    // std::cerr << __LINE__<<"\n";
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode_count++;
     //start new thread here
     // if (active_threads[thread]==true) {
@@ -472,7 +470,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      // std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       // kmer_list_structs[thread].reads.push_back({});
@@ -482,7 +480,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     }
     kmer_list_structs[thread].barcodes.push_back(barcode);
     // kmer_list_structs[thread].reads.push_back({});
-    // std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
   // std::cerr << __LINE__<<"\n";
@@ -506,7 +504,7 @@ if(ret != 0) {
   printf("Error: pthread_create() failed\n");
   exit(EXIT_FAILURE);
 }
-// std::cerr << __LINE__<<"\n";
+std::cerr << __LINE__<<"\n";
 
 for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // if (active_threads[i]==true){
