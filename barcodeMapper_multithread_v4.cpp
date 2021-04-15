@@ -163,7 +163,7 @@ typedef struct{
   uint_fast8_t window_count;
   std::string output_file;
   std::vector<std::string> barcodes;
-  std::vector<std::pair<std::streampos,streampos> BCI;
+  std::vector<std::pair<std::streampos,std::streampos>> BCI;
   std::string readfile1;
   std::string readfile2;
   unsigned q;
@@ -174,7 +174,7 @@ typedef struct{
 void *fillList(void *arg){
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   for (uint32_t i=0; i!=(data->barcodes).size();i++){
-    data->reads=GetReads(BCI[i],std::get<0>(BCI[i+1]),data->readfile1,data->readfile2);
+    data->reads=GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),data->readfile1,data->readfile2);
   }
   //retrieve reads for barcodes
   //process reads
@@ -429,7 +429,7 @@ pthread_join(list_thread[thread],NULL);
 // std::cerr << __LINE__<<"\n";
 int32_t barcode_count=-1;
 int32_t read_count=0;
-itrBCI=BCI.begin();
+itrBCI=BCI_positions.begin();
 // auto tbegin = std::chrono::high_resolution_clock::now();
 BCI_pos1=file1.tellg();
 while (std::getline(file1,meta)) { // proceeding through files
@@ -461,8 +461,8 @@ while (std::getline(file1,meta)) { // proceeding through files
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
 
-      kmer_list_structs[thread].BCI={itrBCI,BCI.end()};
-      itrBCI=BCI.end()-1;
+      kmer_list_structs[thread].BCI={itrBCI,BCI_positions.end()};
+      itrBCI=BCI_positions.end()-1;
 
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
