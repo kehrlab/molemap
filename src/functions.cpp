@@ -6,6 +6,26 @@
 
 using namespace seqan;
 
+std::vector<Dna5String> GetReads(std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions, std::streampos endpos, const char* readfile1, const char* readfile2){
+  std::vector<Dna5String> reads;
+  SeqFileIn file1(readfile1);
+  SeqFileIn file2(readfile2);
+  Dna5String read1;
+  Dna5String read2;
+  CharString id;
+  file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
+  file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
+  while(file1.stream.file.tellg()<endpos){
+    readRecord(id,read1,file1);
+    readRecord(id,read2,file2);
+    reads.push_back(read1);
+    reads.push_back(read2);
+  }
+  close(file1);
+  close(file2);
+  return reads;
+}
+
 // Loads BarcodeIndex from file into string
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
   //construct file names
