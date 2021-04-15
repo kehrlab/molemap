@@ -537,7 +537,7 @@ for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // }
 }
 
-std::cerr << _LINE_<<"\n";
+std::cerr << __LINE__<<"\n";
 
 file1.close();
 file2.close();
