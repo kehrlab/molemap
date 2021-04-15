@@ -416,7 +416,6 @@ kmer_list_struct_template.q=options.q;
 kmer_list_struct_template.l=options.l;
 kmer_list_struct_template.barcodes={};
 kmer_list_struct_template.reads={};
-kmer_list_struct_template.BCI={};
 
 //std::cerr << __LINE__<<"\n";
 
