@@ -462,7 +462,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       // std::vector<std::pair<std::streampos,std::streampos>> BCItest;
       // BCItest.insert(BCItest.begin(),itrBCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
-      kmer_list_structs[thread].BCI.push_back(std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end()));
+      kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
       itrBCI=BCI_positions.end()-1;
       std::cerr << __LINE__<<"\n";
