@@ -429,7 +429,7 @@ pthread_join(list_thread[thread],NULL);
 std::cerr << __LINE__<<"\n";
 int32_t barcode_count=-1;
 int32_t read_count=0;
-itrBCI=BCI_positions.begin();
+itrBCI=BCI_positions.begin()+1;
 // auto tbegin = std::chrono::high_resolution_clock::now();
 BCI_pos1=file1.tellg();
 while (std::getline(file1,meta)) { // proceeding through files
