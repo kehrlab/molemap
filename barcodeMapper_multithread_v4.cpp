@@ -460,6 +460,7 @@ BCI_barcodes.push_back(barcode);
 BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 // BCI_pos1=file1.tellg();
 itrBCI=BCI_positions.begin();
+std::cerr << __LINE__<<"\n";
 
 while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
@@ -470,7 +471,7 @@ while (std::getline(file1,meta)) { // proceeding through files
   file2.ignore(10000,'\n');
   file2.ignore(10000,'\n');
   file2.ignore(10000,'\n');
-  // //std::cerr << __LINE__<<"\n";
+  std::cerr << __LINE__<<"\n";
   // analyse barcode using standard functions. not seqan
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
@@ -479,9 +480,10 @@ while (std::getline(file1,meta)) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     barcode_count++;
+    std::cerr << __LINE__<<"\n";
 
     if (read_count>10000) {
-      //std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
       kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
       //std::cerr << __LINE__<<"\n";
@@ -501,11 +503,11 @@ while (std::getline(file1,meta)) { // proceeding through files
       // kmer_list_structs[thread].reads.push_back({});
       read_count=0;
       barcode_count=0;
-      // //std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
     }
     kmer_list_structs[thread].barcodes.push_back(barcode);
     // kmer_list_structs[thread].reads.push_back({});
-    //std::cerr << __LINE__<<"\n";
+    std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
   // //std::cerr << __LINE__<<"\n";
