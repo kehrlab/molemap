@@ -485,7 +485,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     barcode_count++;
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
 
     if (read_count>10000) {
       std::cerr << __LINE__<<"\n";
