@@ -437,7 +437,7 @@ while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
   file1.ignore(10000,'\n');
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
   // analyse barcode using standard functions. not seqan
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
@@ -458,10 +458,10 @@ while (std::getline(file1,meta)) { // proceeding through files
     // }
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
-
+      std::cerr << __LINE__<<"\n";
       kmer_list_structs[thread].BCI={itrBCI,BCI_positions.end()};
       itrBCI=BCI_positions.end()-1;
-
+      std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
