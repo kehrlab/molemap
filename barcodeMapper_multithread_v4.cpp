@@ -459,6 +459,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
       std::cerr << __LINE__<<"\n";
+      std::cerr << "BCI_pos: " << std::get<0>(*BCI_positions.begin());
       std::cerr << "BCI: "<<std::get<0>(*itrBCI) << "\n";
       std::cerr << "BCI: "<<std::get<0>(*BCI_positions.end()) << "\n";
       // std::vector<std::pair<std::streampos,std::streampos>> BCItest(itrBCI,BCI_positions.end());
