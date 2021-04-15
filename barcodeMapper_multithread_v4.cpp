@@ -365,7 +365,9 @@ CharString id2;
 
 // opening read files
 std::ifstream file1;
+file1.open();
 std::ifstream file2;
+file2.open();
 // SeqFileIn file1(toCString(options.readfile1));
 // SeqFileIn file2(toCString(options.readfile2));
 
@@ -499,8 +501,8 @@ for (int i; i!=thread_count; i++) { //waiting for active threads to finish
   // }
 }
 
-close(file1);
-close(file2);
+file1.close();
+file2.close();
 // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 // tbegin = std::chrono::high_resolution_clock::now();
 std::cerr << ".........done.\n";
