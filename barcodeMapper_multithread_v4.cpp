@@ -489,7 +489,8 @@ while (std::getline(file1,meta)) { // proceeding through files
 
     if (read_count>10000) {
       std::cerr << __LINE__<<"\n";
-      std::cerr << std::get<0>(*itrBCI) << " " << std::get<1>(*itrBCI) << "\n";
+      std::cerr << (int)std::get<0>(*itrBCI) << " " << (int)std::get<1>(*itrBCI) << "\n";
+      std::cerr << (int)std::get<0>(*(BCI_positions.end()-1)) << "\n";
       kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
       itrBCI=BCI_positions.end()-1;
