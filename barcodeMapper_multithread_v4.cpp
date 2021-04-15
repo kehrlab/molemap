@@ -530,7 +530,7 @@ if(ret != 0) {
 std::cerr << __LINE__<<"\n";
 
 for (int i; i!=thread_count; i++) { //waiting for active threads to finish
-  std::cerr << _LINE_<<"\n";
+  std::cerr << __LINE__<<"\n";
   // if (active_threads[i]==true){
   pthread_join(list_thread[i],NULL);
   // active_threads[i]=false;
