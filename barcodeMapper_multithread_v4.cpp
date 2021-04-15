@@ -521,8 +521,10 @@ while (std::getline(file1,meta)) { // proceeding through files
   // std::cerr << __LINE__<<"\n";
   read_count++;
 }
+std::cerr << __LINE__<<"\n";
 kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
 kmer_list_structs[thread].barcodes.push_back(new_barcode);
+std::cerr << __LINE__<<"\n";
 ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
 if(ret != 0) {
   printf("Error: pthread_create() failed\n");
