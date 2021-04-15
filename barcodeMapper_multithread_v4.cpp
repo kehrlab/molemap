@@ -172,17 +172,17 @@ typedef struct{
 } kmer_list_struct_t;
 
 void *fillList(void *arg){
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   std::cerr << "size: " << data->barcodes.size() << "\n";
   for (uint32_t i=0; i!=data->barcodes.size();i++){
-    std::cerr << __LINE__ << " " << i <<" of "<< data->barcodes.size()<< "\n";
-    std::cerr << "pos1: " << (int)std::get<0>(data->BCI[i]) << "\n";
-    std::cerr << "pos2: " << (int)std::get<1>(data->BCI[i]) << "\n";
+    // std::cerr << __LINE__ << " " << i <<" of "<< data->barcodes.size()<< "\n";
+    std::cerr << "pos1: " << (long long int)std::get<0>(data->BCI[i]) << "\n";
+    std::cerr << "pos2: " << (long long int)std::get<1>(data->BCI[i]) << "\n";
     data->reads.push_back(GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2)));
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
   }
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   //retrieve reads for barcodes
   //process reads
   std::vector<std::string>::iterator itrbarcodes=(data->barcodes).begin();
@@ -231,11 +231,11 @@ void *fillList(void *arg){
     itrbarcodes++;
   }
   // //std::cerr << __LINE__ << "\n";
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   data->reads.clear();
   data->barcodes.clear();
   data->BCI.clear();
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   pthread_exit(NULL);
 }
 
@@ -476,7 +476,7 @@ while (std::getline(file1,meta)) { // proceeding through files
   file2.ignore(10000,'\n');
   file2.ignore(10000,'\n');
   file2.ignore(10000,'\n');
-  std::cerr << __LINE__<<"\n";
+  // std::cerr << __LINE__<<"\n";
   // analyse barcode using standard functions. not seqan
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     //append Barcode Index
@@ -493,7 +493,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
       itrBCI=BCI_positions.end()-1;
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
@@ -512,7 +512,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     }
     kmer_list_structs[thread].barcodes.push_back(barcode);
     // kmer_list_structs[thread].reads.push_back({});
-    std::cerr << __LINE__<<"\n";
+    // std::cerr << __LINE__<<"\n";
     barcode=new_barcode;
   }
   // //std::cerr << __LINE__<<"\n";
