@@ -174,7 +174,7 @@ typedef struct{
 void *fillList(void *arg){
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   for (uint32_t i=0; i!=(data->barcodes).size();i++){
-    data->reads=GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2));
+    data->reads.push_back(GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2)));
   }
   //retrieve reads for barcodes
   //process reads
