@@ -459,7 +459,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
       std::cerr << __LINE__<<"\n";
-      kmer_list_structs[thread].BCI=insert(kmer_list_structs[thread].BCI.begin(),itrBCI,BCI_positions.end()};
+      kmer_list_structs[thread].BCI=insert(kmer_list_structs[thread].BCI.begin(),itrBCI,BCI_positions.end());
       itrBCI=BCI_positions.end()-1;
       std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
