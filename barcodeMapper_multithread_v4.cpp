@@ -424,7 +424,6 @@ while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
   file1.ignore(10000,'\n');
   std::cerr << meta << "\n";
-  meta=toCString(id1);
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   std::cerr << new_barcode << "\n";
   // std::cerr << __LINE__<<"\n";
