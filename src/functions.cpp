@@ -7,6 +7,7 @@
 using namespace seqan;
 
 std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_positions, std::streampos endpos, const char* readfile1, const char* readfile2){
+  std::cerr << __LINE__ << "\n";
   std::vector<Dna5String> reads;
   SeqFileIn file1(readfile1);
   SeqFileIn file2(readfile2);
@@ -23,6 +24,7 @@ std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_
   }
   close(file1);
   close(file2);
+  std::cerr << __LINE__ << "\n";
   return reads;
 }
 
