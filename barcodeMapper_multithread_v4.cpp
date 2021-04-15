@@ -445,12 +445,18 @@ int32_t read_count=0;
 
 //retrieving first barcode
 BCI_pos1=file1.tellg();
+std::cerr << "BCI_pos1: " << (int)file1.tellg()<< "\n";
+std::cerr << "BCI_pos1: " << (int)BCI_pos1<< "\n";
+
 std::getline(file1,meta);
 file1.ignore(10000,'\n');
 file1.ignore(10000,'\n');
 file1.ignore(10000,'\n');
 barcode=meta.substr(meta.find("RX:Z:")+5,16);
 BCI_pos2=file2.tellg();
+std::cerr << "BCI_pos2: " << (int)file2.tellg()<< "\n";
+std::cerr << "BCI_pos2: " << (int)BCI_pos2<< "\n";
+
 file2.ignore(10000,'\n');
 file2.ignore(10000,'\n');
 file2.ignore(10000,'\n');
