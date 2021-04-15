@@ -13,8 +13,8 @@ std::vector<Dna5String> GetReads(std::vector<std::pair<std::streampos,std::strea
   Dna5String read1;
   Dna5String read2;
   CharString id;
-  file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
-  file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
+  file1.stream.file.seekg(std::get<0>(BCI_positions));
+  file2.stream.file.seekg(std::get<1>(BCI_positions));
   while(file1.stream.file.tellg()<endpos){
     readRecord(id,read1,file1);
     readRecord(id,read2,file2);
