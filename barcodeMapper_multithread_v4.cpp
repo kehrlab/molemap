@@ -177,6 +177,7 @@ void *fillList(void *arg){
   for (uint32_t i=0; i!=(data->barcodes).size();i++){
     data->reads.push_back(GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2)));
   }
+  std::cerr << __LINE__ << "\n";
   //retrieve reads for barcodes
   //process reads
   std::vector<std::string>::iterator itrbarcodes=(data->barcodes).begin();
@@ -225,6 +226,7 @@ void *fillList(void *arg){
     itrbarcodes++;
   }
   // //std::cerr << __LINE__ << "\n";
+  std::cerr << __LINE__ << "\n";
   data->reads.clear();
   data->barcodes.clear();
   data->BCI.clear();
