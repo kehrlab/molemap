@@ -427,11 +427,27 @@ for (int i=0; i!=thread_count; i++) {
 }
 pthread_join(list_thread[thread],NULL);
 std::cerr << __LINE__<<"\n";
-int32_t barcode_count=-1;
+int32_t barcode_count=0;
 int32_t read_count=0;
-itrBCI=BCI_positions.begin();
 // auto tbegin = std::chrono::high_resolution_clock::now();
+
+//retrieving first barcode
 BCI_pos1=file1.tellg();
+std::getline(file1,meta);
+file1.ignore(10000,'\n');
+file1.ignore(10000,'\n');
+file1.ignore(10000,'\n');
+new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+BCI_pos2=file2.tellg();
+file2.ignore(10000,'\n');
+file2.ignore(10000,'\n');
+file2.ignore(10000,'\n');
+file2.ignore(10000,'\n');
+BCI_barcodes.push_back(new_barcode);
+BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+BCI_pos1=file1.tellg();
+itrBCI=BCI_positions.begin();
+
 while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
   file1.ignore(10000,'\n');
@@ -458,18 +474,16 @@ while (std::getline(file1,meta)) { // proceeding through files
     // }
     // std::cerr << __LINE__<<"\n";
     if (read_count>10000) {
-      // std::cerr << __LINE__<<"\n";
-      // std::cerr << "BCI_pos: " << std::get<0>(*BCI_positions.begin()) << "\n";
-      // std::cerr << "BCI_pos_end: " << std::get<0>(*(BCI_positions.end()-1)) << "\n";
-      // std::cerr << "BCI: "<<std::get<0>(*itrBCI) << "\n";
-      // std::cerr << "BCI: "<<std::get<0>(*BCI_positions.end()) << "\n";
-      // // std::vector<std::pair<std::streampos,std::streampos>> BCItest(itrBCI,BCI_positions.end());
-      // std::cerr << __LINE__<<"\n";
-      // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
-      // std::cerr << __LINE__<<"\n";
-      itrBCI=BCI_positions.end()-1;
+      std::cerr << __LINE__<<"\n";
+      std::cerr << "BCI_pos: " << std::get<0>(*BCI_positions.begin()) << "\n";
+      std::cerr << "BCI_pos_end: " << std::get<0>(*(BCI_positions.end()-1)) << "\n";
       std::cerr << "BCI: "<<std::get<0>(*itrBCI) << "\n";
-
+      std::cerr << "BCI: "<<std::get<0>(*BCI_positions.end()) << "\n";
+      // std::vector<std::pair<std::streampos,std::streampos>> BCItest(itrBCI,BCI_positions.end());
+      std::cerr << __LINE__<<"\n";
+      kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+      std::cerr << __LINE__<<"\n";
+      itrBCI=BCI_positions.end()-1;
       std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
