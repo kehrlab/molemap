@@ -464,7 +464,8 @@ file2.ignore(10000,'\n');
 BCI_barcodes.push_back(barcode);
 BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 // BCI_pos1=file1.tellg();
-itrBCI=BCI_positions.begin();
+// itrBCI=BCI_positions.begin();
+int32_t pos_BCI=0;
 std::cerr << __LINE__<<"\n";
 std::cerr << "BCI_pos1: " << (int)std::get<0>(*itrBCI)<< "\n";
 std::cerr << "BCI_pos1: " << (int)std::get<0>(*BCI_positions.begin())<< "\n";
@@ -484,12 +485,12 @@ while (std::getline(file1,meta)) { // proceeding through files
     //append Barcode Index
     BCI_pos1=file1.tellg();
     BCI_pos2=file2.tellg();
-    std::cerr << "BCI_pos1_before_push: " << (int)std::get<0>(*itrBCI)<< "\n";
 
     BCI_barcodes.push_back(new_barcode);
-    std::cerr << "BCI_pos1_after push: " << (int)std::get<0>(*itrBCI)<< "\n";
 
+    // std::cerr << "BCI_pos1_before_push: " << (int)std::get<0>(*itrBCI)<< "\n";
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+    // std::cerr << "BCI_pos1_after push: " << (int)std::get<0>(*itrBCI)<< "\n";
     barcode_count++;
     // std::cerr << __LINE__<<"\n";
 
@@ -497,9 +498,11 @@ while (std::getline(file1,meta)) { // proceeding through files
       std::cerr << __LINE__<<"\n";
       std::cerr << (int)std::get<0>(*itrBCI) << " " << (int)std::get<1>(*itrBCI) << "\n";
       std::cerr << (int)std::get<0>(*(BCI_positions.end()-1)) << "\n";
-      kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+      // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+      kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
       std::cerr << __LINE__<<"\n";
-      itrBCI=BCI_positions.end()-1;
+      pos_BCI=BCI_positions.size()-1;
+      // itrBCI=BCI_positions.end()-1;
       // std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
@@ -541,7 +544,8 @@ BCI_pos1=file1.tellg();
 BCI_pos2=file2.tellg();
 BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 //std::cerr << __LINE__<<"\n";
-kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+// kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
 kmer_list_structs[thread].barcodes.push_back(new_barcode);
 //std::cerr << __LINE__<<"\n";
 ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
