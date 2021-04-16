@@ -21,11 +21,11 @@ std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_
   while(file1.stream.file.tellg()<endpos){
     //std::cerr << __LINE__ << "\n";
     readRecord(id,read1,file1);
-    std::cerr << __LINE__ << "\n";
-    std::cerr << (int)file1.stream.file.tellg() << "\n";
-    std::cerr << (int)file2.stream.file.tellg() << "\n";
+    // std::cerr << __LINE__ << "\n";
+    // std::cerr << (int)file1.stream.file.tellg() << "\n";
+    // std::cerr << (int)file2.stream.file.tellg() << "\n";
     readRecord(id,read2,file2);
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     reads.push_back(read1);
     //std::cerr << __LINE__ << "\n";
     reads.push_back(read2);
