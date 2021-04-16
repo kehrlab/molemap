@@ -392,7 +392,7 @@ file2.open(toCString(options.readfile2));
 // preparing barcode Index
 std::vector<std::string> BCI_barcodes;
 std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
-std::vector<std::pair<std::streampos,std::streampos>>::iterator itrBCI;
+// std::vector<std::pair<std::streampos,std::streampos>>::iterator itrBCI;
 std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
@@ -467,7 +467,7 @@ BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 // itrBCI=BCI_positions.begin();
 int32_t pos_BCI=0;
 std::cerr << __LINE__<<"\n";
-std::cerr << "BCI_pos1: " << (int)std::get<0>(*itrBCI)<< "\n";
+// std::cerr << "BCI_pos1: " << (int)std::get<0>(*itrBCI)<< "\n";
 std::cerr << "BCI_pos1: " << (int)std::get<0>(*BCI_positions.begin())<< "\n";
 
 while (std::getline(file1,meta)) { // proceeding through files
