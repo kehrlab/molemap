@@ -466,6 +466,8 @@ BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 // BCI_pos1=file1.tellg();
 itrBCI=BCI_positions.begin();
 std::cerr << __LINE__<<"\n";
+std::cerr << "BCI_pos1: " << (int)std::get<0>(*itrBCI)<< "\n";
+std::cerr << "BCI_pos1: " << (int)std::get<0>(BCI_positions.begin())<< "\n";
 
 while (std::getline(file1,meta)) { // proceeding through files
   file1.ignore(10000,'\n');
