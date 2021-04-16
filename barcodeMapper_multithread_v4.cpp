@@ -179,7 +179,7 @@ void *fillList(void *arg){
     // //std::cerr << __LINE__ << " " << i <<" of "<< data->barcodes.size()<< "\n";
     // std::cerr << "pos1: " << (long long int)std::get<0>(data->BCI[i]) << "\n";
     // std::cerr << "pos2: " << (long long int)std::get<1>(data->BCI[i]) << "\n";
-    std::cerr << "i: " << i << " imax: " <<data->barcodes.size() <<"\n"; 
+    std::cerr << "i: " << i << " imax: " <<data->barcodes.size() <<"\n";
     std::cerr << "positions1: \n";
     std::cerr << std::get<0>(data->BCI[i]) << "\n";
     // std::cerr << file1.stream.file.tellg() << "\n";
@@ -504,6 +504,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       // std::cerr << (int)std::get<0>(*itrBCI) << " " << (int)std::get<1>(*itrBCI) << "\n";
       // std::cerr << (int)std::get<0>(*(BCI_positions.end()-1)) << "\n";
       // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
+      std::cerr << "positions2: " << std::get<0>(*(BCI_positions.end()-1)) << "\n";
       kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
       //std::cerr << __LINE__<<"\n";
       pos_BCI=BCI_positions.size()-1;
