@@ -176,8 +176,8 @@ void *fillList(void *arg){
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   // std::cerr << "size: " << data->barcodes.size() << "\n";
   std::cerr << "BCI: ";
-  for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
-    std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
+  for (size_t i = 0; i < data->BCI.size(); i++) {
+    std::cerr << std::get<0>(data->BCI[i]) << "\t";
   }
   std::cerr << "\n";
   for (uint32_t i=0; i!=data->barcodes.size();i++){
