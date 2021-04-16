@@ -18,7 +18,7 @@ std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_
   file1.stream.file.seekg(std::get<0>(BCI_positions));
   file2.stream.file.seekg(std::get<1>(BCI_positions));
   //std::cerr << __LINE__ << "\n";
-  while(file1.stream.file.tellg()<endpos && !std::eof(file1.stream.file)){
+  while(file1.stream.file.tellg()<endpos && !file1.stream.file.eof()){
     //std::cerr << __LINE__ << "\n";
     std::cerr << "positions: \n";
     std::cerr << std::get<0>(BCI_positions) << "\n";
