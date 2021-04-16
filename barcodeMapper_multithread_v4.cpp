@@ -489,6 +489,9 @@ while (std::getline(file1,meta)) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
 
     // std::cerr << "BCI_pos1_before_push: " << (int)std::get<0>(*itrBCI)<< "\n";
+    if ((int)BCI_pos1==-1){
+      std::cerr << "ERROR!!";
+    }
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // std::cerr << "BCI_pos1_after push: " << (int)std::get<0>(*itrBCI)<< "\n";
     barcode_count++;
