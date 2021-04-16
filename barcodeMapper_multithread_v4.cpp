@@ -556,7 +556,7 @@ while (std::getline(file1,meta)) { // proceeding through files
   // ////std::cerr << __LINE__<<"\n";
   read_count++;
 }
-BCI_pos1=file1.tellg();
+BCI_pos1=file1.end;
 std::cerr <<"BCI_POS1: "<< BCI_pos1 << "\n";
 std::cerr <<"BCI_POS2: "<< BCI_pos2 << "\n";
 BCI_pos2=file2.tellg();
@@ -569,7 +569,6 @@ for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
   std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
 }
 std::cerr << "\n";
-kmer_list_structs[thread].barcodes.push_back(new_barcode);
 std::cerr << "lenBC: " << kmer_list_structs[thread].barcodes.size();
 std::cerr << "lenBCI: " << kmer_list_structs[thread].BCI.size();
 
