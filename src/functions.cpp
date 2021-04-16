@@ -21,7 +21,7 @@ std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_
   while(file1.stream.file.tellg()<endpos){
     //std::cerr << __LINE__ << "\n";
     std::cerr << "positions: \n";
-    std::cerr << BCI_position << "\n";
+    std::cerr << std::get<0>BCI_positions << "\n";
     std::cerr << file1.stream.file.tellg() << "\n";
     readRecord(id,read1,file1);
     // std::cerr << __LINE__ << "\n";
