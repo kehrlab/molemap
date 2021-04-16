@@ -519,7 +519,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       //std::cerr << __LINE__<<"\n";
       pos_BCI=BCI_positions.size()-1;
       // itrBCI=BCI_positions.end()-1;
-      // //std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
@@ -528,7 +528,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      //std::cerr << __LINE__<<"\n";
+      std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       // kmer_list_structs[thread].reads.push_back({});
