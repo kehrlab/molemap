@@ -484,7 +484,11 @@ while (std::getline(file1,meta)) { // proceeding through files
     //append Barcode Index
     BCI_pos1=file1.tellg();
     BCI_pos2=file2.tellg();
+    std::cerr << "BCI_pos1_before_push: " << (int)std::get<0>(*itrBCI)<< "\n";
+
     BCI_barcodes.push_back(new_barcode);
+    std::cerr << "BCI_pos1_after push: " << (int)std::get<0>(*itrBCI)<< "\n";
+
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     barcode_count++;
     // std::cerr << __LINE__<<"\n";
