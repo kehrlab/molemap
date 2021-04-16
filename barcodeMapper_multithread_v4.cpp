@@ -179,9 +179,9 @@ void *fillList(void *arg){
     // //std::cerr << __LINE__ << " " << i <<" of "<< data->barcodes.size()<< "\n";
     // std::cerr << "pos1: " << (long long int)std::get<0>(data->BCI[i]) << "\n";
     // std::cerr << "pos2: " << (long long int)std::get<1>(data->BCI[i]) << "\n";
-    std::cerr << "i: " << i << " imax: " <<data->barcodes.size() <<"\n";
-    std::cerr << "positions1: \n";
-    std::cerr << std::get<0>(data->BCI[i]) << "\n";
+    // std::cerr << "i: " << i << " imax: " <<data->barcodes.size() <<"\n";
+    // std::cerr << "positions1: \n";
+    // std::cerr << std::get<0>(data->BCI[i]) << "\n";
     // std::cerr << file1.stream.file.tellg() << "\n";
     data->reads.push_back(GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2)));
     // //std::cerr << __LINE__ << "\n";
