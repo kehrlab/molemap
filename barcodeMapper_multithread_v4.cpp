@@ -557,20 +557,20 @@ while (std::getline(file1,meta)) { // proceeding through files
   read_count++;
 }
 BCI_pos1=file1.end;
-std::cerr <<"BCI_POS1: "<< BCI_pos1 << "\n";
-std::cerr <<"BCI_POS2: "<< BCI_pos2 << "\n";
+// std::cerr <<"BCI_POS1: "<< BCI_pos1 << "\n";
+// std::cerr <<"BCI_POS2: "<< BCI_pos2 << "\n";
 BCI_pos2=file2.tellg();
 BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 ////std::cerr << __LINE__<<"\n";
 // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
 kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
-std::cerr << "BCI: ";
-for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
-  std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
-}
-std::cerr << "\n";
-std::cerr << "lenBC: " << kmer_list_structs[thread].barcodes.size();
-std::cerr << "lenBCI: " << kmer_list_structs[thread].BCI.size();
+// std::cerr << "BCI: ";
+// for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
+//   std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
+// }
+// std::cerr << "\n";
+// std::cerr << "lenBC: " << kmer_list_structs[thread].barcodes.size();
+// std::cerr << "lenBCI: " << kmer_list_structs[thread].BCI.size();
 
 ////std::cerr << __LINE__<<"\n";
 ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
