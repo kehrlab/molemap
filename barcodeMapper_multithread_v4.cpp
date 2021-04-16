@@ -175,10 +175,10 @@ void *fillList(void *arg){
   // //std::cerr << __LINE__ << "\n";
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   // std::cerr << "size: " << data->barcodes.size() << "\n";
-  std::cerr << "BCI: ";
-  for (size_t i = 0; i < data->BCI.size(); i++) {
-    std::cerr << std::get<0>(data->BCI[i]) << "\t";
-  }
+  // std::cerr << "BCI: ";
+  // for (size_t i = 0; i < data->BCI.size(); i++) {
+  //   std::cerr << std::get<0>(data->BCI[i]) << "\t";
+  // }
   std::cerr << "\n";
   for (uint32_t i=0; i!=data->barcodes.size();i++){
     // //std::cerr << __LINE__ << " " << i <<" of "<< data->barcodes.size()<< "\n";
@@ -559,6 +559,11 @@ while (std::getline(file1,meta)) { // proceeding through files
 BCI_pos1=file1.tellg();
 BCI_pos2=file2.tellg();
 BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+std::cerr << "BCI: ";
+for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
+  std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
+}
+std::cerr << "\n";
 ////std::cerr << __LINE__<<"\n";
 // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
 kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
