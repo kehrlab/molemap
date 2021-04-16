@@ -172,7 +172,7 @@ typedef struct{
 } kmer_list_struct_t;
 
 void *fillList(void *arg){
-  // //std::cerr << __LINE__ << "\n";
+  std::cerr << __LINE__ << "\n";
   kmer_list_struct_t *data = (kmer_list_struct_t *)arg;
   // std::cerr << "size: " << data->barcodes.size() << "\n";
   // std::cerr << "BCI: ";
@@ -191,7 +191,7 @@ void *fillList(void *arg){
     data->reads.push_back(GetReads((data->BCI)[i],std::get<0>((data->BCI)[i+1]),toCString(data->readfile1),toCString(data->readfile2)));
     // //std::cerr << __LINE__ << "\n";
   }
-  // //std::cerr << __LINE__ << "\n";
+  std::cerr << __LINE__ << "\n";
   //retrieve reads for barcodes
   //process reads
   std::vector<std::string>::iterator itrbarcodes=(data->barcodes).begin();
@@ -244,7 +244,7 @@ void *fillList(void *arg){
   data->reads.clear();
   data->barcodes.clear();
   data->BCI.clear();
-  // //std::cerr << __LINE__ << "\n";
+  std::cerr << __LINE__ << "\n";
   pthread_exit(NULL);
 }
 
@@ -505,7 +505,7 @@ while (std::getline(file1,meta)) { // proceeding through files
     // //std::cerr << __LINE__<<"\n";
 
     if (read_count>10000) {
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
       // std::cerr << (int)std::get<0>(*itrBCI) << " " << (int)std::get<1>(*itrBCI) << "\n";
       // std::cerr << (int)std::get<0>(*(BCI_positions.end()-1)) << "\n";
       // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
@@ -519,7 +519,7 @@ while (std::getline(file1,meta)) { // proceeding through files
       //std::cerr << __LINE__<<"\n";
       pos_BCI=BCI_positions.size()-1;
       // itrBCI=BCI_positions.end()-1;
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
       ret =  pthread_create(&list_thread[thread], &attr, &fillList, &kmer_list_structs[thread]);
       if(ret != 0) {
         printf("Error: pthread_create() failed\n");
@@ -528,13 +528,13 @@ while (std::getline(file1,meta)) { // proceeding through files
       // std::cerr << "starting thread " << (int)thread << "\n";
       // active_threads[thread]=true;
       thread=(thread+1)%(thread_count);
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
 
       pthread_join(list_thread[thread],NULL);
       // kmer_list_structs[thread].reads.push_back({});
       read_count=0;
       barcode_count=0;
-      std::cerr << __LINE__<<"\n";
+      // std::cerr << __LINE__<<"\n";
     }
     kmer_list_structs[thread].barcodes.push_back(barcode);
     // kmer_list_structs[thread].reads.push_back({});
