@@ -506,6 +506,11 @@ while (std::getline(file1,meta)) { // proceeding through files
       // kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(itrBCI,BCI_positions.end());
       std::cerr << "positions2: " << std::get<0>(*(BCI_positions.end()-1)) << "\n";
       kmer_list_structs[thread].BCI=std::vector<std::pair<std::streampos,std::streampos>>(BCI_positions.begin()+pos_BCI,BCI_positions.end());
+      std::cerr << "BCI: ";
+      for (size_t i = 0; i < kmer_list_structs[thread].BCI.size(); i++) {
+        std::cerr << std::get<0>(kmer_list_structs[thread].BCI[i]) << "\t";
+      }
+      std::cerr << "\n";
       //std::cerr << __LINE__<<"\n";
       pos_BCI=BCI_positions.size()-1;
       // itrBCI=BCI_positions.end()-1;
