@@ -165,7 +165,7 @@ std::tuple<String<uint32_t, External<ExternalConfigLarge<>> >,String<uint_fast8_
 
 #pragma omp parallel for
   for (int i=0;i<4;i++){
-    assign(*std::get<i>(Index),*std::get<i>(exttable), Exact());
+    assign(std::get<i>(Index),std::get<i>(exttable), Exact());
     std::cerr <<".";
   }
 // assign(pos, extpos, Exact());
