@@ -144,62 +144,46 @@ std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
 String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index position file." );
+}
 String<uint32_t, External<> > extdir;
+if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index directory file." );
+}
 String<int32_t, External<> > extC;
-std::tuple<std::tuple<std::string, * String<uint32_t, External<ExternalConfigLarge<>> >, * String<uint32_t> >, std::tuple<std::string, * String<uint_fast8_t, External<ExternalConfigLarge<>> >, * String<uint_fast8_t> >, std::tuple<std::string, * String<uint32_t, External<> >, * String<uint32_t> >, std::tuple<std::string, * String<int32_t, External<> >, * String<int32_t> > > Index_builder;
+if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+  throw std::runtime_error("Could not open index counts file." );
+}
 
-std::get<0>(std::get<0>(Index_builder))=IndPos;
-std::get<0>(std::get<1>(Index_builder))=&extpos;
-std::get<0>(std::get<2>(Index_builder))=&pos;
-std::get<1>(std::get<0>(Index_builder))=IndRef;
-std::get<1>(std::get<1>(Index_builder))=&extref;
-std::get<1>(std::get<2>(Index_builder))=&ref;
-std::get<2>(std::get<0>(Index_builder))=IndDir;
-std::get<2>(std::get<1>(Index_builder))=&extdir;
-std::get<2>(std::get<2>(Index_builder))=&dir;
-std::get<3>(std::get<0>(Index_builder))=IndC;
-std::get<3>(std::get<1>(Index_builder))=&extC;
-std::get<3>(std::get<2>(Index_builder))=&C;
+std::tuple<*String<uint32_t>,*String<uint_fast8_t>,*String<uint32_t>,*String<int32_t>> table = std::make_tuple(&pos, &ref, &dir, &C);
+std::tuple<*String<uint32_t, External<ExternalConfigLarge<>> >,*String<uint_fast8_t, External<ExternalConfigLarge<>> >,*String<uint32_t, External<ExternalConfigLarge<>> >,*String<int32_t, External<ExternalConfigLarge<>> >> exttable = std::make_tuple(&extpos, &extref, &extdir, &extC);
 
 #pragma omp parallel for
-{
-for (int i=0;i<4;i++){
-  if (!open(*std::get<i>(std::get<1>(Index_builder)), std::get<i>(std::get<0>(Index_builder)).c_str(), OPEN_RDONLY)){
-    throw std::runtime_error("Could not open index position file." );
+  for (int i=0;i<4;i++){
+    assign(*std::get<i>(table),*std::get<i>(exttable), Exact());
+    std::cerr <<".";
   }
-  assign(*std::get<i>(std::get<2>(Index_builder)), *std::get<i>(std::get<1>(Index_builder)), Exact());
-  close(*std::get<i>(std::get<1>(Index_builder)));
-  std::cerr <<".";
-}
-// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index position file." );
-// }
 // assign(pos, extpos, Exact());
-// close(extpos);
 // std::cerr <<".";
 //
-// if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index position file." );
-// }
 // assign(ref, extref, Exact());
-// close(extref);
 // std::cerr <<".";
 //
-// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index directory file." );
-// }
 // assign(dir, extdir, Exact());
-// close(extdir);
 // std::cerr <<".";
 //
-// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-//   throw std::runtime_error("Could not open index counts file." );
-// }
 // assign(C, extC, Exact());
-// close(extC);
+// std::cerr <<".";
 
-} //pragma omp parallel for
+close(extpos);
+close(extref);
+close(extdir);
+close(extC);
 
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
@@ -218,7 +202,7 @@ uint_fast32_t bucket_number=length(C);
 // std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
-std::cerr <<"...done.\n";
+std::cerr <<"..done.\n";
 std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
