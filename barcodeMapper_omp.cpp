@@ -160,12 +160,12 @@ if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index counts file." );
 }
 
-std::tuple<*String<uint32_t>,*String<uint_fast8_t>,*String<uint32_t>,*String<int32_t>> table = std::make_tuple(&pos, &ref, &dir, &C);
-std::tuple<*String<uint32_t, External<ExternalConfigLarge<>> >,*String<uint_fast8_t, External<ExternalConfigLarge<>> >,*String<uint32_t, External<ExternalConfigLarge<>> >,*String<int32_t, External<ExternalConfigLarge<>> >> exttable = std::make_tuple(&extpos, &extref, &extdir, &extC);
+std::tuple<String<uint32_t>,String<uint_fast8_t>,String<uint32_t>,String<int32_t>> Index = std::make_tuple(pos, ref, dir, C);
+std::tuple<String<uint32_t, External<ExternalConfigLarge<>> >,String<uint_fast8_t, External<ExternalConfigLarge<>> >,String<uint32_t, External<ExternalConfigLarge<>> >,String<int32_t, External<ExternalConfigLarge<>> >> exttable = std::make_tuple(extpos, extref, extdir, extC);
 
 #pragma omp parallel for
   for (int i=0;i<4;i++){
-    assign(*std::get<i>(table),*std::get<i>(exttable), Exact());
+    assign(*std::get<i>(Index),*std::get<i>(exttable), Exact());
     std::cerr <<".";
   }
 // assign(pos, extpos, Exact());
