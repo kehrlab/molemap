@@ -145,7 +145,7 @@ IndC.append("_C.txt");
 
 #pragma omp parallel
 {
-  
+
 String<uint32_t, External<ExternalConfigLarge<>> > extpos;
 if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
   throw std::runtime_error("Could not open index position file." );
@@ -251,7 +251,7 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 
-auto tbegin = std::chrono::high_resolution_clock::now();
+tbegin = std::chrono::high_resolution_clock::now();
 // auto tsum = std::chrono::high_resolution_clock::now();
 // auto tstart = std::chrono::high_resolution_clock::now();
 // auto tcumul = std::chrono::high_resolution_clock::now();

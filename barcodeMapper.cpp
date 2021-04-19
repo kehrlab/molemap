@@ -127,7 +127,7 @@ reading the Index
 */
 
 std::cerr << "Reading in the k-mer index";
-// auto tbegin = std::chrono::high_resolution_clock::now();
+auto tbegin = std::chrono::high_resolution_clock::now();
 
 String<uint32_t> dir;
 String<uint32_t> pos;
@@ -192,7 +192,7 @@ std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
 std::cerr <<"...done.\n";
-// std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
 loading in the reads
@@ -246,7 +246,7 @@ std::streampos BCI_pos2;
 
 std::cerr << "Processing read file...";
 
-auto tbegin = std::chrono::high_resolution_clock::now();
+tbegin = std::chrono::high_resolution_clock::now();
 // auto tsum = std::chrono::high_resolution_clock::now();
 // auto tstart = std::chrono::high_resolution_clock::now();
 // auto tcumul = std::chrono::high_resolution_clock::now();
