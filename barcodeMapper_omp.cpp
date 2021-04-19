@@ -129,9 +129,9 @@ reading the Index
 std::cerr << "Reading in the k-mer index";
 auto tbegin = std::chrono::high_resolution_clock::now();
 
-String<uint32_t> dir;
 String<uint32_t> pos;
 String<uint_fast8_t> ref;
+String<uint32_t> dir;
 String<int32_t> C;
 //
 std::string IndPos=options.index_name;
@@ -143,41 +143,66 @@ IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
 
-#pragma omp parallel
-{
-
 String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index position file." );
-}
-assign(pos, extpos, Exact());
-close(extpos);
-std::cerr <<".";
-
 String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index position file." );
-}
-assign(ref, extref, Exact());
-close(extref);
-std::cerr <<".";
-
 String<uint32_t, External<> > extdir;
-if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index directory file." );
-}
-assign(dir, extdir, Exact());
-close(extdir);
-std::cerr <<".";
-
 String<int32_t, External<> > extC;
-if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
-  throw std::runtime_error("Could not open index counts file." );
-}
-assign(C, extC, Exact());
-close(extC);
+std::tuple<std::tuple<std::string, *String<uint32_t, External<ExternalConfigLarge<>> >, *String<uint32_t>>,...
+                      std::string, *String<uint_fast8_t, External<ExternalConfigLarge<>> >, *String<uint_fast8_t>...
+                      std::string, *String<uint32_t, External<> >, *String<uint32_t>...
+                      std::string, *String<int32_t, External<> >, *String<int32_t> C > Index_builder;
 
-} //pragma omp parallel
+std::get<0>(std::get<0>(Index_builder))=IndPos;
+std::get<0>(std::get<1>(Index_builder))=&extpos;
+std::get<0>(std::get<2>(Index_builder))=&pos;
+std::get<1>(std::get<0>(Index_builder))=IndRef;
+std::get<1>(std::get<1>(Index_builder))=&extref;
+std::get<1>(std::get<2>(Index_builder))=&ref;
+std::get<2>(std::get<0>(Index_builder))=IndDir;
+std::get<2>(std::get<1>(Index_builder))=&extdir;
+std::get<2>(std::get<2>(Index_builder))=&dir;
+std::get<3>(std::get<0>(Index_builder))=IndC;
+std::get<3>(std::get<1>(Index_builder))=&extC;
+std::get<3>(std::get<2>(Index_builder))=&C;
+
+#pragma omp parallel for
+{
+for (int i=0;i<4;i++){
+  if (!open(*std::get<i>(std::get<1>(Index_builder)), std::get<i>(std::get<0>(Index_builder)).c_str(), OPEN_RDONLY)){
+    throw std::runtime_error("Could not open index position file." );
+  }
+  assign(*std::get<i>(std::get<2>(Index_builder)), *std::get<i>(std::get<1>(Index_builder)), Exact());
+  close(*std::get<i>(std::get<1>(Index_builder)));
+  std::cerr <<".";
+}
+// if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index position file." );
+// }
+// assign(pos, extpos, Exact());
+// close(extpos);
+// std::cerr <<".";
+//
+// if (!open(extref, IndRef.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index position file." );
+// }
+// assign(ref, extref, Exact());
+// close(extref);
+// std::cerr <<".";
+//
+// if (!open(extdir, IndDir.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index directory file." );
+// }
+// assign(dir, extdir, Exact());
+// close(extdir);
+// std::cerr <<".";
+//
+// if (!open(extC, IndC.c_str(), OPEN_RDONLY)){
+//   throw std::runtime_error("Could not open index counts file." );
+// }
+// assign(C, extC, Exact());
+// close(extC);
+
+} //pragma omp parallel for
 
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
@@ -193,7 +218,7 @@ for (uint_fast8_t i=0;i<k;++i){
 }
 
 uint_fast32_t bucket_number=length(C);
-std::cerr << "bucket_number: " << bucket_number << "\n";
+// std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
 std::cerr <<"...done.\n";

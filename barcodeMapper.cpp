@@ -188,7 +188,7 @@ for (uint_fast8_t i=0;i<k;++i){
 }
 
 uint_fast32_t bucket_number=length(C);
-std::cerr << "bucket_number: " << bucket_number << "\n";
+// std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
 std::cerr <<"...done.\n";
