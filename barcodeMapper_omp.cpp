@@ -380,6 +380,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << "\n";
         }else{ //appned read to readset of current barcode
           std::cerr << __LINE__ << "\n";
+          std::cerr << "read1: " << read1 << "\n";
           readSet[thread].back().push_back(read1);
           std::cerr << __LINE__ << "\n";
         }
