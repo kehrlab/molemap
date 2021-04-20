@@ -349,7 +349,7 @@ for(int i=0;i<2;i++){
 std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  #pragma omp parallel for
+  // #pragma omp parallel for
   for(int i=0;i<3;i++){
     std::cerr << __LINE__ << "\n";
     if (i==0){   // read next batch of reads from file1
