@@ -277,7 +277,7 @@ std::cerr << "Processing read file...";
 
 tbegin = std::chrono::high_resolution_clock::now();
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ //read first batch of reads from file1
   BCI_pos1=file1.stream.file.tellg();
@@ -304,7 +304,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   readCount++;
 }
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
@@ -351,7 +351,7 @@ for(int i=0;i<2;i++){
   }
 }
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
   #pragma omp parallel for
@@ -400,6 +400,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
     }
+
     if (i==2){   // process reads and write results to file
       // itrbarc=barcodeSet[thread3].begin();
       for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
@@ -467,8 +468,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
   // std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
 }
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
+#pragma omp parallel for
 for(int i=0;i<2;i++){
 
   if (i==0){  // read last batch of reads from file2
@@ -538,6 +540,8 @@ for(int i=0;i<2;i++){
   } //if (i==1)
 }
 
+std::cerr << __LINE__ << "\n";
+
 // process last batch of reads
 // itrbarc=barcodeSet[thread3].begin();
 for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
@@ -587,6 +591,8 @@ for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin();
 readSet[thread3].clear();
 barcodeSet[thread3].clear();
 thread3=(thread3+1)%3;
+
+std::cerr << __LINE__ << "\n";
 
 close(file1);
 close(file2);
