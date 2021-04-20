@@ -372,41 +372,41 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
         std::cerr << __LINE__ << "\n";
         if (barcode!=new_barcode){
-          std::cerr << "NEW_BARCODE" << "\n";
+          // std::cerr << "NEW_BARCODE" << "\n";
           BCI_barcodes.push_back(new_barcode);
           BCI_posSet[thread].push_back(BCI_pos1);
           barcode=new_barcode;
           if (readCount>max_readCount){
             thread=(thread+1)%3; // iterate thread
             std::cerr << __LINE__ << "\n";
-            std::cerr << "read1: " << read1 << "\n";
+            // std::cerr << "read1: " << read1 << "\n";
             // barcodeSet[thread].push_back(barcode);
             barcode_overflow=barcode;//write barcode to Set of next batch
-            std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
+            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             read_overflow=read1;
-            std::cerr << "size1: " << readSet[thread].size() << "\n";
-            std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
-            std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
-            std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-            std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
+            // std::cerr << "size1: " << readSet[thread].size() << "\n";
+            // std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
+            // std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
+            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
+            // std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
             readCount=0;
             break;
           }else{ //write read to readset of new barcode
             barcodeSet[thread].push_back(barcode);
             std::cerr << __LINE__ << "\n";
-            std::cerr << "read1: " << read1 << "\n";
-            std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
+            // std::cerr << "read1: " << read1 << "\n";
+            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             readSet[thread].push_back({read1});
-            std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
+            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
 
           }
           std::cerr << __LINE__ << "\n";
         }else{ //append read to readset of current barcode
           std::cerr << __LINE__ << "\n";
-          std::cerr << "read1: " << read1 << "\n";
-          std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-          std::cerr << "last element: " << (readSet[thread].back()).back() << "\n";
-          std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
+          // std::cerr << "read1: " << read1 << "\n";
+          // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
+          // std::cerr << "last element: " << (readSet[thread].back()).back() << "\n";
+          // std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
           readSet[thread].back().push_back(read1);
           std::cerr << __LINE__ << "\n";
         }
