@@ -287,7 +287,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
     if (readCount>max_readCount){
       thread=(thread+1)%3; // iterate thread
       barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
-      readSet[thread].push_back({read1});
+      readSet[thread].emplace_back({read1});
       readCount=0;
       break;
     }else{ //write read to readset of new barcode
@@ -317,19 +317,13 @@ for(int i=0;i<2;i++){
         barcode=new_barcode;
         if (readCount>max_readCount){
           thread=(thread+1)%3; // iterate thread
-          std::cerr << "read1: " << read1 << "\n";
-          std::cerr << "size1: " << readSet[thread].size() << "\n";
-          std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
-          std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
-          std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
           barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
-          readSet[thread].push_back({});
-          readSet[thread].back().push_back(read1);
+          readSet[thread].push_back({read1});
           readCount=0;
           break;
         }else{ //write read to readset of new barcode
           barcodeSet[thread].push_back(barcode);
-          readSet[thread].push_back({read1});
+          readSet[thread].emplace_back({read1});
         }
       }else{ //appned read to readset of current barcode
         readSet[thread].back().push_back(read1);
@@ -381,8 +375,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
-            readSet[thread].push_back({});
-            readSet[thread].back().push_back(read1);
+            readSet[thread].emplace_back({read1});
             readCount=0;
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             break;
