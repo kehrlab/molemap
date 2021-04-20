@@ -400,7 +400,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       }
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
-      std::cerr << __LINE__ << "\n";      
+      std::cerr << __LINE__ << "\n";
     }
 
     if (i==2){   // process reads and write results to file
@@ -456,7 +456,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         // std::cerr << __LINE__ << "\n";
         // itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
-      // std::cerr << __LINE__ << "\n";
+      std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
       omp_set_lock(&lock);
