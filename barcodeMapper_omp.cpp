@@ -310,6 +310,7 @@ std::cerr << __LINE__ << "\n";
 for(int i=0;i<2;i++){
 
   if (i==0){  //read 2nd batch of reads from file1
+    std::cerr << __LINE__ << "\n";
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
@@ -334,9 +335,11 @@ for(int i=0;i<2;i++){
       }
       readCount++;
     }
+    std::cerr << __LINE__ << "\n";
   }
 
   if (i==1){  // read first batch of reads from file2
+    std::cerr << __LINE__ << "\n";
     for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
       uint32_t r_count=readSet[thread][barc].size();
       BCI_pos2=file2.stream.file.tellg();
@@ -348,6 +351,8 @@ for(int i=0;i<2;i++){
     }
     BCI_posSet[thread2].clear();
     thread2=(thread2+1)%3;
+    std::cerr << __LINE__ << "\n";
+
   }
 }
 
