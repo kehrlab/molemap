@@ -416,7 +416,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     if (i==2){   // process reads and write results to file
       auto tbegin3 = std::chrono::high_resolution_clock::now();
       // itrbarc=barcodeSet[thread3].begin();
-      #pragma omp parallel for ordered
+      #pragma omp parallel for ordered schedule(dynamic)
       for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
