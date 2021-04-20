@@ -399,12 +399,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       }
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
-      // std::cerr << __LINE__ << "\n";
     }
     if (i==2){   // process reads and write results to file
-      // std::cerr << __LINE__ << "\n";
-      itrbarc=barcodeSet[thread3].begin();
-      for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+      // itrbarc=barcodeSet[thread3].begin();
+      for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
         for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
@@ -453,7 +451,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << __LINE__ << "\n";
         }
         // std::cerr << __LINE__ << "\n";
-        itrbarc++;
+        // itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
       // std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
@@ -488,8 +486,8 @@ for(int i=0;i<2;i++){
   }
 
   if (i==1){   // process reads and write results to file
-    itrbarc=barcodeSet[thread3].begin();
-    for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+    // itrbarc=barcodeSet[thread3].begin();
+    for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
       std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
       for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
         std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -531,7 +529,7 @@ for(int i=0;i<2;i++){
         sort(kmer_list.begin(),kmer_list.end());
         MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
       }
-      itrbarc++;
+      // itrbarc++;
     } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
     barcodeSet[thread3].clear();
@@ -541,8 +539,8 @@ for(int i=0;i<2;i++){
 }
 
 // process last batch of reads
-itrbarc=barcodeSet[thread3].begin();
-for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+// itrbarc=barcodeSet[thread3].begin();
+for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -584,7 +582,7 @@ for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end()
     sort(kmer_list.begin(),kmer_list.end());
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
   }
-  itrbarc++;
+  // itrbarc++;
 } //for (itrreadSet = readSet[thread3].begin();
 readSet[thread3].clear();
 barcodeSet[thread3].clear();
