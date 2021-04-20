@@ -408,14 +408,14 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
         for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
           int64_t minimizer_position=0;
           int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
           uint_fast8_t minimizer_active_bases=1;
           // std::cerr << __LINE__ << "\n";
           if (length(*it)>mini_window_size){
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << __LINE__ << "\n";
             for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
               // std::cerr << __LINE__ << "\n";
               if (t!=minimizer_position){                 // if old minimizer in current window
@@ -440,22 +440,22 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           }
           // std::cerr << __LINE__ << "\n";
         } //for (itrreads = *(itrreadSet).begin();
-        std::cerr << __LINE__ << "\n";
+        // std::cerr << __LINE__ << "\n";
         if (!kmer_list.empty()) {
           // std::cerr << __LINE__ << "\n";
           sort(kmer_list.begin(),kmer_list.end());
-          std::cerr << __LINE__ << "\n";
-          std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
-          std::cerr << "size barcodeSet: " << barcodeSet[thread3].size() << "\n";
-          std::cerr << "pos: " << (int)(itrreadSet-readSet[thread3].begin()) << "\n";
-          std::cerr << "itrbarc: "<< *itrbarc << "\n";
+          // std::cerr << __LINE__ << "\n";
+          // std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
+          // std::cerr << "size barcodeSet: " << barcodeSet[thread3].size() << "\n";
+          // std::cerr << "pos: " << (int)(itrreadSet-readSet[thread3].begin()) << "\n";
+          // std::cerr << "itrbarc: "<< *itrbarc << "\n";
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
         }
-        std::cerr << __LINE__ << "\n";
+        // std::cerr << __LINE__ << "\n";
         itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
       omp_set_lock(&lock);
@@ -463,13 +463,13 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
     } //if (i==2)
   }
-  std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
+  // std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
 }
 
-std::cerr << __LINE__ << "\n";
+// std::cerr << __LINE__ << "\n";
 
 for(int i=0;i<2;i++){
 
@@ -488,7 +488,7 @@ for(int i=0;i<2;i++){
   }
 
   if (i==1){   // process reads and write results to file
-    itrbarc=barcodeSet[thread].begin();
+    itrbarc=barcodeSet[thread3].begin();
     for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
       std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
       for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
@@ -541,7 +541,7 @@ for(int i=0;i<2;i++){
 }
 
 // process last batch of reads
-itrbarc=barcodeSet[thread].begin();
+itrbarc=barcodeSet[thread3].begin();
 for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
