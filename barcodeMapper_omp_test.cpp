@@ -201,7 +201,7 @@ uint_fast32_t bucket_number=length(C);
 // std::cerr << "bucket_number: " << bucket_number << "\n";
 
 
-std::cerr <<"...done.\n";
+std::cerr <<"..done.\n";
 // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
 /*
@@ -268,7 +268,7 @@ BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
-uint32_t max_readCount=100;
+uint32_t max_readCount=10000;
 uint32_t readCount;
 omp_lock_t lock;
 omp_init_lock(&lock);
@@ -310,6 +310,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
 for(int i=0;i<2;i++){
 
   if (i==0){  //read 2nd batch of reads from file1
+    // std::cerr << __LINE__ << "\n";
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
@@ -334,9 +335,11 @@ for(int i=0;i<2;i++){
       }
       readCount++;
     }
+    // std::cerr << __LINE__ << "\n";
   }
 
   if (i==1){  // read first batch of reads from file2
+    // std::cerr << __LINE__ << "\n";
     for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
       uint32_t r_count=readSet[thread][barc].size();
       BCI_pos2=file2.stream.file.tellg();
@@ -348,14 +351,17 @@ for(int i=0;i<2;i++){
     }
     BCI_posSet[thread2].clear();
     thread2=(thread2+1)%3;
+    // std::cerr << __LINE__ << "\n";
+
   }
 }
 
 // std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  #pragma omp parallel for
+  #pragma omp parallel for num threads(3)
   for(int i=0;i<3;i++){
+
     if (i==0){   // read next batch of reads from file1
       auto tbegin = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
@@ -386,9 +392,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       }
       omp_unset_lock(&lock);
       std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
-
       // std::cerr << __LINE__ << "\n";
     }
+
     if (i==1){   // read next batch of reads from file2
       auto tbegin2 = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
@@ -404,15 +410,14 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
       std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
-
       // std::cerr << __LINE__ << "\n";
     }
+
     if (i==2){   // process reads and write results to file
       auto tbegin3 = std::chrono::high_resolution_clock::now();
-
-      // std::cerr << __LINE__ << "\n";
-      itrbarc=barcodeSet[thread3].begin();
-      for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+      // itrbarc=barcodeSet[thread3].begin();
+      #pragma omp parallel for ordered collapse(2)
+      for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
         for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
@@ -449,6 +454,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << __LINE__ << "\n";
         } //for (itrreads = *(itrreadSet).begin();
         // std::cerr << __LINE__ << "\n";
+        #pragma omp ordered
         if (!kmer_list.empty()) {
           // std::cerr << __LINE__ << "\n";
           sort(kmer_list.begin(),kmer_list.end());
@@ -461,7 +467,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << __LINE__ << "\n";
         }
         // std::cerr << __LINE__ << "\n";
-        itrbarc++;
+        // itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
       // std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
@@ -480,6 +486,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
 // std::cerr << __LINE__ << "\n";
 
+#pragma omp parallel for
 for(int i=0;i<2;i++){
 
   if (i==0){  // read last batch of reads from file2
@@ -497,8 +504,8 @@ for(int i=0;i<2;i++){
   }
 
   if (i==1){   // process reads and write results to file
-    itrbarc=barcodeSet[thread3].begin();
-    for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+    // itrbarc=barcodeSet[thread3].begin();
+    for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
       std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
       for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
         std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -540,7 +547,7 @@ for(int i=0;i<2;i++){
         sort(kmer_list.begin(),kmer_list.end());
         MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
       }
-      itrbarc++;
+      // itrbarc++;
     } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
     barcodeSet[thread3].clear();
@@ -549,11 +556,15 @@ for(int i=0;i<2;i++){
   } //if (i==1)
 }
 
+// std::cerr << __LINE__ << "\n";
+
 // process last batch of reads
-itrbarc=barcodeSet[thread3].begin();
-for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+// itrbarc=barcodeSet[thread3].begin();
+for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
+  // std::cerr << __LINE__ << "\n";
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
+    // std::cerr << __LINE__ << "\n";
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
@@ -589,15 +600,22 @@ for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end()
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   } //for (itrreads = *(itrreadSet).begin();
+  // std::cerr << __LINE__ << "\n";
   if (!kmer_list.empty()) {
+    // std::cerr << __LINE__ << "\n";
     sort(kmer_list.begin(),kmer_list.end());
+    // std::cerr << "Barcode: " << *itrbarc << "\n";
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
   }
-  itrbarc++;
+  // std::cerr << __LINE__ << "\n";
+  // itrbarc++;
 } //for (itrreadSet = readSet[thread3].begin();
+
 readSet[thread3].clear();
 barcodeSet[thread3].clear();
 thread3=(thread3+1)%3;
+
+// std::cerr << __LINE__ << "\n";
 
 close(file1);
 close(file2);
