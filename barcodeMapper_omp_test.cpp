@@ -275,6 +275,8 @@ uint32_t max_readCount=10000;
 uint32_t readCount;
 omp_lock_t lock;
 omp_init_lock(&lock);
+omp_init_lock(&out_lock);
+
 
 std::cerr << "Processing read file...";
 
