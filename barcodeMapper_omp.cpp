@@ -442,8 +442,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         } //for (itrreads = *(itrreadSet).begin();
         std::cerr << __LINE__ << "\n";
         if (!kmer_list.empty()) {
+          std::cerr << __LINE__ << "\n";
           sort(kmer_list.begin(),kmer_list.end());
+          std::cerr << __LINE__ << "\n";
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
+          std::cerr << __LINE__ << "\n";
         }
         std::cerr << __LINE__ << "\n";
         itrbarc++;
