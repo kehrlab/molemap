@@ -288,6 +288,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
       thread=(thread+1)%3; // iterate thread
       barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
       readSet[thread].push_back({read1});
+      readCount=0;
       break;
     }else{ //write read to readset of new barcode
       barcodeSet[thread].push_back(barcode);
