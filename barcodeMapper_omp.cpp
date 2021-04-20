@@ -354,11 +354,14 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     std::cerr << __LINE__ << "\n";
     if (i==0){   // read next batch of reads from file1
       while (!atEnd(file1)){
+        std::cerr << __LINE__ << "\n";
         BCI_pos1=file1.stream.file.tellg();
         readRecord(id1, read1, file1);
         meta=toCString(id1);
         new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+        std::cerr << __LINE__ << "\n";
         if (barcode!=new_barcode){
+          std::cerr << __LINE__ << "\n";
           BCI_barcodes.push_back(new_barcode);
           BCI_posSet[thread].push_back(BCI_pos1);
           barcode=new_barcode;
@@ -371,9 +374,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             barcodeSet[thread].push_back(barcode);
             readSet[thread].push_back({read1});
           }
+          std::cerr << __LINE__ << "\n";
         }else{ //appned read to readset of current barcode
           readSet[thread].back().push_back(read1);
         }
+        std::cerr << __LINE__ << "\n";
         readCount++;
       }
     }
