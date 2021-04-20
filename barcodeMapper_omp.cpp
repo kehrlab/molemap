@@ -415,11 +415,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     if (i==1){   // read next batch of reads from file2
       std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
-        std::cerr << __LINE__ << "\n";
-        std::cerr << "size1: " << readSet[thread2].size() << "\n";
-        std::cerr << "barc: " << barc << "\n";
-        std::cerr << "size: " << readSet[thread2][0].size() << "\n";
-        uint32_t r_count=readSet[thread][barc].size();
+        uint32_t r_count=readSet[thread2][barc].size();
         std::cerr << __LINE__ << "\n";
         BCI_pos2=file2.stream.file.tellg();
         std::cerr << __LINE__ << "\n";
