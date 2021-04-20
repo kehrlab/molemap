@@ -257,6 +257,7 @@ std::streampos BCI_pos2;
 std::vector<std::vector<std::vector<Dna5String>>> readSet;
 std::vector<std::vector<Dna5String>>::iterator itrreadSet;
 std::vector<Dna5String>::iterator it;
+Dna5String read_overflow;
 readSet.resize(3,{});
 std::vector<std::vector<DnaString>> barcodeSet;
 std::vector<DnaString>::iterator itrbarc;
@@ -361,6 +362,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
   for(int i=0;i<3;i++){
     std::cerr << __LINE__ << "\n";
     if (i==0){   // read next batch of reads from file1
+      omp_set_lock(&lock);
       while (!atEnd(file1)){
         std::cerr << __LINE__ << "\n";
         BCI_pos1=file1.stream.file.tellg();
@@ -375,18 +377,16 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           barcode=new_barcode;
           if (readCount>max_readCount){
             thread=(thread+1)%3; // iterate thread
-            omp_set_lock(&lock);
             std::cerr << __LINE__ << "\n";
             std::cerr << "read1: " << read1 << "\n";
             barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-            readSet[thread].push_back({read1});
+            read_overflow=read1;
             std::cerr << "size1: " << readSet[thread].size() << "\n";
             std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
             std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
-            omp_unset_lock(&lock);
             readCount=0;
             break;
           }else{ //write read to readset of new barcode
@@ -411,6 +411,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         std::cerr << __LINE__ << "\n";
         readCount++;
       }
+      omp_unset_lock(&lock);
     }
     std::cerr << __LINE__ << "\n";
     if (i==1){   // read next batch of reads from file2
@@ -428,7 +429,6 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     }
     std::cerr << __LINE__ << "\n";
     if (i==2){   // process reads and write results to file
-      omp_set_lock(&lock);
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -476,8 +476,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       } //for (itrreadSet = readSet[thread3].begin();
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
-      thread3=(thread3+1)%3;
+      omp_set_lock(&lock);
+      readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
+      thread3=(thread3+1)%3;
     } //if (i==2)
   }
 }
