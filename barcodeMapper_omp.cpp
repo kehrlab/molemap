@@ -237,7 +237,7 @@ std::string barcode;
 std::string new_barcode;
 std::string meta;
 // StringSet<Dna5String> reads;
-resize(reads, 2, Exact());
+// resize(reads, 2, Exact());
 Dna5String read1;
 Dna5String read2;
 CharString id1;
@@ -257,12 +257,12 @@ std::streampos BCI_pos2;
 std::vector<std::vector<std::vector<Dna5String>>> readSet;
 std::vector<std::vector<Dna5String>>::iterator itrreadSet;
 std::vector<Dna5String>::iterator it;
-resize(readSet,3,{});
+readSet.resize(3,{});
 std::vector<std::vector<Dna5String>> barcodeSet;
 std::vector<Dna5String>::iterator itrbarc;
-resize(barcodeSet,3,{});
+barcodeSet.resize(3,{});
 std::vector<std::streampos> BCI_posSet;
-resize(BCI_posSet,3,{});
+BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
@@ -383,7 +383,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         }
       }
       BCI_posSet[thread2].clear();
-      thread2=(thread2+1)%3
+      thread2=(thread2+1)%3;
     }
 
     if (i==2){   // process reads and write results to file
