@@ -256,7 +256,7 @@ std::streampos BCI_pos2;
 // multithread handling
 std::vector<std::vector<std::vector<Dna5String>>> readSet;
 std::vector<std::vector<Dna5String>>::iterator itrreadSet;
-std::vector<Dna5String>::iterator itrreads;
+std::vector<Dna5String>::iterator it;
 resize(readSet,3,{});
 std::vector<std::vector<Dna5String>> barcodeSet;
 std::vector<Dna5String>::iterator itrbarc;
@@ -299,7 +299,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
-  
+
   if (i==0){  //read 2nd batch of reads from file1
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
@@ -390,7 +390,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-        for (itrreads = *(itrreadSet).begin(); itrreads!=*(itrreadSet).end(); ++itrreads){                                            // Iterating over the reads
+        for (it = *(itrreadSet).begin(); it!=*(itrreadSet).end(); ++it){                                            // Iterating over the reads
           std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
           int64_t minimizer_position=0;
           int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
@@ -460,7 +460,7 @@ for(int i=0;i<2;i++){
     itrbarc=barcodeSet[thread].begin();
     for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
       std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-      for (itrreads = *(itrreadSet).begin(); itrreads!=*(itrreadSet).end(); ++itrreads){                                            // Iterating over the reads
+      for (it = *(itrreadSet).begin(); it!=*(itrreadSet).end(); ++it){                                            // Iterating over the reads
         std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
         int64_t minimizer_position=0;
         int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
@@ -495,13 +495,13 @@ for(int i=0;i<2;i++){
           }
           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
         }
-      } //for (itrreads = *(itrreadSet).begin();
+      } //for (it = *(itrreadSet).begin();
       if (!kmer_list.empty()) {
         sort(kmer_list.begin(),kmer_list.end());
         MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
       }
       itrbarc++;
-    } //for (itrreadSet = readSet[thread3].begin();
+    } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
     barcodeSet[thread3].clear();
     thread3=(thread3+1)%3;
@@ -512,7 +512,7 @@ for(int i=0;i<2;i++){
 itrbarc=barcodeSet[thread].begin();
 for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-  for (itrreads = *(itrreadSet).begin(); itrreads!=*(itrreadSet).end(); ++itrreads){                                            // Iterating over the reads
+  for (it = *(itrreadSet).begin(); it!=*(itrreadSet).end(); ++it){                                            // Iterating over the reads
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
