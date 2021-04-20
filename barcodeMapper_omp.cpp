@@ -318,7 +318,8 @@ for(int i=0;i<2;i++){
         if (readCount>max_readCount){
           thread=(thread+1)%3; // iterate thread
           barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
-          readSet[thread].push_back({read1});
+          readSet[thread].push_back({});
+          readSet[thread].back().push_back(read1);
           readCount=0;
           break;
         }else{ //write read to readset of new barcode
@@ -375,7 +376,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
-            readSet[thread].push_back({read1});
+            readSet[thread].push_back({});
+            readSet[thread].back().push_back(read1);
             readCount=0;
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             break;
