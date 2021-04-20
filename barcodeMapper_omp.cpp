@@ -417,7 +417,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
         std::cerr << __LINE__ << "\n";
         uint32_t r_count=readSet[thread][barc].size();
+        std::cerr << __LINE__ << "\n";
         BCI_pos2=file2.stream.file.tellg();
+        std::cerr << __LINE__ << "\n";
         BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
         std::cerr << __LINE__ << "\n";
         for (uint32_t read = 0; read < r_count; read++) {
