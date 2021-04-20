@@ -443,6 +443,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       thread3=(thread3+1)%3;
     } //if (i==2)
   }
+  std::cerr << __LINE__ << "\n";
 }
 
 std::cerr << __LINE__ << "\n";
