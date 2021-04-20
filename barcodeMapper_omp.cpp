@@ -390,7 +390,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         readCount++;
       }
       omp_unset_lock(&lock);
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
     }
 
     if (i==1){   // read next batch of reads from file2
@@ -594,7 +594,7 @@ for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin();
   } //for (itrreads = *(itrreadSet).begin();
   // std::cerr << __LINE__ << "\n";
   if (!kmer_list.empty()) {
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     sort(kmer_list.begin(),kmer_list.end());
     // std::cerr << "Barcode: " << *itrbarc << "\n";
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
