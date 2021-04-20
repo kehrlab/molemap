@@ -588,10 +588,10 @@ for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin();
   if (!kmer_list.empty()) {
     std::cerr << __LINE__ << "\n";
     sort(kmer_list.begin(),kmer_list.end());
-    std::cerr << "Barcode: " << *itrbarc << "\n";
+    // std::cerr << "Barcode: " << *itrbarc << "\n";
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
   }
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   // itrbarc++;
 } //for (itrreadSet = readSet[thread3].begin();
 readSet[thread3].clear();
