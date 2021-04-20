@@ -269,7 +269,7 @@ uint32_t thread3=0;   // "thread" for processing reads
 uint32_t max_readCount=100;
 uint32_t readCount;
 
-std::cerr << "Processing read file...";
+std::cerr << "Processing read file...\n";
 
 tbegin = std::chrono::high_resolution_clock::now();
 
@@ -351,7 +351,7 @@ std::cerr << __LINE__ << "\n";
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
   #pragma omp parallel for
   for(int i=0;i<3;i++){
-
+    std::cerr << __LINE__ << "\n";
     if (i==0){   // read next batch of reads from file1
       while (!atEnd(file1)){
         BCI_pos1=file1.stream.file.tellg();
@@ -377,7 +377,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         readCount++;
       }
     }
-
+    std::cerr << __LINE__ << "\n";
     if (i==1){   // read next batch of reads from file2
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
         uint32_t r_count=readSet[thread][barc].size();
@@ -391,7 +391,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
     }
-
+    std::cerr << __LINE__ << "\n";
     if (i==2){   // process reads and write results to file
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
