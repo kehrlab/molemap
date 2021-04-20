@@ -398,7 +398,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << "\n";
           std::cerr << "read1: " << read1 << "\n";
           std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-          std::cerr << "thread " << thread << " thread2 " << thread2 << "\n";  
+          std::cerr << "last element: " << (readSet[thread].back()).back() << "\n";          
+          std::cerr << "thread " << thread << " thread2 " << thread2 << "\n";
           readSet[thread].back().push_back(read1);
           std::cerr << __LINE__ << "\n";
         }
