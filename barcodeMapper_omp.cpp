@@ -400,32 +400,34 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
 
           }
-          std::cerr << __LINE__ << "\n";
         }else{ //append read to readset of current barcode
-          std::cerr << __LINE__ << "\n";
           // std::cerr << "read1: " << read1 << "\n";
           // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
           // std::cerr << "last element: " << (readSet[thread].back()).back() << "\n";
           // std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
           readSet[thread].back().push_back(read1);
-          std::cerr << __LINE__ << "\n";
         }
-        std::cerr << __LINE__ << "\n";
         readCount++;
       }
       omp_unset_lock(&lock);
     }
     std::cerr << __LINE__ << "\n";
     if (i==1){   // read next batch of reads from file2
+      std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
+        std::cerr << __LINE__ << "\n";
         uint32_t r_count=readSet[thread][barc].size();
         BCI_pos2=file2.stream.file.tellg();
         BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
+        std::cerr << __LINE__ << "\n";
         for (uint32_t read = 0; read < r_count; read++) {
+          std::cerr << __LINE__ << "\n";
           readRecord(id2, read2, file2);
           readSet[thread2][barc].push_back(read2);
+          std::cerr << __LINE__ << "\n";
         }
       }
+      std::cerr << __LINE__ << "\n";
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
     }
