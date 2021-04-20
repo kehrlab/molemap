@@ -91,7 +91,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 }
 
 omp_lock_t out_lock;
-omp_init_lock(&out_lock);
+// omp_init_lock(&out_lock);
 
 int main(int argc, char const ** argv){
 
