@@ -309,7 +309,7 @@ std::cerr << __LINE__ << "\n";
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
 
-  if (i==7){  //read 2nd batch of reads from file1
+  if (i==0){  //read 2nd batch of reads from file1
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
@@ -357,6 +357,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
   #pragma omp parallel for
   for(int i=0;i<3;i++){
     if (i==0){   // read next batch of reads from file1
+      std::cerr << __LINE__ << "\n";
       omp_set_lock(&lock);
       while (!atEnd(file1)){
         BCI_pos1=file1.stream.file.tellg();
@@ -383,8 +384,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         readCount++;
       }
       omp_unset_lock(&lock);
+      std::cerr << __LINE__ << "\n";
     }
     if (i==1){   // read next batch of reads from file2
+      std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
         uint32_t r_count=readSet[thread2][barc].size();
         BCI_pos2=file2.stream.file.tellg();
@@ -396,8 +399,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       }
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
+      std::cerr << __LINE__ << "\n";
     }
     if (i==2){   // process reads and write results to file
+      std::cerr << __LINE__ << "\n";
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -441,9 +446,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
+      std::cerr << __LINE__ << "\n";
     } //if (i==2)
   }
-  std::cerr << __LINE__ << "\n";
+  std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
 }
 
 std::cerr << __LINE__ << "\n";
