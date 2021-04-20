@@ -403,7 +403,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     }
     if (i==2){   // process reads and write results to file
       // std::cerr << __LINE__ << "\n";
-      itrbarc=barcodeSet[thread].begin();
+      itrbarc=barcodeSet[thread3].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -642,7 +642,7 @@ return 0;
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold){
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -665,14 +665,14 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     uint_fast32_t end_position=POS(kmer_list.begin());
     double window_quality=0;
     std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
 
     if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
       window_quality+=0.00032*ACT(kmer_list.begin());
     }else{
       window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
     }
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
 
     for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
 
@@ -731,7 +731,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
     candidate=std::make_tuple(window_quality,REF(itrk),POS(itrstart),POS(itrk));
     ReportWindow(best_windows,candidate); //reporting last window
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
 
     //filter low quality windows
     if (std::get<0>(*(best_windows.end()-1))!=0) {
@@ -750,7 +750,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     for (int i=(toshort.size()-1);i>=0;--i) {
       best_windows.erase(best_windows.begin()+toshort[i]);
     }
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
 
     // Output
     std::fstream results;
@@ -767,6 +767,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
     results.close();
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     return;
   } //MapKmerList
