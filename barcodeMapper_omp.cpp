@@ -361,7 +361,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
         std::cerr << __LINE__ << "\n";
         if (barcode!=new_barcode){
-          std::cerr << __LINE__ << "\n";
+          std::cerr << "NEW_BARCODE" << "\n";
           BCI_barcodes.push_back(new_barcode);
           BCI_posSet[thread].push_back(BCI_pos1);
           barcode=new_barcode;
@@ -371,11 +371,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             readSet[thread].push_back({read1});
             break;
           }else{ //write read to readset of new barcode
-            std::cerr << __LINE__ << "\n";
             barcodeSet[thread].push_back(barcode);
-            std::cerr << __LINE__ << "\n";
             readSet[thread].push_back({read1});
-            std::cerr << __LINE__ << "\n";
           }
           std::cerr << __LINE__ << "\n";
         }else{ //append read to readset of current barcode
