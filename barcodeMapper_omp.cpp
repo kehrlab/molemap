@@ -268,7 +268,7 @@ BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
-uint32_t max_readCount=1000;
+uint32_t max_readCount=10000;
 uint32_t readCount;
 omp_lock_t lock;
 omp_init_lock(&lock);
