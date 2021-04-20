@@ -415,7 +415,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           uint_fast8_t minimizer_active_bases=1;
           std::cerr << __LINE__ << "\n";
           if (length(*it)>mini_window_size){
+            std::cerr << __LINE__ << "\n";
             for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
+              std::cerr << __LINE__ << "\n";
               if (t!=minimizer_position){                 // if old minimizer in current window
                 rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
                 if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -432,14 +434,18 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
                 minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
                 minimizer_active_bases=1;
               }
+              std::cerr << __LINE__ << "\n";
             }
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
           }
+          std::cerr << __LINE__ << "\n";
         } //for (itrreads = *(itrreadSet).begin();
+        std::cerr << __LINE__ << "\n";
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
         }
+        std::cerr << __LINE__ << "\n";
         itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
       std::cerr << __LINE__ << "\n";
