@@ -357,7 +357,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
   #pragma omp parallel for
   for(int i=0;i<3;i++){
     if (i==0){   // read next batch of reads from file1
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       omp_set_lock(&lock);
       while (!atEnd(file1)){
         BCI_pos1=file1.stream.file.tellg();
@@ -384,10 +384,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         readCount++;
       }
       omp_unset_lock(&lock);
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
     }
     if (i==1){   // read next batch of reads from file2
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
         uint32_t r_count=readSet[thread2][barc].size();
         BCI_pos2=file2.stream.file.tellg();
@@ -399,18 +399,21 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       }
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
     }
     if (i==2){   // process reads and write results to file
       std::cerr << __LINE__ << "\n";
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
+        std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
         for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
+          std::cerr << __LINE__ << "\n";
           std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
           int64_t minimizer_position=0;
           int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
           uint_fast8_t minimizer_active_bases=1;
+          std::cerr << __LINE__ << "\n";
           if (length(*it)>mini_window_size){
             for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
               if (t!=minimizer_position){                 // if old minimizer in current window
@@ -439,6 +442,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         }
         itrbarc++;
       } //for (itrreadSet = readSet[thread3].begin();
+      std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
       omp_set_lock(&lock);
