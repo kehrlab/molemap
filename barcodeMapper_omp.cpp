@@ -371,6 +371,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
             readSet[thread].push_back({read1});
+            readCount=0;
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             break;
           }else{ //write read to readset of new barcode
