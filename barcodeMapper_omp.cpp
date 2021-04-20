@@ -545,21 +545,21 @@ std::cerr << __LINE__ << "\n";
 // process last batch of reads
 // itrbarc=barcodeSet[thread3].begin();
 for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
     uint_fast8_t minimizer_active_bases=1;
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     if (length(*it)>mini_window_size){
       for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-        std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
+        // std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -568,7 +568,7 @@ for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin();
           }
           minimizer_active_bases++;
         }else{
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
           // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
@@ -578,13 +578,13 @@ for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin();
           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
           // std::cerr << __LINE__ << "\n";
           minimizer_active_bases=1;
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
         }
       }
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   } //for (itrreads = *(itrreadSet).begin();
-  std::cerr << __LINE__ << "\n";
+  // std::cerr << __LINE__ << "\n";
   if (!kmer_list.empty()) {
     std::cerr << __LINE__ << "\n";
     sort(kmer_list.begin(),kmer_list.end());
