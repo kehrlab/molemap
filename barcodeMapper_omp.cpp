@@ -309,7 +309,7 @@ std::cerr << __LINE__ << "\n";
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
 
-  if (i==0){  //read 2nd batch of reads from file1
+  if (i==7){  //read 2nd batch of reads from file1
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
