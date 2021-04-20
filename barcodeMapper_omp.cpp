@@ -258,6 +258,7 @@ std::vector<std::vector<std::vector<Dna5String>>> readSet;
 std::vector<std::vector<Dna5String>>::iterator itrreadSet;
 std::vector<Dna5String>::iterator it;
 Dna5String read_overflow;
+Dna5String barcode_overflow;
 readSet.resize(3,{});
 std::vector<std::vector<DnaString>> barcodeSet;
 std::vector<DnaString>::iterator itrbarc;
@@ -379,7 +380,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             thread=(thread+1)%3; // iterate thread
             std::cerr << __LINE__ << "\n";
             std::cerr << "read1: " << read1 << "\n";
-            barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
+            // barcodeSet[thread].push_back(barcode);
+            barcode_overflow=barcode;//write barcode to Set of next batch
             std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             read_overflow=read1;
             std::cerr << "size1: " << readSet[thread].size() << "\n";
@@ -477,6 +479,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
       omp_set_lock(&lock);
+      barcodeSet[thread3].push_back(barcode_overflow);
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
