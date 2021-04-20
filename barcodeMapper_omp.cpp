@@ -277,8 +277,6 @@ std::cerr << "Processing read file...\n";
 
 tbegin = std::chrono::high_resolution_clock::now();
 
-std::cerr << __LINE__ << "\n";
-
 while (!atEnd(file1)){ //read first batch of reads from file1
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
@@ -290,13 +288,8 @@ while (!atEnd(file1)){ //read first batch of reads from file1
     barcode=new_barcode;
     if (readCount>max_readCount){
       thread=(thread+1)%3; // iterate thread
-      std::cerr << "read1: " << read1 << "\n";
       barcodeSet[thread].push_back(barcode);  //write barcode to Set of next batch
       readSet[thread].push_back({read1});
-      std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
-      std::cerr << "size1: " << readSet[thread].size() << "\n";
-      std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
-      std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
       readCount=0;
       break;
     }else{ //write read to readset of new barcode
@@ -308,8 +301,6 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   }
   readCount++;
 }
-
-std::cerr << __LINE__ << "\n";
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
@@ -356,83 +347,50 @@ for(int i=0;i<2;i++){
   }
 }
 
-std::cerr << __LINE__ << "\n";
-
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  // #pragma omp parallel for
+  #pragma omp parallel for
   for(int i=0;i<3;i++){
-    std::cerr << __LINE__ << "\n";
     if (i==0){   // read next batch of reads from file1
       omp_set_lock(&lock);
       while (!atEnd(file1)){
-        std::cerr << __LINE__ << "\n";
         BCI_pos1=file1.stream.file.tellg();
         readRecord(id1, read1, file1);
         meta=toCString(id1);
         new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-        std::cerr << __LINE__ << "\n";
         if (barcode!=new_barcode){
-          // std::cerr << "NEW_BARCODE" << "\n";
           BCI_barcodes.push_back(new_barcode);
           BCI_posSet[thread].push_back(BCI_pos1);
           barcode=new_barcode;
           if (readCount>max_readCount){
             thread=(thread+1)%3; // iterate thread
-            std::cerr << __LINE__ << "\n";
-            // std::cerr << "read1: " << read1 << "\n";
-            // barcodeSet[thread].push_back(barcode);
             barcode_overflow=barcode;//write barcode to Set of next batch
-            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             read_overflow=read1;
-            // std::cerr << "size1: " << readSet[thread].size() << "\n";
-            // std::cerr << "is empty? " << readSet[thread].back().empty() << "\n";
-            // std::cerr << "last_element: " << (readSet[thread].back().back()) <<"\n";
-            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-            // std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
             readCount=0;
             break;
           }else{ //write read to readset of new barcode
             barcodeSet[thread].push_back(barcode);
-            std::cerr << __LINE__ << "\n";
-            // std::cerr << "read1: " << read1 << "\n";
-            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
             readSet[thread].push_back({read1});
-            // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-
           }
         }else{ //append read to readset of current barcode
-          // std::cerr << "read1: " << read1 << "\n";
-          // std::cerr << "size: " << (readSet[thread].back()).size() << "\n";
-          // std::cerr << "last element: " << (readSet[thread].back()).back() << "\n";
-          // std::cerr << "thread " << thread << " thread3 " << thread3 << "\n";
           readSet[thread].back().push_back(read1);
         }
         readCount++;
       }
       omp_unset_lock(&lock);
     }
-    std::cerr << __LINE__ << "\n";
     if (i==1){   // read next batch of reads from file2
-      std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
         uint32_t r_count=readSet[thread2][barc].size();
-        std::cerr << __LINE__ << "\n";
         BCI_pos2=file2.stream.file.tellg();
-        std::cerr << __LINE__ << "\n";
         BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
-        std::cerr << __LINE__ << "\n";
         for (uint32_t read = 0; read < r_count; read++) {
-          std::cerr << __LINE__ << "\n";
           readRecord(id2, read2, file2);
           readSet[thread2][barc].push_back(read2);
-          std::cerr << __LINE__ << "\n";
         }
       }
-      std::cerr << __LINE__ << "\n";
       BCI_posSet[thread2].clear();
       thread2=(thread2+1)%3;
     }
-    std::cerr << __LINE__ << "\n";
     if (i==2){   // process reads and write results to file
       itrbarc=barcodeSet[thread].begin();
       for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
@@ -442,13 +400,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           int64_t minimizer_position=0;
           int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
           uint_fast8_t minimizer_active_bases=1;
-          // std::cerr << __LINE__ << "\n";
           if (length(*it)>mini_window_size){
             for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-              // std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
               if (t!=minimizer_position){                 // if old minimizer in current window
                 rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-                // std::cerr << __LINE__ << "\n";
                 if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
                   AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
                   minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -457,17 +412,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
                 }
                 minimizer_active_bases++;
               }else{
-                // std::cerr << __LINE__ << "\n";
                 AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-                // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
                 minimizer_position=t+1;
-                // std::cerr << __LINE__ << "\n";
                 hash=hashkMer(infix(*it,t+1,t+1+k),k);
-                // std::cerr << __LINE__ << "\n";
                 minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-                // std::cerr << __LINE__ << "\n";
                 minimizer_active_bases=1;
-                // std::cerr << __LINE__ << "\n";
               }
             }
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
@@ -489,8 +438,6 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     } //if (i==2)
   }
 }
-
-std::cerr << __LINE__ << "\n";
 
 for(int i=0;i<2;i++){
 
@@ -561,8 +508,6 @@ for(int i=0;i<2;i++){
   } //if (i==1)
 }
 
-std::cerr << __LINE__ << "\n";
-
 // process last batch of reads
 itrbarc=barcodeSet[thread].begin();
 for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end();itrreadSet++) {// for all barcodes in set
@@ -612,8 +557,6 @@ for (itrreadSet = readSet[thread3].begin(); itrreadSet != readSet[thread3].end()
 readSet[thread3].clear();
 barcodeSet[thread3].clear();
 thread3=(thread3+1)%3;
-
-std::cerr << __LINE__ << "\n";
 
 close(file1);
 close(file2);
