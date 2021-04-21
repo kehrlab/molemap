@@ -460,9 +460,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
               }
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
             }
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
           } //for (itrreads = *(itrreadSetG).begin();
-          // std::cerr << __LINE__ << "\n";
+          std::cerr << __LINE__ << "\n";
           if (!kmer_list.empty()) {
             std::cerr << __LINE__ << "\n";
             sort(kmer_list.begin(),kmer_list.end());
