@@ -378,7 +378,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       for (int i=-2; i<barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
-          // std::cerr << __LINE__ << "\n";
+          std::cerr << __LINE__ << "\n";
           omp_set_lock(&lock);
           while (!atEnd(file1)){
             BCI_pos1=file1.stream.file.tellg();
@@ -408,10 +408,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
 
-        }
-        else if(i==-1){   // read from file 2
+        }else if(i==-1){   // read from file 2
           auto tbegin2 = std::chrono::high_resolution_clock::now();
-          // std::cerr << __LINE__ << "\n";
+          std::cerr << __LINE__ << "\n";
           for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
             uint32_t r_count=readSet[thread2][barc].size();
             BCI_pos2=file2.stream.file.tellg();
