@@ -364,7 +364,6 @@ for(int i=0;i<2;i++){
 // std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  auto tbegin3 = std::chrono::high_resolution_clock::now();
   #pragma omp parallel sections
   {
   // for(int i=0;i<3;i++){
@@ -423,13 +422,15 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
       // std::cerr << __LINE__ << "\n";
     }
+  }
 
     // if (i==2){   // process reads and write results to file
-    #pragma omp section
-    {
+    //   #pragma omp section
+    // {
+      auto tbegin3 = std::chrono::high_resolution_clock::now();
       itrbarc=barcodeSet[thread3].begin();
       // #pragma omp parallel for
-      // #pragma omp parallel for
+      #pragma omp parallel for
       for (itrreadSet = readSet[thread3].begin()/*, itrbarc=barcodeSet[thread3].begin()*/; itrreadSet != readSet[thread3].end(); itrreadSet++ /*,itrbarc++*/) {// for all barcodes in set
         // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -489,12 +490,12 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
+      std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
       // std::cerr << __LINE__ << "\n";
-    } //if (i==2)
-  }
+    // } //if (i==2)
+  // }
   // std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
 // }   //pragma omp parallel
-std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
 }   //while (!atEnd(file1))
 
