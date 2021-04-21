@@ -375,7 +375,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
       std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
       std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
-      for (int i=-2; i<barcodeSet[thread3].size(); i++) {// for all barcodes in set
+      for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
           std::cerr << __LINE__ << "\n";
