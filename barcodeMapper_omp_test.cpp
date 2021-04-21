@@ -282,7 +282,7 @@ std::cerr << "Processing read file...";
 
 tbegin = std::chrono::high_resolution_clock::now();
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ //read first batch of reads from file1
   BCI_pos1=file1.stream.file.tellg();
@@ -309,7 +309,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   readCount++;
 }
 
-// std::cerr << __LINE__ << "\n";
+std::cerr << __LINE__ << "\n";
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
@@ -361,6 +361,7 @@ for(int i=0;i<2;i++){
   }
 }
 
+std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
 
