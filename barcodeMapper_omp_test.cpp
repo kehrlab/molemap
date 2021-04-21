@@ -90,6 +90,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
+omp_lock_t out_lock;
+
 int main(int argc, char const ** argv){
 
 // parsing command line arguments
@@ -271,7 +273,7 @@ uint32_t thread3=0;   // "thread" for processing reads
 uint32_t max_readCount=10000;
 uint32_t readCount;
 omp_lock_t lock;
-omp_lock_t out_lock;
+// omp_lock_t out_lock;
 omp_init_lock(&lock);
 omp_init_lock(&out_lock);
 
@@ -466,9 +468,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             // std::cerr << "size barcodeSet: " << barcodeSet[thread3].size() << "\n";
             // std::cerr << "pos: " << (int)(itrreadSetG-readSet[thread3].begin()) << "\n";
             // std::cerr << "itrbarcGG: "<< *itrbarcG << "\n";
-            omp_set_lock(&out_lock);
+            // omp_set_lock(&out_lock);
             MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
-            omp_unset_lock(&out_lock);
+            // omp_unset_lock(&out_lock);
             // std::cerr << __LINE__ << "\n";
           }
           // std::cerr << __LINE__ << "\n";
@@ -650,22 +652,6 @@ file_pos.close();
 
 std::cerr << ".done.\n";
 std::cerr << "Barcodes mapped sucessfully!\n";
-
-// Kontrollausgabe
-// std::cerr << "\nKontrollausgabe:\n";
-//
-// BCI_barcodes.clear();
-// BCI_positions.clear();
-// std::string testbarcode = "AAACACCGTAGATTAG";
-//
-// LoadBarcodeIndex(options.bci_name,BCI_barcodes,BCI_positions);
-// std::vector<std::pair<Dna5String,Dna5String>> barcodedreads;
-// barcodedreads=ReturnBarcodeReads(BCI_barcodes,BCI_positions,testbarcode,toCString(options.readfile1),toCString(options.readfile2));
-// for (int i=0;i<barcodedreads.size();i++){
-//   std::cerr << std::get<0>(barcodedreads[i]) << "\n" << std::get<1>(barcodedreads[i]) << "\n\n";
-// }
-// close(file1);
-// close(file2);
 
 return 0;
 } //main
