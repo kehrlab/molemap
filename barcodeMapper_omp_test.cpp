@@ -402,7 +402,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             readCount++;
           }
           omp_unset_lock(&lock);
-          std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+          // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
 
         }
@@ -420,16 +420,16 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           }
           BCI_posSet[thread2].clear();
           thread2=(thread2+1)%3;
-          std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
+          // std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
         }
         else{             // process reads
           std::vector<std::vector<Dna5String>>::iterator itrreadSet = itrreadSetG+i;
           std::vector<DnaString>::iterator itrbarc = itrbarcG+i;
-          // std::cerr << __LINE__ << "\n";
+          std::cerr << __LINE__ << "\n";
           std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
             int64_t minimizer_position=0;
             int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
@@ -461,9 +461,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             }
             // std::cerr << __LINE__ << "\n";
           } //for (itrreads = *(itrreadSetG).begin();
-          // std::cerr << __LINE__ << "\n";
+          std::cerr << __LINE__ << "\n";
           if (!kmer_list.empty()) {
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             sort(kmer_list.begin(),kmer_list.end());
             // std::cerr << __LINE__ << "\n";
             // std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
@@ -473,7 +473,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             // omp_set_lock(&out_lock);
             MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
             // omp_unset_lock(&out_lock);
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
           }
           // std::cerr << __LINE__ << "\n";
           // itrbarcG++;
@@ -488,7 +488,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
-      std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
+      // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
 }   //while (!atEnd(file1))
 
