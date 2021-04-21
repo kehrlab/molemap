@@ -364,11 +364,13 @@ for(int i=0;i<2;i++){
 // std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  #pragma omp parallel sections{
+  #pragma omp parallel sections
+  {
   // for(int i=0;i<3;i++){
 
     // if (i==0){   // read next batch of reads from file1
-    #pragma omp section{
+    #pragma omp section
+    {
       auto tbegin = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
       omp_set_lock(&lock);
@@ -402,7 +404,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     }
 
     // if (i==1){   // read next batch of reads from file2
-    #pragma omp section{
+    #pragma omp section
+    {
       auto tbegin2 = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
