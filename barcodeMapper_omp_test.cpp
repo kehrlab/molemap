@@ -371,10 +371,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       itrbarcG=barcodeSet[thread3].begin();
       itrreadSetG = readSet[thread3].begin();
       // #pragma omp parallel for
-      // #pragma omp parallel for
       // std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
       // std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
       // std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
+      #pragma omp parallel for
       for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
@@ -405,7 +405,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             readCount++;
           }
           omp_unset_lock(&lock);
-          // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+          std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
 
         }
@@ -423,7 +423,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           }
           BCI_posSet[thread2].clear();
           thread2=(thread2+1)%3;
-          // std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
+          std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
         }
         else{             // process reads
@@ -491,7 +491,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       readSet[thread3].push_back({read_overflow});
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
-      // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
+      std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
 }   //while (!atEnd(file1))
 
