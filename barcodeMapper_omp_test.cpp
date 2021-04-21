@@ -372,9 +372,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       itrreadSetG = readSet[thread3].begin();
       // #pragma omp parallel for
       // #pragma omp parallel for
-      std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
-      std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
-      std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
+      // std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
+      // std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
+      // std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
       for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
@@ -428,7 +428,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         else{             // process reads
           std::vector<std::vector<Dna5String>>::iterator itrreadSet = itrreadSetG+i;
           std::vector<DnaString>::iterator itrbarc = itrbarcG+i;
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
             // std::cerr << __LINE__ << "\n";
@@ -465,7 +465,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           } //for (itrreads = *(itrreadSetG).begin();
           // std::cerr << __LINE__ << "\n";
           if (!kmer_list.empty()) {
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             sort(kmer_list.begin(),kmer_list.end());
             // std::cerr << __LINE__ << "\n";
             // std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
@@ -475,7 +475,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             // omp_set_lock(&out_lock);
             MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
             // omp_unset_lock(&out_lock);
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
           }
           // std::cerr << __LINE__ << "\n";
           // itrbarcG++;
