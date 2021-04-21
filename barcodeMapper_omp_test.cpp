@@ -436,7 +436,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << " i: " << i << "\n";
           // std::cerr << "size: " << (*itrreadSet).size() << " " << (*(itrreadSet+1)).size() << "\n";
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-            // std::cerr << __LINE__ << " i: " << i << "\n";
+            std::cerr << __LINE__ << " i: " << i << "\n";
             // std::cerr << *it << "\n";
             // std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -470,6 +470,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
             }
             std::cerr << __LINE__ << " i: " << i << "\n";
+            std::cerr << "next read: "<<*(it+1)<< "\n";
           } //for (itrreads = *(itrreadSetG).begin();
 
 
