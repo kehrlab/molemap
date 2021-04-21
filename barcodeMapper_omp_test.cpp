@@ -309,7 +309,7 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   readCount++;
 }
 
-std::cerr << __LINE__ << "\n";
+// std::cerr << __LINE__ << "\n";
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
@@ -378,7 +378,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           omp_set_lock(&lock);
           while (!atEnd(file1)){
             BCI_pos1=file1.stream.file.tellg();
@@ -408,9 +408,10 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
           // std::cerr << __LINE__ << "\n";
 
-        }else if(i==-1){   // read from file 2
+        }
+        else if(i==-1){   // read from file 2
           auto tbegin2 = std::chrono::high_resolution_clock::now();
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
             uint32_t r_count=readSet[thread2][barc].size();
             BCI_pos2=file2.stream.file.tellg();
@@ -465,7 +466,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           } //for (itrreads = *(itrreadSetG).begin();
           // std::cerr << __LINE__ << "\n";
           if (!kmer_list.empty()) {
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << __LINE__ << "\n";
             sort(kmer_list.begin(),kmer_list.end());
             // std::cerr << __LINE__ << "\n";
             // std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
@@ -475,14 +476,14 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             // omp_set_lock(&out_lock);
             MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
             // omp_unset_lock(&out_lock);
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << __LINE__ << "\n";
           }
           // std::cerr << __LINE__ << "\n";
           // itrbarcG++;
         } //else
       } //for (int i=-2; i<barcodeSet[thread3].size(); i++)
 
-      std::cerr << __LINE__ << "\n";
+      // std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
       omp_set_lock(&lock);
@@ -494,7 +495,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
 }   //while (!atEnd(file1))
 
-std::cerr << __LINE__ << "\n";
+// std::cerr << __LINE__ << "\n";
 
 #pragma omp parallel for
 for(int i=0;i<2;i++){
