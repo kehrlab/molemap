@@ -372,7 +372,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       // std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
       // std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
       // std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
-#pragma omp parallel num_threads(3)
+#pragma omp parallel num_threads(2)
 {
   #pragma omp for
       // #pragma omp parallel for
@@ -440,11 +440,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             int64_t minimizer_position=0;
             int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
             uint_fast8_t minimizer_active_bases=1;
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             if (length(*it)>mini_window_size){
-              // std::cerr << __LINE__ << "\n";
+              std::cerr << __LINE__ << "\n";
               for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-                // std::cerr << __LINE__ << "\n";
+                std::cerr << __LINE__ << "\n";
                 if (t!=minimizer_position){                 // if old minimizer in current window
                   rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
                   if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
