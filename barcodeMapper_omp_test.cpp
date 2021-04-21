@@ -493,7 +493,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
     } //if (i==2)
   }
   // std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
-}   //pragma omp parallel
+// }   //pragma omp parallel
 std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
 }   //while (!atEnd(file1))
