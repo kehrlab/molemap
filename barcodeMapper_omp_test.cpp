@@ -432,7 +432,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       itrreadSetG = readSet[thread3].begin();
       // #pragma omp parallel for
       #pragma omp parallel for
-      for (int i=0; i!=barcodeSet[thread3].size(); i++) {// for all barcodes in set
+      for (int i=0; i<barcodeSet[thread3].size(); i++) {// for all barcodes in set
         std::vector<std::vector<Dna5String>>::iterator itrreadSet = itrreadSetG+i;
         std::vector<DnaString>::iterator itrbarc = itrbarcG+i;
         // std::cerr << __LINE__ << "\n";
