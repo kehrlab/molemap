@@ -436,6 +436,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << " i: " << i << "\n";
           std::cerr << "size: " << (*itrreadSet).size() << " " << (*(itrreadSet+1)).size() << "\n";
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
+            std::cerr << *it << "\n";
             // std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
             int64_t minimizer_position=0;
