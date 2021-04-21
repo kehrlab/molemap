@@ -431,7 +431,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << "\n";
           std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
             int64_t minimizer_position=0;
             int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
