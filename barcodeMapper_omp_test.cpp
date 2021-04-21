@@ -371,7 +371,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       itrbarcG=barcodeSet[thread3].begin();
       itrreadSetG = readSet[thread3].begin();
       // #pragma omp parallel for
-      #pragma omp parallel for
+      // #pragma omp parallel for
       for (int i=-2; i<barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
