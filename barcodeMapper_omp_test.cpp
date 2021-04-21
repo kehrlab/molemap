@@ -364,10 +364,11 @@ for(int i=0;i<2;i++){
 // std::cerr << __LINE__ << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
-  #pragma omp parallel for
-  for(int i=0;i<3;i++){
+  #pragma omp parallel sections{
+  // for(int i=0;i<3;i++){
 
-    if (i==0){   // read next batch of reads from file1
+    // if (i==0){   // read next batch of reads from file1
+    #pragma omp section{
       auto tbegin = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
       omp_set_lock(&lock);
@@ -400,7 +401,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       // std::cerr << __LINE__ << "\n";
     }
 
-    if (i==1){   // read next batch of reads from file2
+    // if (i==1){   // read next batch of reads from file2
+    #pragma omp section{
       auto tbegin2 = std::chrono::high_resolution_clock::now();
       // std::cerr << __LINE__ << "\n";
       for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
@@ -418,8 +420,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       // std::cerr << __LINE__ << "\n";
     }
 
-    if (i==2){   // process reads and write results to file
-      auto tbegin3 = std::chrono::high_resolution_clock::now();
+    // if (i==2){   // process reads and write results to file
+    auto tbegin3 = std::chrono::high_resolution_clock::now();
+    #pragma omp for
       // itrbarc=barcodeSet[thread3].begin();
       // #pragma omp parallel for
       for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
@@ -483,10 +486,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       omp_unset_lock(&lock);
       thread3=(thread3+1)%3;
       // std::cerr << __LINE__ << "\n";
-    } //if (i==2)
+    // } //if (i==2)
   }
   // std::cerr << __LINE__ << "!!!!!!!!!!!!!\n";
-}
+}   //pragma omp parallel
+}   //while (!atEnd(file1))
 
 // std::cerr << __LINE__ << "\n";
 
