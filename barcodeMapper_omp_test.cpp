@@ -520,7 +520,7 @@ for(int i=0;i<2;i++){
 
   if (i==1){   // process reads and write results to file
     // itrbarc=barcodeSet[thread3].begin();
-    for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
+    for (auto itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
       std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
       for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
         std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -575,7 +575,7 @@ for(int i=0;i<2;i++){
 
 // process last batch of reads
 // itrbarc=barcodeSet[thread3].begin();
-for (itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
+for (auto itrreadSet = readSet[thread3].begin(), itrbarc=barcodeSet[thread3].begin(); itrreadSet != readSet[thread3].end(); itrreadSet++ ,itrbarc++) {// for all barcodes in set
   // std::cerr << __LINE__ << "\n";
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
