@@ -372,7 +372,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       // std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
       // std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
       // std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
-      #pragma omp parallel for
+#pragma omp parallel num threads(3){
+#pragma omp for
+      // #pragma omp parallel for
       for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
         if (i==-2){       // read from file 1
           auto tbegin = std::chrono::high_resolution_clock::now();
@@ -429,6 +431,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::vector<DnaString>::iterator itrbarc = itrbarcG+i;
           std::cerr << __LINE__ << "\n";
           std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+
+
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
             // std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -462,6 +466,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             }
             std::cerr << __LINE__ << "\n";
           } //for (itrreads = *(itrreadSetG).begin();
+
+
           std::cerr << __LINE__ << "\n";
           if (!kmer_list.empty()) {
             std::cerr << __LINE__ << "\n";
@@ -480,7 +486,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // itrbarcG++;
         } //else
       } //for (int i=-2; i<barcodeSet[thread3].size(); i++)
-
+} //pragma omp parallel
       std::cerr << __LINE__ << "\n";
       readSet[thread3].clear();
       barcodeSet[thread3].clear();
