@@ -436,7 +436,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           std::cerr << __LINE__ << " i: " << i << "\n";
           // std::cerr << "size: " << (*itrreadSet).size() << " " << (*(itrreadSet+1)).size() << "\n";
           for (it = (*itrreadSet).begin(); it!=(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-            std::cerr << __LINE__ << " i: " << i << "\n";
+            // std::cerr << __LINE__ << " i: " << i << "\n";
             // std::cerr << *it << "\n";
             // std::cerr << __LINE__ << "\n";
             std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -445,9 +445,9 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             uint_fast8_t minimizer_active_bases=1;
             std::cerr << __LINE__ << " i: " << i << "\n";
             if (length(*it)>mini_window_size){
-              // std::cerr << __LINE__ << " i: " << i << "\n";
+              std::cerr << __LINE__ << " i: " << i << "\n";
               for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-                // std::cerr << __LINE__ << " i: " << i << "\n";
+                std::cerr << __LINE__ << " i: " << i << "\n";
                 if (t!=minimizer_position){                 // if old minimizer in current window
                   rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
                   if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -466,6 +466,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
                 }
                 // std::cerr << __LINE__ << "\n";
               }
+              std::cerr << __LINE__ << " i: " << i << "\n";
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
             }
             std::cerr << __LINE__ << " i: " << i << "\n";
