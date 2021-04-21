@@ -470,7 +470,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
             }
             std::cerr << __LINE__ << " i: " << i << "\n";
-            std::cerr << "next read: "<<*(it+1)<< "\n";
+            // std::cerr << "next read: "<<*(it+1)<< "\n";
           } //for (itrreads = *(itrreadSetG).begin();
 
 
