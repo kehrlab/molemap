@@ -372,7 +372,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       // std::cerr << "thread: " << thread << " thread2: " << thread2 << " thread3: " << thread3 << "\n";
       // std::cerr << "BarcodeSed size: " << barcodeSet[thread3].size() << "\n";
       // std::cerr << "begin-end: " << (int)(barcodeSet[thread3].end()-barcodeSet[thread3].begin()) << "\n";
-#pragma omp parallel //num_threads(16)
+#pragma omp parallel num_threads(16)
 {
   #pragma omp for
   for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
