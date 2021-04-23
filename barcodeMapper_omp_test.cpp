@@ -271,7 +271,7 @@ uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
 uint32_t max_readCount=1000000;
-uint32_t readCount;
+uint32_t readCount=0;
 omp_lock_t lock;
 // omp_lock_t out_lock;
 omp_init_lock(&lock);
@@ -298,7 +298,9 @@ while (!atEnd(file1)){ //read first batch of reads from file1
       readCount=0;
       break;
     }else{ //write read to readset of new barcode
+      // std::cerr << "size of barcodeSet before: " << barcodeSet[thread].size() << "\n";
       barcodeSet[thread].push_back(barcode);
+      // std::cerr << "size of barcodeSet after: " << barcodeSet[thread].size() << "\n";
       readSet[thread].push_back({read1});
     }
   }else{ //appned read to readset of current barcode
@@ -306,10 +308,10 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   }
   readCount++;
 }
-
-std::cerr << "thread2: " << thread3 << "\n";
-std::cerr << "size of barcodeSet: " << barcodeSet[thread2].size() << "\n";
-std::cerr << "size ofreadSet: " << readSet[thread2].size() << "\n";
+//
+std::cerr << "thread3: " << thread3 << "\n";
+std::cerr << "size of barcodeSet: " << barcodeSet[thread3].size() << "\n";
+std::cerr << "size ofreadSet: " << readSet[thread3].size() << "\n";
 
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
@@ -358,10 +360,10 @@ for(int i=0;i<2;i++){
   }
 
 }
-
-std::cerr << "thread2: " << thread2 << "\n";
-std::cerr << "size of barcodeSet: " << barcodeSet[thread2].size() << "\n";
-std::cerr << "size ofreadSet: " << readSet[thread2].size() << "\n";
+//
+// std::cerr << "thread2: " << thread2 << "\n";
+// std::cerr << "size of barcodeSet: " << barcodeSet[thread2].size() << "\n";
+// std::cerr << "size ofreadSet: " << readSet[thread2].size() << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
 
