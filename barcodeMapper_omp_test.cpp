@@ -307,6 +307,10 @@ while (!atEnd(file1)){ //read first batch of reads from file1
   readCount++;
 }
 
+std::cerr << "thread3: " << thread3 << "\n";
+std::cerr << "size of barcodeSet: " << barcodeSet[thread3].size() << "\n";
+std::cerr << "size ofreadSet: " << readSet[thread3].size() << "\n";
+
 #pragma omp parallel for  //read 2nd batch of reads from file1 and read first batch of reads from file2
 for(int i=0;i<2;i++){
 
@@ -357,7 +361,7 @@ for(int i=0;i<2;i++){
 
 std::cerr << "thread3: " << thread3 << "\n";
 std::cerr << "size of barcodeSet: " << barcodeSet[thread3].size() << "\n";
-std::cerr << "ssize ofreadSet: " << readSet[thread3].size() << "\n";
+std::cerr << "size ofreadSet: " << readSet[thread3].size() << "\n";
 
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
 
