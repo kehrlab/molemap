@@ -406,6 +406,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           uint32_t r_count=readSet[thread2][barc].size();
           BCI_pos2=file2.stream.file.tellg();
           BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
+          readSet[thread2][barc].reserve(readSet[thread2][barc].size()*2);
           for (uint32_t read = 0; read < r_count; read++) {
             readRecord(id2, read2, file2);
             readSet[thread2][barc].push_back(read2);
