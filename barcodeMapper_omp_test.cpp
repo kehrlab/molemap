@@ -270,7 +270,7 @@ BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
-uint32_t max_readCount=1000000;
+uint32_t max_readCount=10000;
 uint32_t readCount=0;
 omp_lock_t lock;
 // omp_lock_t out_lock;
@@ -396,7 +396,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           readCount++;
         }
         omp_unset_lock(&lock);
-        std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+        // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
         // std::cerr << __LINE__ << "\n";
 
       }
@@ -417,7 +417,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         }
         BCI_posSet[thread2].clear();
         thread2=(thread2+1)%3;
-        std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
+        // std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
         // std::cerr << __LINE__ << "\n";
       }
 
@@ -464,7 +464,6 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
           }
           // std::cerr << __LINE__ << " i: " << i << "\n";
-          // std::cerr << "next read: "<<*(it+1)<< "\n";
         } //for (itrreads = *(itrreadSetG).begin();
 
 
@@ -473,13 +472,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           // std::cerr << __LINE__ << "\n";
           sort(kmer_list.begin(),kmer_list.end());
           // std::cerr << __LINE__ << "\n";
-          // std::cerr << "size readSet: " << readSet[thread3].size() << "\n";
-          // std::cerr << "size barcodeSet: " << barcodeSet[thread3].size() << "\n";
-          // std::cerr << "pos: " << (int)(itrreadSetG-readSet[thread3].begin()) << "\n";
-          // std::cerr << "itrbarcGG: "<< *itrbarcG << "\n";
-          // omp_set_lock(&out_lock);
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
-          // omp_unset_lock(&out_lock);
           // std::cerr << __LINE__ << "\n";
         }
         // std::cerr << __LINE__ << "\n";
@@ -496,7 +489,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
   readSet[thread3].push_back({read_overflow});
   omp_unset_lock(&lock);
   thread3=(thread3+1)%3;
-  std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
+  // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
 }   //while (!atEnd(file1))
 
