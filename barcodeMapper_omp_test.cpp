@@ -339,10 +339,12 @@ for(int i=0;i<2;i++){
   }
 
   if (i==1){  // read first batch of reads from file2
+    BCI_positions.reserve(BCI_positions.size()+barcodeSet[thread2].size());
     for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
       uint32_t r_count=readSet[thread2][barc].size();
       BCI_pos2=file2.stream.file.tellg();
       BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
+      readSet[thread2][barc].reserve(readSet[thread2][barc].size()*2);
       for (uint32_t read = 0; read < r_count; read++) {
         readRecord(id2, read2, file2);
         readSet[thread2][barc].push_back(read2);
@@ -402,6 +404,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       else if(i==-1){   // read from file 2
         auto tbegin2 = std::chrono::high_resolution_clock::now();
         // std::cerr << __LINE__ << "\n";
+        BCI_positions.reserve(BCI_positions.size()+barcodeSet[thread2].size());
         for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
           uint32_t r_count=readSet[thread2][barc].size();
           BCI_pos2=file2.stream.file.tellg();
@@ -501,10 +504,12 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 for(int i=0;i<2;i++){
 
   if (i==0){  // read last batch of reads from file2
+    BCI_positions.reserve(BCI_positions.size()+barcodeSet[thread2].size());
     for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
       uint32_t r_count=readSet[thread][barc].size();
       BCI_pos2=file2.stream.file.tellg();
       BCI_positions.push_back(std::make_pair(BCI_posSet[thread2][barc],BCI_pos2));
+      readSet[thread2][barc].reserve(readSet[thread2][barc].size()*2);
       for (uint32_t read = 0; read < r_count; read++) {
         readRecord(id2, read2, file2);
         readSet[thread2][barc].push_back(read2);
