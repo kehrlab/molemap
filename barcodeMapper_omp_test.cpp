@@ -355,6 +355,10 @@ for(int i=0;i<2;i++){
 
 }
 
+std::cerr << "thread3: " << thread3 << "\n";
+std::cerr << "size of barcodeSet: " << barcodeSet[thread3].size() << "\n";
+std::cerr << "ssize ofreadSet: " << readSet[thread3].size() << "\n";
+
 while (!atEnd(file1)){ // reading and processing next batch of reads until file endpos
 
   auto tbegin3 = std::chrono::high_resolution_clock::now();
