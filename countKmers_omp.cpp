@@ -140,12 +140,12 @@ int main(int argc, char const **argv){
   std::cerr << ".....done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-  TStringSetIterator seqG = begin(seqs)
-  int laenge=length(seqs);
+  TStringSetIterator seqG = begin(seqs);
+  // int laenge=length(seqs);
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
-    for (int i=0; i<laenge; i++){
+    for (int i=0; i<(int)length(seqs); i++){
       uint_fast8_t CHROM=CHROMG+i;
       TStringSetIterator seq=seqG+i;
       std::cerr << "." ;
