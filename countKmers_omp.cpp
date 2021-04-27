@@ -135,14 +135,17 @@ int main(int argc, char const **argv){
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint32_t c;
-  // uint_fast8_t CHROM = 0;
+  uint_fast8_t CHROMG = 0;
 
   std::cerr << ".....done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
+  TStringSetIterator seqG = begin(seqs)
 
   #pragma omp parallel for schedule(dynamic)
-  for (TStringSetIterator seq = begin(seqs), uint_fast8_t CHROM=0; seq != end(seqs); ++seq, CHROM++){
+  for (int i=0;i<length(seqs);i++){
+    uint_fast8_t CHROM=CHROMG+i;
+    TStringSetIterator seq=seqG+i;
     std::cerr << "." ;
     if ((CHROM-4)%29==0) {std::cerr << "\n";}
     // counting k-mers
