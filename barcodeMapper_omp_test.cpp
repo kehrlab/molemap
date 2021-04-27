@@ -90,7 +90,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-omp_lock_t out_lock;
+// omp_lock_t out_lock;
 
 int main(int argc, char const ** argv){
 
@@ -272,10 +272,10 @@ uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
 uint32_t max_readCount=10000000;
 uint32_t readCount=0;
-omp_lock_t lock;
+// omp_lock_t lock;
 // omp_lock_t out_lock;
-omp_init_lock(&lock);
-omp_init_lock(&out_lock);
+// omp_init_lock(&lock);
+// omp_init_lock(&out_lock);
 
 std::cerr << "Processing read file...";
 
@@ -370,32 +370,35 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
       if (i==-2){       // read from file 1
         auto tbegin = std::chrono::high_resolution_clock::now();
         // std::cerr << __LINE__ << "\n";
-        omp_set_lock(&lock);
-        while (!atEnd(file1)){
-          BCI_pos1=file1.stream.file.tellg();
-          readRecord(id1, read1, file1);
-          meta=toCString(id1);
-          new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-          if (barcode!=new_barcode){
-            BCI_barcodes.push_back(new_barcode);
-            BCI_posSet[thread].push_back(BCI_pos1);
-            barcode=new_barcode;
-            if (readCount>max_readCount){
-              thread=(thread+1)%3; // iterate thread
-              barcode_overflow=barcode;//write barcode to Set of next batch
-              read_overflow=read1;
-              readCount=0;
-              break;
-            }else{ //write read to readset of new barcode
-              barcodeSet[thread].push_back(barcode);
-              readSet[thread].push_back({read1});
+        // omp_set_lock(&lock);
+        #pragma omp critical(lastread)
+        {
+          while (!atEnd(file1)){
+            BCI_pos1=file1.stream.file.tellg();
+            readRecord(id1, read1, file1);
+            meta=toCString(id1);
+            new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+            if (barcode!=new_barcode){
+              BCI_barcodes.push_back(new_barcode);
+              BCI_posSet[thread].push_back(BCI_pos1);
+              barcode=new_barcode;
+              if (readCount>max_readCount){
+                thread=(thread+1)%3; // iterate thread
+                barcode_overflow=barcode;//write barcode to Set of next batch
+                read_overflow=read1;
+                readCount=0;
+                break;
+              }else{ //write read to readset of new barcode
+                barcodeSet[thread].push_back(barcode);
+                readSet[thread].push_back({read1});
+              }
+            }else{ //append read to readset of current barcode
+              readSet[thread].back().push_back(read1);
             }
-          }else{ //append read to readset of current barcode
-            readSet[thread].back().push_back(read1);
+            readCount++;
           }
-          readCount++;
-        }
-        omp_unset_lock(&lock);
+          // omp_unset_lock(&lock);
+        } //pragma omp critical
         // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
         // std::cerr << __LINE__ << "\n";
 
@@ -484,10 +487,13 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
   readSet[thread3].clear();
   barcodeSet[thread3].clear();
-  omp_set_lock(&lock);
-  barcodeSet[thread3].push_back(barcode_overflow);
-  readSet[thread3].push_back({read_overflow});
-  omp_unset_lock(&lock);
+  // omp_set_lock(&lock);
+  #pragma omp critical(lastread)
+  {
+    barcodeSet[thread3].push_back(barcode_overflow);
+    readSet[thread3].push_back({read_overflow});
+  } //pragma omp critical
+  // omp_unset_lock(&lock);
   thread3=(thread3+1)%3;
   // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
@@ -769,23 +775,25 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
     // Output
 
-    omp_set_lock(&out_lock);
+    // omp_set_lock(&out_lock);
+    #pragma omp critical
+    {
+      std::fstream results;
+      results.open(file,std::ios::out | std::ios::app);
 
-    std::fstream results;
-    results.open(file,std::ios::out | std::ios::app);
+      for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
-    for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
-
-      std::string qual=std::to_string((int)std::get<0>(*itrbw));
-      std::string ref=lookChrom[std::get<1>(*itrbw)];
-      std::string start=std::to_string(std::get<2>(*itrbw));
-      std::string end=std::to_string(std::get<3>(*itrbw));
-      std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-      results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
-      // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
+        std::string qual=std::to_string((int)std::get<0>(*itrbw));
+        std::string ref=lookChrom[std::get<1>(*itrbw)];
+        std::string start=std::to_string(std::get<2>(*itrbw));
+        std::string end=std::to_string(std::get<3>(*itrbw));
+        std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
+        results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
+        // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
+      }
+      results.close();
+      // omp_unset_lock(&out_lock);
     }
-    results.close();
-    omp_unset_lock(&out_lock);
     // std::cerr << __LINE__ << "\n";
     return;
   } //MapKmerList
