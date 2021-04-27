@@ -191,7 +191,7 @@ int main(int argc, char const **argv){
     *itrs=sum;
   }
 
-  CHROM=0;
+  uint_fast8_t CHROM=0;
   std::cerr << ".done.\n";
 
   // iterating over the stringSet (Chromosomes)
