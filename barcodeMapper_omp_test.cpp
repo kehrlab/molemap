@@ -61,7 +61,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "l", "1000");
     addOption(parser, seqan::ArgParseOption(
-        "p", "protocol", "linked-read sequencing protocol.",
+        "p", "protocol", "linked-read sequencing protocol. (only 10x implemented)",
         seqan::ArgParseArgument::STRING, "string"));
     setDefaultValue(parser, "p", "10x");
 
@@ -123,15 +123,6 @@ uint_fast8_t mini_window_size = options.mini_window_size;
 /*
 defining Parameters
 */
-
-if (options.protocol=="10x") {
-  #define GETBC std::cerr<<"10x was chosen\n\n"
-}else if (options.protocol=="ill") {
-  #define GETBC std::cerr<<"ill was chosen\n\n"
-}
-
-GETBC;
-
 
 
 uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
@@ -252,7 +243,7 @@ std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator
 
 std::string barcode;
 std::string new_barcode;
-std::string meta;
+// std::string meta;
 // StringSet<Dna5String> reads;
 // resize(reads, 2, Exact());
 Dna5String read1;
@@ -294,8 +285,7 @@ tbegin = std::chrono::high_resolution_clock::now();
 while (!atEnd(file1)){ //read first batch of reads from file1
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
-  meta=toCString(id1);
-  new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+  get10xBarcode(new_barcode, id1);
   if (barcode!=new_barcode){
     BCI_barcodes.push_back(new_barcode);
     BCI_posSet[thread].push_back(BCI_pos1);
@@ -323,8 +313,7 @@ for(int i=0;i<2;i++){
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
-      meta=toCString(id1);
-      new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+      get10xBarcode(new_barcode, id1);
       if (barcode!=new_barcode){
         BCI_barcodes.push_back(new_barcode);
         BCI_posSet[thread].push_back(BCI_pos1);
@@ -382,8 +371,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           while (!atEnd(file1)){
             BCI_pos1=file1.stream.file.tellg();
             readRecord(id1, read1, file1);
-            meta=toCString(id1);
-            new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
+            get10xBarcode(new_barcode, id1);
             if (barcode!=new_barcode){
               BCI_barcodes.push_back(new_barcode);
               BCI_posSet[thread].push_back(BCI_pos1);
