@@ -141,39 +141,39 @@ int main(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs)
-
+  int laenge=length(seqs);
   #pragma omp parallel
   {
-  #pragma omp for schedule(dynamic)
-  for (int i=0; i<(int)length(seqs); i++){
-    uint_fast8_t CHROM=CHROMG+i;
-    TStringSetIterator seq=seqG+i;
-    std::cerr << "." ;
-    if ((CHROM-4)%29==0) {std::cerr << "\n";}
-    // counting k-mers
-    std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
+    #pragma omp for schedule(dynamic)
+    for (int i=0; i<laenge; i++){
+      uint_fast8_t CHROM=CHROMG+i;
+      TStringSetIterator seq=seqG+i;
+      std::cerr << "." ;
+      if ((CHROM-4)%29==0) {std::cerr << "\n";}
+      // counting k-mers
+      std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
-    for (uint64_t i = 0;i<length(*seq)-k;++i){
+      for (uint64_t i = 0;i<length(*seq)-k;++i){
+        #pragma omp critical(reqbkt)
+        {
+          c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
+        }
+        dir[c+1]+=1;
+        if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
+          rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
+        }
+        else {                                                          // reinitialization of the hashvalue after encountering an "N"
+          i+=k+1;
+          hash=hashkMer(infix(*seq,i,i+k),k);
+        }
+      }
       #pragma omp critical(reqbkt)
       {
-        c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
+        c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
       }
       dir[c+1]+=1;
-      if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
-        rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
-      }
-      else {                                                          // reinitialization of the hashvalue after encountering an "N"
-        i+=k+1;
-        hash=hashkMer(infix(*seq,i,i+k),k);
-      }
+      // CHROM++;
     }
-    #pragma omp critical(reqbkt)
-    {
-      c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
-    }
-    dir[c+1]+=1;
-    // CHROM++;
-  }
   }
 
   std::cerr << "done. \n";
