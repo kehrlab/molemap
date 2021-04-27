@@ -285,7 +285,7 @@ tbegin = std::chrono::high_resolution_clock::now();
 while (!atEnd(file1)){ //read first batch of reads from file1
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
-  get10xBarcode(new_barcode, id1);
+  get10xBarcode(new_barcode, toCString(id1));
   if (barcode!=new_barcode){
     BCI_barcodes.push_back(new_barcode);
     BCI_posSet[thread].push_back(BCI_pos1);
@@ -313,7 +313,7 @@ for(int i=0;i<2;i++){
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
-      get10xBarcode(new_barcode, id1);
+      get10xBarcode(new_barcode, toCString(id1));
       if (barcode!=new_barcode){
         BCI_barcodes.push_back(new_barcode);
         BCI_posSet[thread].push_back(BCI_pos1);
@@ -371,7 +371,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
           while (!atEnd(file1)){
             BCI_pos1=file1.stream.file.tellg();
             readRecord(id1, read1, file1);
-            get10xBarcode(new_barcode, id1);
+            get10xBarcode(new_barcode, toCString(id1));
             if (barcode!=new_barcode){
               BCI_barcodes.push_back(new_barcode);
               BCI_posSet[thread].push_back(BCI_pos1);
