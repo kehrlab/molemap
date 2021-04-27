@@ -18,6 +18,5 @@ std::pair <int64_t,int64_t> hashkMer(const DnaString & kmer, const uint_fast8_t 
 void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const uint_fast8_t k, const int64_t & maxhash);
 uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2);
 uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2);
-// std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number, const uint_fast8_t k_2);
 
 #endif

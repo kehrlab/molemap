@@ -6,38 +6,10 @@
 
 using namespace seqan;
 
-std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_positions, std::streampos endpos, const char* readfile1, const char* readfile2){
-  //std::cerr << __LINE__ << "\n";
-  std::vector<Dna5String> reads;
-  SeqFileIn file1(readfile1);
-  SeqFileIn file2(readfile2);
-  Dna5String read1;
-  Dna5String read2;
-  CharString id;
-  //std::cerr << __LINE__ << "\n";
-  file1.stream.file.seekg(std::get<0>(BCI_positions));
-  file2.stream.file.seekg(std::get<1>(BCI_positions));
-  //std::cerr << __LINE__ << "\n";
-  // std::cerr << "positions: \n";
-  // std::cerr << std::get<0>(BCI_positions) << "\n";
-  // std::cerr << file1.stream.file.tellg() << "\n";
-  while(file1.stream.file.tellg()<endpos && !file1.stream.file.eof()){
-    //std::cerr << __LINE__ << "\n";
-    readRecord(id,read1,file1);
-    // std::cerr << __LINE__ << "\n";
-    // std::cerr << file1.stream.file.tellg() << "\n";
-    readRecord(id,read2,file2);
-    // std::cerr << __LINE__ << "\n";
-    reads.push_back(read1);
-    //std::cerr << __LINE__ << "\n";
-    reads.push_back(read2);
-    //std::cerr << __LINE__ << "\n";
-  }
-  //std::cerr << __LINE__ << "\n";
-  close(file1);
-  close(file2);
-  //std::cerr << __LINE__ << "\n";
-  return reads;
+//retreive the barcode from 10x linked reads
+void get10xBarcode(std::string & new_barcode, std::string & id1){
+  std::string meta=toCString(id1);
+  new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
 }
 
 // Loads BarcodeIndex from file into string
@@ -124,18 +96,14 @@ int64_t ReturnSmaller(const int64_t hash1,const int64_t hash2,const int64_t rand
 // initializes the minimizer
 int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
   int64_t minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-  // int64_t minimizer=std::min(hash.first,hash.second);
-  // std::cerr << "minimizer: "<< minimizer << "min:" << std::min(hash.first,hash.second) << "\n";
   int64_t minimizer_pos=0;
   for (uint_fast32_t i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
       if (minimizer > (hash.first^random_seed)){
-      // if (std::min(minimizer,hash.first)!=minimizer){
         minimizer=hash.first;
         minimizer_pos=i;
       }
       if (minimizer > (hash.second^random_seed)){
-      // if (std::min(minimizer,hash.second)!=minimizer){
         minimizer=hash.second;
         minimizer_pos=i;
       }
@@ -149,25 +117,13 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
       uint_fast32_t abundance=dir[c+1]-dir[c];
       if (abundance<=10){
-        // pthread_mutex_lock(lock);
         kmer_list.reserve(kmer_list.size()+abundance);
         for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
           kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
-        // pthread_mutex_unlock(lock);
       }
       return;
 }
-
-// // return k-mer positions
-// std::vector<std::pair <uint_fast8_t,uint32_t>> RetPos(const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number, const uint_fast8_t k_2){
-//       std::vector<std::pair <uint_fast8_t,uint32_t>> positions;
-//       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
-//       for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-//         positions.push_back(std::make_pair(ref[i],pos[i]);
-//       }
-//       return positions;
-// }
 
 // Find correct Bucket
 uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
