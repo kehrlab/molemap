@@ -142,8 +142,10 @@ int main(int argc, char const **argv){
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs)
 
-  #pragma omp parallel for schedule(dynamic)
-  for (int i=0;i<(int)length(seqs);i++){
+  #pragma omp parallel
+  {
+  #pragma omp for schedule(dynamic)
+  for (int i=0; i<(int)length(seqs); i++){
     uint_fast8_t CHROM=CHROMG+i;
     TStringSetIterator seq=seqG+i;
     std::cerr << "." ;
@@ -171,6 +173,7 @@ int main(int argc, char const **argv){
     }
     dir[c+1]+=1;
     // CHROM++;
+  }
   }
 
   std::cerr << "done. \n";
