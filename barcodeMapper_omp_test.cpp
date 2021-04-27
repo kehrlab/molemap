@@ -22,15 +22,15 @@ struct bcmapOptions{
   std::string output_file;
   unsigned q;
   unsigned l;
+  std::string protocol;
   bcmapOptions() :
-  k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000)
+  k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000), protocol("10x")
   {}
   };
 
 seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("bcmap");
-
     // We require one argument.
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile1.fastq"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile2.fastq"));
@@ -60,10 +60,14 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         "l", "length", "Length threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "l", "1000");
+    addOption(parser, seqan::ArgParseOption(
+        "p", "protocol", "linked-read sequencing protocol.",
+        seqan::ArgParseArgument::STRING, "string"));
+    setDefaultValue(parser, "p", "10x");
 
     setShortDescription(parser, "Map barcodes to reference.");
-    setVersion(parser, "0.1");
-    setDate(parser, "March 24 2021");
+    setVersion(parser, "0.2");
+    setDate(parser, "April 27 2021");
     addDescription(parser,
                "Barcodes will be mapped to reference genome."
                "Returns genomic windows from which barcoded reads most likely originate."
@@ -81,16 +85,16 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
+    getOptionValue(options.protocol, parser, "p");
 
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
     getArgumentValue(options.index_name, parser, 2);
     getArgumentValue(options.bci_name, parser, 3);
 
+
     return seqan::ArgumentParser::PARSE_OK;
 }
-
-// omp_lock_t out_lock;
 
 int main(int argc, char const ** argv){
 
@@ -108,7 +112,8 @@ std::cout <<'\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << '\n'
           << "quality threshold\t" << options.q << '\n'
-          << "length threshold \t" << options.l << "\n\n";
+          << "length threshold \t" << options.l << 'n'
+          << "protocol         \t" << options.protocol <<"\n\n";
 
 uint_fast8_t k = options.k;
 int k_2 = k+1;
@@ -118,6 +123,16 @@ uint_fast8_t mini_window_size = options.mini_window_size;
 /*
 defining Parameters
 */
+
+if (options.protocol=="10x") {
+  #define GETBC std::cerr<<"10x was chosen\n\n"
+}else if (options.protocol=="ill") {
+  #define GETBC std::cerr<<"ill was chosen\n\n"
+}
+
+GETBC;
+
+
 
 uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
 uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
@@ -258,7 +273,6 @@ std::streampos BCI_pos2;
 // multithread handling
 std::vector<std::vector<std::vector<Dna5String>>> readSet;
 std::vector<std::vector<Dna5String>>::iterator itrreadSetG;
-// std::vector<Dna5String>::iterator it;
 Dna5String read_overflow;
 Dna5String barcode_overflow;
 readSet.resize(3,{});
@@ -272,10 +286,6 @@ uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
 uint32_t max_readCount=10000000;
 uint32_t readCount=0;
-// omp_lock_t lock;
-// omp_lock_t out_lock;
-// omp_init_lock(&lock);
-// omp_init_lock(&out_lock);
 
 std::cerr << "Processing read file...";
 
@@ -310,7 +320,6 @@ while (!atEnd(file1)){ //read first batch of reads from file1
 for(int i=0;i<2;i++){
 
   if (i==0){  //read 2nd batch of reads from file1
-    // std::cerr << __LINE__ << "\n";
     while (!atEnd(file1)){ //read first batch of reads from file1
       BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
@@ -335,7 +344,6 @@ for(int i=0;i<2;i++){
       }
       readCount++;
     }
-    // std::cerr << __LINE__ << "\n";
   }
 
   if (i==1){  // read first batch of reads from file2
@@ -369,8 +377,6 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
       if (i==-2){       // read from file 1
         auto tbegin = std::chrono::high_resolution_clock::now();
-        // std::cerr << __LINE__ << "\n";
-        // omp_set_lock(&lock);
         #pragma omp critical(lastread)
         {
           while (!atEnd(file1)){
@@ -397,16 +403,12 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             }
             readCount++;
           }
-          // omp_unset_lock(&lock);
         } //pragma omp critical
         // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
-        // std::cerr << __LINE__ << "\n";
-
       }
 
       else if(i==-1){   // read from file 2
         auto tbegin2 = std::chrono::high_resolution_clock::now();
-        // std::cerr << __LINE__ << "\n";
         BCI_positions.reserve(BCI_positions.size()+barcodeSet[thread2].size());
         for (uint32_t barc=0; barc<barcodeSet[thread2].size(); barc++){
           uint32_t r_count=readSet[thread2][barc].size();
@@ -421,30 +423,19 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
         BCI_posSet[thread2].clear();
         thread2=(thread2+1)%3;
         // std::cerr << " reading file2 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin2).count()/1000 << "s\n";
-        // std::cerr << __LINE__ << "\n";
       }
 
       else{             // process reads
         std::vector<std::vector<Dna5String>>::iterator itrreadSet = itrreadSetG+i;
         std::vector<DnaString>::iterator itrbarc = itrbarcG+i;
-        // std::cerr << __LINE__ << "\n";
         std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-
-        // std::cerr << __LINE__ << " i: " << i << "\n";
-        // std::cerr << "size: " << (*itrreadSet).size() << " " << (*(itrreadSet+1)).size() << "\n";
         for (std::vector<Dna5String>::iterator it = (*itrreadSet).begin(); it<(*itrreadSet).end(); ++it){                                            // Iterating over the reads
-          // std::cerr << __LINE__ << " i: " << i << "\n";
-          // std::cerr << *it << "\n";
-          // std::cerr << __LINE__ << "\n";
           std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
           int64_t minimizer_position=0;
           int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
           uint_fast8_t minimizer_active_bases=1;
-          // std::cerr << __LINE__ << " i: " << i << "\n";
           if (length(*it)>mini_window_size){
-            // std::cerr << __LINE__ << " i: " << i << "\n";
             for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-              // std::cerr << __LINE__ << " i: " << i << "\n";
               if (t!=minimizer_position){                 // if old minimizer in current window
                 rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
                 if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -461,25 +452,16 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
                 minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
                 minimizer_active_bases=1;
               }
-              // std::cerr << __LINE__ << "\n";
             }
-            // std::cerr << __LINE__ << " i: " << i << "\n";
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
           }
-          // std::cerr << __LINE__ << " i: " << i << "\n";
         } //for (itrreads = *(itrreadSetG).begin();
 
 
-        // std::cerr << __LINE__ << " i: " << i << "\n";
         if (!kmer_list.empty()) {
-          // std::cerr << __LINE__ << "\n";
           sort(kmer_list.begin(),kmer_list.end());
-          // std::cerr << __LINE__ << "\n";
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
-          // std::cerr << __LINE__ << "\n";
         }
-        // std::cerr << __LINE__ << "\n";
-        // itrbarcG++;
       } //else
 
     } //for (int i=-2; i<barcodeSet[thread3].size(); i++)
@@ -487,13 +469,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
   readSet[thread3].clear();
   barcodeSet[thread3].clear();
-  // omp_set_lock(&lock);
   #pragma omp critical(lastread)
   {
     barcodeSet[thread3].push_back(barcode_overflow);
     readSet[thread3].push_back({read_overflow});
   } //pragma omp critical
-  // omp_unset_lock(&lock);
   thread3=(thread3+1)%3;
   // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
@@ -527,13 +507,10 @@ for(int i=0;i<2;i++){
         int64_t minimizer_position=0;
         int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
         uint_fast8_t minimizer_active_bases=1;
-        // std::cerr << __LINE__ << "\n";
         if (length(*it)>mini_window_size){
           for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-            // std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
             if (t!=minimizer_position){                 // if old minimizer in current window
               rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-              // std::cerr << __LINE__ << "\n";
               if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
                 AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
                 minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -542,17 +519,11 @@ for(int i=0;i<2;i++){
               }
               minimizer_active_bases++;
             }else{
-              // std::cerr << __LINE__ << "\n";
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-              // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
               minimizer_position=t+1;
-              // std::cerr << __LINE__ << "\n";
               hash=hashkMer(infix(*it,t+1,t+1+k),k);
-              // std::cerr << __LINE__ << "\n";
               minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-              // std::cerr << __LINE__ << "\n";
               minimizer_active_bases=1;
-              // std::cerr << __LINE__ << "\n";
             }
           }
           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
@@ -562,7 +533,6 @@ for(int i=0;i<2;i++){
         sort(kmer_list.begin(),kmer_list.end());
         MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l);
       }
-      // itrbarcG++;
     } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
     barcodeSet[thread3].clear();
@@ -574,21 +544,16 @@ for(int i=0;i<2;i++){
 
 // process last batch of reads
 for (itrreadSetG = readSet[thread3].begin(), itrbarcG=barcodeSet[thread3].begin(); itrreadSetG != readSet[thread3].end(); itrreadSetG++ ,itrbarcG++) {// for all barcodes in set
-  // std::cerr << __LINE__ << "\n";
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   for (std::vector<Dna5String>::iterator it = (*itrreadSetG).begin(); it!=(*itrreadSetG).end(); ++it){                                            // Iterating over the reads
-    // std::cerr << __LINE__ << "\n";
     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
     int64_t minimizer_position=0;
     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
     uint_fast8_t minimizer_active_bases=1;
-    // std::cerr << __LINE__ << "\n";
     if (length(*it)>mini_window_size){
-      for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-        // std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
+      for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){     // iterating over all kmers
         if (t!=minimizer_position){                 // if old minimizer in current window
           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-          // std::cerr << __LINE__ << "\n";
           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -597,31 +562,20 @@ for (itrreadSetG = readSet[thread3].begin(), itrbarcG=barcodeSet[thread3].begin(
           }
           minimizer_active_bases++;
         }else{
-          // std::cerr << __LINE__ << "\n";
           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-          // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
           minimizer_position=t+1;
-          // std::cerr << __LINE__ << "\n";
           hash=hashkMer(infix(*it,t+1,t+1+k),k);
-          // std::cerr << __LINE__ << "\n";
           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-          // std::cerr << __LINE__ << "\n";
           minimizer_active_bases=1;
-          // std::cerr << __LINE__ << "\n";
         }
       }
       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
     }
   } //for (itrreads = *(itrreadSetG).begin();
-  // std::cerr << __LINE__ << "\n";
   if (!kmer_list.empty()) {
-    // std::cerr << __LINE__ << "\n";
     sort(kmer_list.begin(),kmer_list.end());
-    // std::cerr << "Barcode: " << *itrbarcG << "\n";
     MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l);
   }
-  // std::cerr << __LINE__ << "\n";
-  // itrbarcG++;
 } //for (itrreadSetG = readSet[thread3].begin();
 
 readSet[thread3].clear();
@@ -663,7 +617,6 @@ return 0;
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold){
-    // std::cerr << __LINE__ << "\n";
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -686,14 +639,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     uint_fast32_t end_position=POS(kmer_list.begin());
     double window_quality=0;
     std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
-    // std::cerr << __LINE__ << "\n";
 
     if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
       window_quality+=0.00032*ACT(kmer_list.begin());
     }else{
       window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
     }
-    // std::cerr << __LINE__ << "\n";
 
     for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
 
@@ -752,7 +703,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
     candidate=std::make_tuple(window_quality,REF(itrk),POS(itrstart),POS(itrk));
     ReportWindow(best_windows,candidate); //reporting last window
-    // std::cerr << __LINE__ << "\n";
 
     //filter low quality windows
     if (std::get<0>(*(best_windows.end()-1))!=0) {
@@ -771,11 +721,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     for (int i=(toshort.size()-1);i>=0;--i) {
       best_windows.erase(best_windows.begin()+toshort[i]);
     }
-    // std::cerr << __LINE__ << "\n";
 
     // Output
-
-    // omp_set_lock(&out_lock);
     #pragma omp critical
     {
       std::fstream results;
@@ -789,11 +736,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         std::string end=std::to_string(std::get<3>(*itrbw));
         std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
         results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
-        // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
       }
       results.close();
-      // omp_unset_lock(&out_lock);
     }
-    // std::cerr << __LINE__ << "\n";
     return;
   } //MapKmerList
