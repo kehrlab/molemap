@@ -143,7 +143,7 @@ int main(int argc, char const **argv){
   TStringSetIterator seqG = begin(seqs)
 
   #pragma omp parallel for schedule(dynamic)
-  for (int i=0;i<length(seqs);i++){
+  for (int i=0;i<(int)length(seqs);i++){
     uint_fast8_t CHROM=CHROMG+i;
     TStringSetIterator seq=seqG+i;
     std::cerr << "." ;
