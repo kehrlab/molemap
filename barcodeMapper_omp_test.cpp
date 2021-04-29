@@ -112,7 +112,7 @@ std::cout <<'\n'
           << "minimizer window \t" << options.mini_window_size << '\n'
           << "output file      \t" << options.output_file << '\n'
           << "quality threshold\t" << options.q << '\n'
-          << "length threshold \t" << options.l << 'n'
+          << "length threshold \t" << options.l << '\n'
           << "protocol         \t" << options.protocol <<"\n\n";
 
 uint_fast8_t k = options.k;
@@ -275,7 +275,7 @@ BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
-uint32_t max_readCount=10000000;
+uint32_t max_readCount=5000000;
 uint32_t readCount=0;
 
 std::cerr << "Processing read file...";
