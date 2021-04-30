@@ -196,7 +196,7 @@ int main(int argc, char const **argv){
 
   // iterating over the stringSet (Chromosomes)
   std::cerr << "Writing positions to index:";
-  TStringSetIterator seqG = begin(seqs);
+  seqG = begin(seqs);
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
