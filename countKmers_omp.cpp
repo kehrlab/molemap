@@ -196,12 +196,12 @@ int main(int argc, char const **argv){
 
   // iterating over the stringSet (Chromosomes)
   std::cerr << "Writing positions to index:";
+  TStringSetIterator seqG = begin(seqs);
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
-    for (TStringSetIterator seq = begin(seqs); seq != end(seqs); ++seq){
-      std::cerr << ".";
-      if ((CHROM-1)%29==0) {std::cerr << "\n";}
+    for (int i=0; i<(int)length(seqs); i++){
+      TStringSetIterator seq=seqG+i;
       // filling pos
 
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -224,6 +224,9 @@ int main(int argc, char const **argv){
       ref[dir[c+1]]=CHROM;
       dir[c+1]++;
       CHROM++;
+
+      std::cerr << ".";
+      if ((CHROM-1)%29==0) {std::cerr << "\n";}
     }
   }
   std::cerr << "done. \n";
