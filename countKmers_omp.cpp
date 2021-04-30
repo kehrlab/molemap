@@ -147,21 +147,19 @@ int main(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs);
+  uint_fast8_t CHROM=0;
   // int laenge=length(seqs);
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
     for (int i=0; i<(int)length(seqs); i++){
-      uint_fast8_t CHROM=CHROMG+i;
       TStringSetIterator seq=seqG+i;
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
       for (uint64_t i = 0;i<length(*seq)-k;++i){
-        // #pragma omp critical(reqbkt)
-        // {
-          c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
-        // }
+        c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
+        #pragma omp atomic
         dir[c+1]+=1;
         if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -171,12 +169,12 @@ int main(int argc, char const **argv){
           hash=hashkMer(infix(*seq,i,i+k),k);
         }
       }
-      // #pragma omp critical(reqbkt)
-      // {
-        c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
-      // }
+
+      c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
+      #pragma omp atomic
       dir[c+1]+=1;
-      // CHROM++;
+      #pragma omp atomic
+      CHROM++;
       std::cerr << "." ;
       if ((CHROM-4)%29==0) {std::cerr << "\n";}
     }
@@ -249,35 +247,40 @@ int main(int argc, char const **argv){
   IndC.append("_C.txt");
 
   std::cerr << "Writing index to file...";
-
-  String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-  if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index positions file." );
+  #pragma omp sections{
+    #pragma omp section{
+      String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+      if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+        throw std::runtime_error("Could not open index positions file." );
+      }
+      assign(extpos, pos, Exact());
+      close(extpos);
+    }
+    #pragma omp section{
+      String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+      if (!open(extref, IndRef.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+        throw std::runtime_error("Could not open index reference file." );
+      }
+      assign(extref, ref, Exact());
+      close(extref);
+    }
+    #pragma omp section{
+      String<uint32_t, External<> > extdir;
+      if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+        throw std::runtime_error("Could not open index directory file." );
+      }
+      assign(extdir, dir, Exact());
+      close(extdir);
+    }
+    #pragma omp section{
+      String<int32_t, External<> > extC;
+      if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+        throw std::runtime_error("Could not open index counts file." );
+      }
+      assign(extC, C, Exact());
+      close(extC);
+    }
   }
-  assign(extpos, pos, Exact());
-  close(extpos);
-
-  String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-  if (!open(extref, IndRef.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index reference file." );
-  }
-  assign(extref, ref, Exact());
-  close(extref);
-
-  String<uint32_t, External<> > extdir;
-  if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index directory file." );
-  }
-  assign(extdir, dir, Exact());
-  close(extdir);
-
-  String<int32_t, External<> > extC;
-  if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-    throw std::runtime_error("Could not open index counts file." );
-  }
-  assign(extC, C, Exact());
-  close(extC);
-
   std::cerr << ".....done.\n";
   std::cerr << "Index finished!\n";
   return 0;
