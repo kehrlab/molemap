@@ -119,25 +119,31 @@ int main(int argc, char const **argv){
 
 
   // building index storage
-
-  String<uint32_t> dir;
-  resize(dir,bucket_number+1,0);
-  std::cerr << "..";
-  String<uint32_t> pos;
-  resize(pos,length(concat(seqs)));
-  std::cerr << "..";
-  String<uint_fast8_t> ref;
-  resize(ref,length(concat(seqs)));
-  std::cerr << "..";
-  String<int32_t> C;
-  resize(C,bucket_number,-1);
+  #pragma omp parallel sections
+  {
+    {String<uint32_t> dir;
+    resize(dir,bucket_number+1,0);
+    std::cerr << "..";}
+    #pragma omp section
+    {String<uint32_t> pos;
+    resize(pos,length(concat(seqs)));
+    std::cerr << "..";}
+    #pragma omp section
+    {String<uint_fast8_t> ref;
+    resize(ref,length(concat(seqs)));
+    std::cerr << "..";}
+    #pragma omp section
+    {String<int32_t> C;
+    resize(C,bucket_number,-1);
+    std::cerr << "..";}
+  }
 
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint32_t c;
   uint_fast8_t CHROMG = 0;
 
-  std::cerr << ".....done.\nFilling index initially:";
+  std::cerr << "...done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs);
