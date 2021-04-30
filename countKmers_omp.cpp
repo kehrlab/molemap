@@ -148,8 +148,6 @@ int main(int argc, char const **argv){
     for (int i=0; i<(int)length(seqs); i++){
       uint_fast8_t CHROM=CHROMG+i;
       TStringSetIterator seq=seqG+i;
-      std::cerr << "." ;
-      if ((CHROM-4)%29==0) {std::cerr << "\n";}
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
@@ -173,6 +171,8 @@ int main(int argc, char const **argv){
       // }
       dir[c+1]+=1;
       // CHROM++;
+      std::cerr << "." ;
+      if ((CHROM-4)%29==0) {std::cerr << "\n";}
     }
   }
 
