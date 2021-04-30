@@ -171,7 +171,7 @@ int main(int argc, char const **argv){
       #pragma omp atomic
       CHROM++;
       std::cerr << "." ;
-      if ((CHROM-4)%29==0) {std::cerr << "\n";}
+      if ((CHROM-5)%29==0) {std::cerr << "\n";}
     }
   }
 
@@ -225,7 +225,7 @@ int main(int argc, char const **argv){
       CHROM++;
 
       std::cerr << ".";
-      if ((CHROM-1)%29==0) {std::cerr << "\n";}
+      if ((CHROM-2)%29==0) {std::cerr << "\n";}
     }
   }
   std::cerr << "done. \n";
@@ -242,41 +242,35 @@ int main(int argc, char const **argv){
   IndC.append("_C.txt");
 
   std::cerr << "Writing index to file...";
-  #pragma omp parallel for
-  for(int i=0; i<4; i++){
-    if(i==0){
-      String<uint32_t, External<ExternalConfigLarge<>> > extpos;
-      if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-        throw std::runtime_error("Could not open index positions file." );
-      }
-      assign(extpos, pos, Exact());
-      close(extpos);
-    }
-    if(i==1){
-      String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
-      if (!open(extref, IndRef.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-        throw std::runtime_error("Could not open index reference file." );
-      }
-      assign(extref, ref, Exact());
-      close(extref);
-    }
-    if(i==2){
-      String<uint32_t, External<> > extdir;
-      if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-        throw std::runtime_error("Could not open index directory file." );
-      }
-      assign(extdir, dir, Exact());
-      close(extdir);
-    }
-    if(i==3){
-      String<int32_t, External<> > extC;
-      if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
-        throw std::runtime_error("Could not open index counts file." );
-      }
-      assign(extC, C, Exact());
-      close(extC);
-    }
+
+  String<uint32_t, External<ExternalConfigLarge<>> > extpos;
+  if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+    throw std::runtime_error("Could not open index positions file." );
   }
+  assign(extpos, pos, Exact());
+  close(extpos);
+
+  String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
+  if (!open(extref, IndRef.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+    throw std::runtime_error("Could not open index reference file." );
+  }
+  assign(extref, ref, Exact());
+  close(extref);
+
+  String<uint32_t, External<> > extdir;
+  if (!open(extdir, IndDir.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+    throw std::runtime_error("Could not open index directory file." );
+  }
+  assign(extdir, dir, Exact());
+  close(extdir);
+
+  String<int32_t, External<> > extC;
+  if (!open(extC, IndC.c_str(), OPEN_WRONLY | OPEN_CREATE)){
+    throw std::runtime_error("Could not open index counts file." );
+  }
+  assign(extC, C, Exact());
+  close(extC);
+
   std::cerr << ".....done.\n";
   std::cerr << "Index finished!\n";
   return 0;
