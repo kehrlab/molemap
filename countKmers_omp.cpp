@@ -123,25 +123,15 @@ int main(int argc, char const **argv){
   String<uint32_t> pos;
   String<uint_fast8_t> ref;
   String<int32_t> C;
-  #pragma omp parallel for
-  for (int i=0; i<4; i++){
-    if(i==0){
-      resize(dir,bucket_number+1,0);
-      std::cerr << "..";
-    }
-    if(i==1){
-      resize(pos,length(concat(seqs)));
-      std::cerr << "..";
-    }
-    if(i==2){
-      resize(ref,length(concat(seqs)));
-      std::cerr << "..";
-    }
-    if(i==3){
-      resize(C,bucket_number,-1);
-      std::cerr << "..";
-    }
-  }
+  resize(dir,bucket_number+1,0);
+  std::cerr << "..";
+  resize(pos,length(concat(seqs)));
+  std::cerr << "..";
+  resize(ref,length(concat(seqs)));
+  std::cerr << "..";
+  resize(C,bucket_number,-1);
+  std::cerr << "..";
+
 
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
