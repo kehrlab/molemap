@@ -148,7 +148,7 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
 uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
   uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
   int64_t d=0;
-  while(1){
+  for(int b=0; b<1000; b++){
     #pragma omp atomic
     C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found and occupied bucket*/;
     if(C[i]==(hash>>k_2)){
@@ -158,6 +158,7 @@ uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast3
     i=(i+2*d+1)%(int64_t)bucket_number;
     d++;
   }
+  std::cerr << "ERROR: no free bucket fount after 1000 tries\n";
   return i;
 }
 
