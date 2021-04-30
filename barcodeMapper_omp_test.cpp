@@ -275,7 +275,7 @@ BCI_posSet.resize(3,{});
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
 uint32_t thread3=0;   // "thread" for processing reads
-uint32_t max_readCount=5000000;
+uint32_t max_readCount=1000000;
 uint32_t readCount=0;
 
 std::cerr << "Processing read file...";
@@ -361,7 +361,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
   #pragma omp parallel //num_threads(16)
   {
-    #pragma omp for schedule(dynamic)
+    #pragma omp for schedule(dynamic, 100)
     for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
 
       if (i==-2){       // read from file 1
