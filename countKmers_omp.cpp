@@ -119,25 +119,25 @@ int main(int argc, char const **argv){
 
 
   // building index storage
+  String<uint32_t> dir;
+  String<uint32_t> pos;
+  String<uint_fast8_t> ref;
+  String<int32_t> C;
   #pragma omp parallel for
   for (int i=0; i<4; i++){
     if(i==0){
-      String<uint32_t> dir;
       resize(dir,bucket_number+1,0);
       std::cerr << "..";
     }
     if(i==1){
-      String<uint32_t> pos;
       resize(pos,length(concat(seqs)));
       std::cerr << "..";
     }
     if(i==2){
-      String<uint_fast8_t> ref;
       resize(ref,length(concat(seqs)));
       std::cerr << "..";
     }
     if(i==3){
-      {String<int32_t> C;
       resize(C,bucket_number,-1);
       std::cerr << "..";
     }
