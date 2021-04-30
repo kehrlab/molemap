@@ -121,6 +121,7 @@ int main(int argc, char const **argv){
   // building index storage
   #pragma omp parallel sections
   {
+    #pragma omp section
     {String<uint32_t> dir;
     resize(dir,bucket_number+1,0);
     std::cerr << "..";}
@@ -247,7 +248,7 @@ int main(int argc, char const **argv){
   IndC.append("_C.txt");
 
   std::cerr << "Writing index to file...";
-  #pragma omp sections{
+  #pragma omp parallel sections{
     #pragma omp section{
       String<uint32_t, External<ExternalConfigLarge<>> > extpos;
       if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){
