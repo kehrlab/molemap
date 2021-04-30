@@ -138,9 +138,26 @@ uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint
 }
 
 // Request a Bucket
+// uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
+//   uint_fast32_t i = GetBkt(hash,C,bucket_number,k_2);
+//   C[i]=hash>>k_2;
+//   return i;
+// }
+
+// Request a Bucket multithread style
 uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
-  uint_fast32_t i = GetBkt(hash,C,bucket_number,k_2);
-  C[i]=hash>>k_2;
+  uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
+  int64_t d=0;
+  while(1){
+    #pragma omp atomic
+    C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found and occupied bucket*/;
+    if(C[i]==(hash>>k_2)){
+      return i;
+    } //return if correct bucket found
+    i=(i^(hash>>((d*16)%31)));
+    i=(i+2*d+1)%(int64_t)bucket_number;
+    d++;
+  }
   return i;
 }
 
