@@ -275,7 +275,7 @@ barcodeSet.resize(3,{});
 std::vector<std::vector<std::streampos>> BCI_posSet;
 BCI_posSet.resize(3,{});
 std::vector<std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>> best_windows_set;
-best_windows_set.resize(3,{}; //(maping_quality, reference, start position in referende, end position)
+best_windows_set.resize(3,{}); //(maping_quality, reference, start position in referende, end position)
 
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
