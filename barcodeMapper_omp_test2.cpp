@@ -275,7 +275,7 @@ barcodeSet.resize(3,{});
 std::vector<std::vector<std::streampos>> BCI_posSet;
 BCI_posSet.resize(3,{});
 std::vector<std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>> best_windows_set;
-best_windows_set.resize(3,window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
+best_windows_set.resize(3,{}; //(maping_quality, reference, start position in referende, end position)
 
 uint32_t thread=0;    // "thread" for reading in reads from file1
 uint32_t thread2=0;   // "thread" for reading in reads from file2
@@ -685,6 +685,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     #define ACT(X) std::get<3>(*(X))
 
     // std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
+    best_windows.resize(window_count,std::make_tuple(0,0,0,0));
     std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
     // std::cerr<<"iteration prepared. \n";
 
