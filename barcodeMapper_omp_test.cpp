@@ -361,13 +361,11 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
   #pragma omp parallel //num_threads(16)
   {
-    #pragma omp for schedule(dynamic, 100)
+    #pragma omp for schedule(dynamic, 10)
     for (int i=-2; i<(int)barcodeSet[thread3].size(); i++) {// for all barcodes in set
 
       if (i==-2){       // read from file 1
         auto tbegin = std::chrono::high_resolution_clock::now();
-        #pragma omp critical(lastread)
-        {
           while (!atEnd(file1)){
             BCI_pos1=file1.stream.file.tellg();
             readRecord(id1, read1, file1);
@@ -391,7 +389,6 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
             }
             readCount++;
           }
-        } //pragma omp critical
         // std::cerr << " reading file1 in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
       }
 
@@ -457,11 +454,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
   readSet[thread3].clear();
   barcodeSet[thread3].clear();
-  #pragma omp critical(lastread)
-  {
-    barcodeSet[thread3].push_back(barcode_overflow);
-    readSet[thread3].push_back({read_overflow});
-  } //pragma omp critical
+  barcodeSet[thread3].push_back(barcode_overflow);
+  readSet[thread3].push_back({read_overflow});
   thread3=(thread3+1)%3;
   // std::cerr << " processing reads in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin3).count()/1000 << "s\n";
 
