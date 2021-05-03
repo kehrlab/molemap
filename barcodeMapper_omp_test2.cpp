@@ -469,7 +469,8 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
-          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l, best_windows_set[thread3]);
+          best_windows[thread3].clear();
+          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l, best_windows[thread3]);
         }
       } //else
 
@@ -555,8 +556,8 @@ for(int i=-1;i<2;i++){
       } //for (it = *(itrreadSetG).begin();
       if (!kmer_list.empty()) {
         sort(kmer_list.begin(),kmer_list.end());
-        best_windows_set[thread3].clear();
-        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l, best_windows_set[thread3]);
+        best_windows[thread3].clear();
+        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l, best_windows[thread3]);
       }
     } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
@@ -599,7 +600,8 @@ for (itrreadSetG = readSet[thread3].begin(), itrbarcG=barcodeSet[thread3].begin(
   } //for (itrreads = *(itrreadSetG).begin();
   if (!kmer_list.empty()) {
     sort(kmer_list.begin(),kmer_list.end());
-    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l, best_windows_set[thread3]);
+    best_windows[thread3].clear();
+    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l, best_windows[thread3]);
   }
 } //for (itrreadSetG = readSet[thread3].begin();
 
