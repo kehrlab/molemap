@@ -267,6 +267,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
     std::cerr << __LINE__ << "\n";
+    std::cerr << "size:  " <<reads.size() << "\n";
     #pragma omp parallel
     {
     #pragma omp for schedule(dynamic)
