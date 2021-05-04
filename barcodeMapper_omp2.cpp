@@ -271,6 +271,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     {
     #pragma omp for schedule(dynamic)
     for (int i=0; i<reads.size();i++){
+      std::cerr << __LINE__ << "\n";
       Dna5String read=reads[i];
       std::pair <int64_t, int64_t> hash = hashkMer(infix(read,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
@@ -278,10 +279,10 @@ while (atEnd(file1)!=1) { // proceeding through files
       uint_fast8_t minimizer_active_bases=1;
       if (length(read)>mini_window_size){
         for (uint_fast32_t t=0;t<(length(read)-1-mini_window_size);t++){
-          // std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
+          std::cerr << __LINE__ << "\n";                                                  // iterating over all kmers
           if (t!=minimizer_position){                 // if old minimizer in current window
             rollinghashkMer(hash.first,hash.second,(read)[t+mini_window_size],k,maxhash); // inline?!
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
               minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
@@ -290,17 +291,17 @@ while (atEnd(file1)!=1) { // proceeding through files
             }
             minimizer_active_bases++;
           }else{
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-            // std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
+            std::cerr << __LINE__ << "\n";                                                                                                  // if old minimizer no longer in window
             minimizer_position=t+1;
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             hash=hashkMer(infix(read,t+1,t+1+k),k);
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             minimizer=InitMini(infix(read,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
             minimizer_active_bases=1;
-            // std::cerr << __LINE__ << "\n";
+            std::cerr << __LINE__ << "\n";
           }
         }
         AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
