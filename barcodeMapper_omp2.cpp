@@ -256,6 +256,8 @@ tbegin = std::chrono::high_resolution_clock::now();
 while (atEnd(file1)!=1) { // proceeding through files
   BCI_pos1=file1.stream.file.tellg();
   readRecord(id1, read1, file1);
+  meta=toCString(id1);
+  std::cerr << __LINE__ << "\n";
   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
     // auto tbegin2 = std::chrono::high_resolution_clock::now();
