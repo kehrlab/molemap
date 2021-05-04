@@ -291,6 +291,7 @@ while (atEnd(file1)!=1) { // proceeding through files
               minimizer_position=t+1+mini_window_size-k;
               minimizer_active_bases=0;
             }
+            std::cerr << __LINE__ << "\n";
             minimizer_active_bases++;
           }else{
             std::cerr << __LINE__ << "\n";
@@ -306,6 +307,7 @@ while (atEnd(file1)!=1) { // proceeding through files
             std::cerr << __LINE__ << "\n";
           }
         }
+        std::cerr << __LINE__ << "\n";
         AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
       }
     }
