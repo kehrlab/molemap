@@ -268,7 +268,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     // map barcode and clear k_mer list
     std::cerr << __LINE__ << "\n";
     std::cerr << "size:  " <<reads.size() << "\n";
-    if (reads.size()!=0){
+    if ((int)reads.size()>0){
     #pragma omp parallel
     {
     #pragma omp for schedule(dynamic)
