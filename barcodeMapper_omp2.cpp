@@ -264,6 +264,7 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
+    std::cerr << __LINE__ << "\n";
     #pragma omp parallel
     {
     #pragma omp for schedule(dynamic)
@@ -304,7 +305,7 @@ while (atEnd(file1)!=1) { // proceeding through files
       }
     }
   } //pragma parallel
-
+  std::cerr << __LINE__ << "\n";
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
@@ -312,12 +313,13 @@ while (atEnd(file1)!=1) { // proceeding through files
     }
     barcode=new_barcode;
   }
+  std::cerr << __LINE__ << "\n";
   readRecord(id2, read2, file2);
   reads.push_back(read1);
   reads.push_back(read2);
 
 }
-
+std::cerr << __LINE__ << "\n";
 if (!kmer_list.empty()) {
   sort(kmer_list.begin(),kmer_list.end());
   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
