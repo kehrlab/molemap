@@ -228,7 +228,7 @@ std::string new_barcode;
 std::string meta;
 // StringSet<Dna5String> reads;
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-resize(reads, 2, Exact());
+// resize(reads, 2, Exact());
 Dna5String read1;
 Dna5String read2;
 std::vector<Dna5String> reads;
@@ -264,10 +264,12 @@ while (atEnd(file1)!=1) { // proceeding through files
     BCI_barcodes.push_back(new_barcode);
     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
     // map barcode and clear k_mer list
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel
+    {
+    #pragma omp for schedule(dynamic)
     for (int i=0; i<reads.size();i++){
       Dna5String read=reads[i];
-      std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
+      std::pair <int64_t, int64_t> hash = hashkMer(infix(read,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(read,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
       uint_fast8_t minimizer_active_bases=1;
@@ -301,6 +303,7 @@ while (atEnd(file1)!=1) { // proceeding through files
         AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
       }
     }
+  } //pragma parallel
 
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
