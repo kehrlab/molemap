@@ -17,10 +17,10 @@ struct countKOptions{
   std::string index_name;
   unsigned k;
   int64_t bucket_count;
-  uint32_t threads
+  uint32_t thread_count;
 
   countKOptions():
-  k(31), bucket_count(3221225472), threads(32)
+  k(31), bucket_count(3221225472), thread_count(32)
   {}
   };
 
@@ -62,7 +62,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     // Extract option values.
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.bucket_count, parser, "b");
+    getOptionValue(options.thread_count, parser, "t");
 
+    // Extract argument calues.
     getArgumentValue(options.reference_file, parser, 0);
     getArgumentValue(options.index_name, parser, 1);
 
@@ -81,7 +83,8 @@ int main(int argc, char const **argv){
             << "reference   \t" << options.reference_file << '\n'
             << "index_name  \t" << options.index_name << '\n'
             << "k           \t" << options.k << '\n'
-            << "bucket_count\t" << options.bucket_count << "\n\n";
+            << "bucket_count\t" << options.bucket_count <<'\n'
+            << "thread_count\t" << options.thread_count << "\n\n";
 
   uint_fast8_t k = options.k;
   int k_2 = k+1;
@@ -113,10 +116,18 @@ int main(int argc, char const **argv){
 
   // split large chromosomes into smaller contigs
   std::vector<uint32_t> Chromtable={}; // vector that translates place in seqs into chromosome identifier
-  for (int i=0; i<seqs.size(); i++){
+
+  std::cerr << index
+  for (int i=0; i<length(seqs); i++){
     Chromtable.push_back(i);
+    std::cerr << "chrom: " << i << "\tsize: " << seqs[i].size() << "\n";
   }
 
+
+
+  if(options.thread_count>1){
+
+  }
 
 
 
