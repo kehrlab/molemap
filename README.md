@@ -1,6 +1,11 @@
 # Barcode_assignment
 
 # Installation
+
+## Prerequisites
+- Seqan
+- gcc version XXX
+- Other libs
 Needed directories etc.
 
 
