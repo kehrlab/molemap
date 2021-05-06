@@ -10,7 +10,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::fstream & results);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -255,10 +255,6 @@ CharString id2;
 SeqFileIn file1(toCString(options.readfile1));
 SeqFileIn file2(toCString(options.readfile2));
 
-// opening output file
-std::fstream results;
-results.open(toCString(options.output_file),std::ios::out | std::ios::app);
-
 // preparing barcode Index
 std::vector<std::string> BCI_barcodes;
 std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
@@ -449,7 +445,7 @@ while (!atEnd(file1)){ // reading and processing next batch of reads until file 
 
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
-          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,*itrbarc, options.q, options.l, results);
+          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarc, options.q, options.l);
         }
       } //else
 
@@ -517,7 +513,7 @@ for(int i=0;i<2;i++){
       } //for (it = *(itrreadSetG).begin();
       if (!kmer_list.empty()) {
         sort(kmer_list.begin(),kmer_list.end());
-        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,*itrbarcG, options.q, options.l, results);
+        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l);
       }
     } //for (itet = readSet[thread3].begin();
     readSet[thread3].clear();
@@ -560,7 +556,7 @@ for (itrreadSetG = readSet[thread3].begin(), itrbarcG=barcodeSet[thread3].begin(
   } //for (itrreads = *(itrreadSetG).begin();
   if (!kmer_list.empty()) {
     sort(kmer_list.begin(),kmer_list.end());
-    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,*itrbarcG, options.q, options.l, results);
+    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),*itrbarcG, options.q, options.l);
   }
 } //for (itrreadSetG = readSet[thread3].begin();
 
@@ -568,10 +564,8 @@ readSet[thread3].clear();
 barcodeSet[thread3].clear();
 thread3=(thread3+1)%3;
 
-// closing in and output files
 close(file1);
 close(file2);
-results.close();
 
 std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
@@ -604,7 +598,7 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::fstream & results){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, DnaString barcode, unsigned qualityThreshold, unsigned lengthThreshold){
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -711,8 +705,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
 
     // Output
-      // std::fstream results;
-      // results.open(file,std::ios::out | std::ios::app);
+    #pragma omp critical
+    {
+      std::fstream results;
+      results.open(file,std::ios::out | std::ios::app);
 
       for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
@@ -721,12 +717,9 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         std::string start=std::to_string(std::get<2>(*itrbw));
         std::string end=std::to_string(std::get<3>(*itrbw));
         std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-        // #pragma omp critical
-        // {
-        // #pragma omp atomic
         results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
-        // }
       }
-      // results.close();
+      results.close();
+    }
     return;
   } //MapKmerList
