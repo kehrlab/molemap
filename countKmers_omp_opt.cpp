@@ -132,7 +132,7 @@ int main(int argc, char const **argv){
         if (length(seqs[seqpos])>maxseqlen){
           insert(seqs,seqpos,suffix(seqs[seqpos],maxseqlen));
           seqs[seqpos]=prefix(seqs[seqpos],maxseqlen);
-          insert(Chromtable.begin()+seqpos,Chromtable[seqpos]);
+          Chromtable.insert(Chromtable.begin()+seqpos,Chromtable[seqpos]);
           seqpos++;
         }else{
           seqpos++;
