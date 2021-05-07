@@ -116,7 +116,7 @@ int main(int argc, char const **argv){
 
   // split large chromosomes into smaller contigs
   std::vector<uint32_t> Chromtable={}; // vector that translates place in seqs into chromosome identifier
-
+  std::vector<uint32_t> Chromtable2={};
   // std::cerr << "\n";
   // for (int i=0; i<length(seqs); i++){
   //   Chromtable.push_back(i);
@@ -134,10 +134,12 @@ int main(int argc, char const **argv){
       for (int j=0; j<(floor(length(seqs[i])/maxseqlen));j++){
         appendValue(seqs2,infix(seqs[i],j*maxseqlen,(j+1)*maxseqlen));
         Chromtable.push_back(i);
+        Chromtable2.push_back(j);
       }
     }
     appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
     Chromtable.push_back(i);
+    Chromtable2.push_back(floor(length(seqs[i])/maxseqlen));
   }
 
   seqs=seqs2;
@@ -268,7 +270,7 @@ int main(int argc, char const **argv){
 
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
-        pos[dir[c+1]]=i;
+        pos[dir[c+1]]=i+Chromtable2[j]*maxseqlen;
         ref[dir[c+1]]=Chromtable[j];
         dir[c+1]++;
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
@@ -280,7 +282,7 @@ int main(int argc, char const **argv){
         }
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
-      pos[dir[c+1]]=length(*seq)-k;
+      pos[dir[c+1]]=length(*seq)-k+Chromtable2[j]*maxseqlen;
       ref[dir[c+1]]=Chromtable[j];
       dir[c+1]++;
 
