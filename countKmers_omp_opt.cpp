@@ -117,36 +117,30 @@ int main(int argc, char const **argv){
   // split large chromosomes into smaller contigs
   std::vector<uint32_t> Chromtable={}; // vector that translates place in seqs into chromosome identifier
 
-  std::cerr << "\n";
-  for (int i=0; i<length(seqs); i++){
-    Chromtable.push_back(i);
-    std::cerr << "chrom: " << i << "\tsize: " << length(seqs[i]) << "\n";
-  }
+  // std::cerr << "\n";
+  // for (int i=0; i<length(seqs); i++){
+  //   Chromtable.push_back(i);
+  //   std::cerr << "chrom: " << i << "\tsize: " << length(seqs[i]) << "\n";
+  // }
+  auto tbegin = std::chrono::high_resolution_clock::now();
 
 
   int maxseqlen=50000000;
   StringSet<Dna5String> seqs2;
 
-
   Chromtable={};
   for(int i=0; i<length(seqs); i++){
-    // std::cerr << __LINE__ << "\n";
     if (length(seqs[i])>maxseqlen){
-      // std::cerr << __LINE__ << "\n";
-
       for (int j=0; j<(floor(length(seqs[i])/maxseqlen));j++){
-
         appendValue(seqs2,infix(seqs[i],j*maxseqlen,(j+1)*maxseqlen));
-
         Chromtable.push_back(i);
-        // std::cerr << __LINE__ << "\n";
-
       }
     }
     appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
     Chromtable.push_back(i);
   }
 
+  std::cerr << "\nReference prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 
   //
   // if(options.thread_count>1){
@@ -163,11 +157,11 @@ int main(int argc, char const **argv){
   //     }
   // }
 
-  std::cerr << "\n";
-  for (int i=0; i<length(seqs2); i++){
-    Chromtable.push_back(i);
-    std::cerr << "chrom: " << Chromtable[i] << "\tsize: " << length(seqs2[i]) << "\n";
-  }
+  // std::cerr << "\n";
+  // for (int i=0; i<length(seqs2); i++){
+  //   Chromtable.push_back(i);
+  //   std::cerr << "chrom: " << Chromtable[i] << "\tsize: " << length(seqs2[i]) << "\n";
+  // }
 
 
 
