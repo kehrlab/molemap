@@ -134,7 +134,7 @@ int main(int argc, char const **argv){
     if (length(seqs[i])>maxseqlen){
       // std::cerr << __LINE__ << "\n";
 
-      for (int j=0; j<(length(seqs[i])%maxseqlen);j++){
+      for (int j=0; j<(floor(length(seqs[i])/maxseqlen));j++){
         std::cerr << __LINE__ << "\n";
         std::cerr << "len: " << length(seqs[i]) << "\n";
         std::cerr << "j:   " << j << "\n";
@@ -147,7 +147,7 @@ int main(int argc, char const **argv){
       }
       std::cerr << __LINE__ << "\n";
 
-      appendValue(seqs2,suffix(seqs[i],(length(seqs[i])%maxseqlen)*maxseqlen));
+      appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
       // std::cerr << __LINE__ << "\n";
 
     }
