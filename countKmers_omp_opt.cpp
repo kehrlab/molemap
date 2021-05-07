@@ -122,13 +122,13 @@ int main(int argc, char const **argv){
   //   Chromtable.push_back(i);
   //   std::cerr << "chrom: " << i << "\tsize: " << length(seqs[i]) << "\n";
   // }
-  auto tbegin = std::chrono::high_resolution_clock::now();
+  // auto tbegin = std::chrono::high_resolution_clock::now();
 
 
   int maxseqlen=50000000;
   StringSet<Dna5String> seqs2;
 
-  Chromtable={};
+  // Chromtable={};
   for(int i=0; i<length(seqs); i++){
     if (length(seqs[i])>maxseqlen){
       for (int j=0; j<(floor(length(seqs[i])/maxseqlen));j++){
@@ -142,7 +142,7 @@ int main(int argc, char const **argv){
 
   seqs=seqs2;
 
-  std::cerr << "\nReference prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+  // std::cerr << "\nReference prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 
   //
   // if(options.thread_count>1){
@@ -259,9 +259,9 @@ int main(int argc, char const **argv){
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
-    for (int i=0; i<(int)length(seqs); i++){
-      TStringSetIterator seq=seqG+i;
-      CHROM=i;
+    for (int j=0; j<(int)length(seqs); j++){
+      TStringSetIterator seq=seqG+j;
+      CHROM=j;
       // filling pos
 
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -269,7 +269,7 @@ int main(int argc, char const **argv){
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
         pos[dir[c+1]]=i;
-        ref[dir[c+1]]=Chromtable[i];
+        ref[dir[c+1]]=Chromtable[j];
         dir[c+1]++;
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -281,7 +281,7 @@ int main(int argc, char const **argv){
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
       pos[dir[c+1]]=length(*seq)-k;
-      ref[dir[c+1]]=Chromtable[i];
+      ref[dir[c+1]]=Chromtable[j];
       dir[c+1]++;
 
       std::cerr << ".";
