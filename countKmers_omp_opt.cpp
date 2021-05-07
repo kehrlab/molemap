@@ -144,6 +144,7 @@ int main(int argc, char const **argv){
       }
     }
     appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
+    Chromtable.push_back(i);
   }
 
 
