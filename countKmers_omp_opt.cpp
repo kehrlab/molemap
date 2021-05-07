@@ -131,11 +131,11 @@ int main(int argc, char const **argv){
   Chromtable={};
   for(int i=0; i<length(seqs); i++){
     if (length(seqs[i])>maxseqlen){
-      for (int j=0; j<(length(seqs[i])%maxseqlen)){
+      for (int j=0; j<(length(seqs[i])%maxseqlen;j++)){
         appendValue(seqs2,infix(seqs[i],j*maxseqlen,(j+1)*maxseqlen);
         Chromtable.push_back(i);
       }
-      appendValue(seqs2,suffix(seqs[i]),(length(seqs[i])%maxseqlen)*maxseqlen);
+      appendValue(seqs2,suffix(seqs[i],(length(seqs[i])%maxseqlen)*maxseqlen));
     }
   }
 
