@@ -125,20 +125,35 @@ int main(int argc, char const **argv){
 
 
   int maxseqlen=50000000;
+  StringSet<Dna5String> seqs2;
 
-  if(options.thread_count>1){
-      int seqpos=0;
-      while (seqpos<length(seqs)){
-        if (length(seqs[seqpos])>maxseqlen){
-          insertValue(seqs,seqpos,suffix(seqs[seqpos],maxseqlen));
-          seqs[seqpos]=prefix(seqs[seqpos],maxseqlen);
-          Chromtable.insert(Chromtable.begin()+seqpos,Chromtable[seqpos]);
-          seqpos++;
-        }else{
-          seqpos++;
-        }
+
+  Chromtable={};
+  for(int i=0; i<length(seqs); i++){
+    if (length(seqs[i])>maxseqlen){
+      for (int j=0; j<(length(seqs[i])%maxseqlen)){
+        appendValue(seqs2,infix(seqs[i],j*maxseqlen,(j+1)*maxseqlen);
+        Chromtable.push_back(i);
       }
+      appendValue(seqs2,suffix(seqs[i]),(length(seqs[i])%maxseqlen)*maxseqlen);
+    }
   }
+
+
+  //
+  // if(options.thread_count>1){
+  //     int seqpos=0;
+  //     while (seqpos<length(seqs)){
+  //       if (length(seqs[seqpos])>maxseqlen){
+  //         insertValue(seqs,seqpos,suffix(seqs[seqpos],maxseqlen));
+  //         seqs[seqpos]=prefix(seqs[seqpos],maxseqlen);
+  //         Chromtable.insert(Chromtable.begin()+seqpos,Chromtable[seqpos]);
+  //         seqpos++;
+  //       }else{
+  //         seqpos++;
+  //       }
+  //     }
+  // }
 
   std::cerr << "\n";
   for (int i=0; i<length(seqs); i++){
