@@ -208,8 +208,8 @@ int main(int argc, char const **argv){
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
-    for (int i=0; i<(int)length(seqs); i++){
-      TStringSetIterator seq=seqG+i;
+    for (int j=0; j<(int)length(seqs); j++){
+      TStringSetIterator seq=seqG+j;
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
 
