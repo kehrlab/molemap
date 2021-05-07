@@ -140,6 +140,8 @@ int main(int argc, char const **argv){
     Chromtable.push_back(i);
   }
 
+  seqs=seqs2;
+
   std::cerr << "\nReference prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 
   //
