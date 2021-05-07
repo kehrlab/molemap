@@ -117,7 +117,7 @@ int main(int argc, char const **argv){
   // split large chromosomes into smaller contigs
   std::vector<uint32_t> Chromtable={}; // vector that translates place in seqs into chromosome identifier
 
-  std::cerr << index
+  std::cerr << "\n";
   for (int i=0; i<length(seqs); i++){
     Chromtable.push_back(i);
     std::cerr << "chrom: " << i << "\tsize: " << seqs[i].size() << "\n";
