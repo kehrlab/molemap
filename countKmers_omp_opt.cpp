@@ -120,7 +120,7 @@ int main(int argc, char const **argv){
   std::cerr << "\n";
   for (int i=0; i<length(seqs); i++){
     Chromtable.push_back(i);
-    std::cerr << "chrom: " << i << "\tsize: " << seqs[i].size() << "\n";
+    std::cerr << "chrom: " << i << "\tsize: " << length(seqs[i]) << "\n";
   }
 
 
