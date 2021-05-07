@@ -124,9 +124,26 @@ int main(int argc, char const **argv){
   }
 
 
+  int maxseqlen=50000000;
 
   if(options.thread_count>1){
+      int seqpos=0;
+      while (seqpos<length(seqs)){
+        if (length(seqs[seqpos])>maxseqlen){
+          insert(seqs,seqpos,suffix(seqs[seqpos],maxseqlen);
+          seqs[seqpos]=prefix(seqs[seqpos],maxseqlen);
+          std::insert(Chromtable.begin()+seqpos,Chromtable[seqpos]);
+          seqpos++;
+        }else{
+          seqpos++;
+        }
+      }
+  }
 
+  std::cerr << "\n";
+  for (int i=0; i<length(seqs); i++){
+    Chromtable.push_back(i);
+    std::cerr << "chrom: " << Chromtable[i] << "\tsize: " << length(seqs[i]) << "\n";
   }
 
 
