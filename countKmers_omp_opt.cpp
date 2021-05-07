@@ -135,22 +135,15 @@ int main(int argc, char const **argv){
       // std::cerr << __LINE__ << "\n";
 
       for (int j=0; j<(floor(length(seqs[i])/maxseqlen));j++){
-        std::cerr << __LINE__ << "\n";
-        std::cerr << "len: " << length(seqs[i]) << "\n";
-        std::cerr << "j:   " << j << "\n";
+
         appendValue(seqs2,infix(seqs[i],j*maxseqlen,(j+1)*maxseqlen));
-        std::cerr << __LINE__ << "\n";
 
         Chromtable.push_back(i);
         // std::cerr << __LINE__ << "\n";
 
       }
-      std::cerr << __LINE__ << "\n";
-
-      appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
-      // std::cerr << __LINE__ << "\n";
-
     }
+    appendValue(seqs2,suffix(seqs[i],floor((length(seqs[i])/maxseqlen))*maxseqlen));
   }
 
 
