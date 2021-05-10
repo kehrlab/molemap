@@ -131,7 +131,7 @@ uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k
 uint_fast8_t window_count=100;   // amount of saved candidate windows
 
 // checking if whitelist exists
-ifstream whitelistFile (options.whitelist);
+std::ifstream whitelistFile (options.whitelist);
 if (!whitelistFile.is_open()) {
   std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1\n"
   return 0;
