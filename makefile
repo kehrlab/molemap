@@ -42,7 +42,7 @@ $(TARGET1): $(OBJS)
 	$(CC) countKmers_omp_opt.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
 
 $(TARGET2): $(OBJS)
-	$(CC) barcodeMapper_omp_test.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
+	$(CC) barcodeMapper_omp_v2.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
