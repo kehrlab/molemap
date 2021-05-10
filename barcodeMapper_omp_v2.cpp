@@ -92,7 +92,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
     std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
-    inf_whitelist+="Whitelist.txt";
+    inf_whitelist+="/Whitelist.txt";
     std::cerr << "infered whitelist: " << inf_whitelist << "\n";
     setDefaultValue(parser, "w", inf_whitelist);
     getOptionValue(options.whitelist, parser, "w");
