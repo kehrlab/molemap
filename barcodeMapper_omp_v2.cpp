@@ -40,7 +40,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
-        "w", "whitelist", "Whitelisted barcodes.",
+        "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
         seqan::ArgParseArgument::INPUT_FILE, "Path to Whitelist.txt"));
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
@@ -93,7 +93,6 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.output_file, parser, "o");
     std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
     inf_whitelist+="/Whitelist.txt";
-    std::cerr << "infered whitelist: " << inf_whitelist << "\n";
     setDefaultValue(parser, "w", inf_whitelist);
     getOptionValue(options.whitelist, parser, "w");
 
@@ -121,7 +120,6 @@ std::cout <<'\n'
 
 uint_fast8_t k = options.k;
 int k_2 = k+1;
-
 uint_fast8_t mini_window_size = options.mini_window_size;
 
 /*
@@ -131,6 +129,13 @@ defining Parameters
 uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
 uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
 uint_fast8_t window_count=100;   // amount of saved candidate windows
+
+// checking if whitelist exists
+ifstream whitelistFile (options.whitelist);
+if (!whitelistFile.is_open()) {
+  std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1\n"
+  return 0;
+}
 
 
 /*
