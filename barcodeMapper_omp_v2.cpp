@@ -292,7 +292,7 @@ std::string meta;
 
 // reading first read and barcode
 readRecord(id1, read1, file1);
-new_barcode=get10xBarcode(id1);
+new_barcode=get10xBarcode(toCString(id1));
 readRecord(id2, read2, file2);
 uint32_t skipreads=0;
 uint32_t skipreads2=0;
@@ -310,7 +310,7 @@ uint32_t skipreads2=0;
     // align whitelisted barcodes and readfile
     while(!atEnd(file1) && new_barcode < whitebarcode){
       readRecord(id1, read1, file1);
-      new_barcode=get10xBarcode(id1);
+      new_barcode=get10xBarcode(toCString(id1));
       skipreads++;
     }
     if (whitebarcode < barcode){ // if whitelisted barcode not in readfile: skip barcode
@@ -322,7 +322,7 @@ uint32_t skipreads2=0;
     while(!atEnd(file1) && new_barcode == whitebarcode){
       reads.push_back(read1);
       readRecord(id1, read1, file1);
-      new_barcode=get10xBarcode(id1);
+      new_barcode=get10xBarcode(toCString(id1));
     }
 
     omp_set_lock(&file2lock);
