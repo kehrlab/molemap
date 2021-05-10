@@ -300,7 +300,7 @@ uint32_t skipreads2=0;
 #pragma omp parallel
 {
   #pragma omp for ordered schedule(dynamic)
-  for (std::string& whitebarcode : whitelist){
+  for (std::string& whitebarcode: whitelist){
     std::vector<DnaString> reads={};
 
     #pragma omp ordered
@@ -346,7 +346,7 @@ uint32_t skipreads2=0;
     //process reads
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-    for (DnaString& read : reads){                                            // Iterating over the reads
+    for (DnaString& read: reads){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(read,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(read,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
