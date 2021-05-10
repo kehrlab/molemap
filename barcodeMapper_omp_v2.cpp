@@ -199,22 +199,18 @@ for(int i=0;i<5;i++){
   }
   if (i==4){ // load whitelist
     std::streampos size;
-    char * memblock;
+    std::string memblock;
+    // char * memblock;
 
     if (whitelistFile.is_open())
     {
       size = whitelistFile.tellg();
-      memblock = new char [size];
+      // memblock = new char [size];
       whitelistFile.seekg (0, std::ios::beg);
       whitelistFile.read (memblock, size);
       whitelistFile.close();
     }
-    std::cerr << "\n\n";
-    for(int i=0;i<100;i+=1){
-      if(i%16==0){std::cerr << "\t";}
-      std::cerr << memblock[i];
-    }
-    std::cerr << "memblock[0]: " << memblock[0] << " memblock[100]: " << memblock[100] << "\n";
+    std::cerr << "\ns[0] "<< memblock[0] << " s[100] "<< memblock[100] << "\n";
   }
 } //for omp
 
