@@ -210,8 +210,9 @@ for(int i=0;i<5;i++){
       whitelistFile.close();
     }
     std::cerr << "\n\n";
-    for(int i=0;i<100;i+=16){
-      std::cerr << memblock[i:i+15] << "\t";
+    for(int i=0;i<100;i+=1){
+      if(i%16==0){std::cerr << "\t";}
+      std::cerr << memblock[i];
     }
     std::cerr << "memblock[0]: " << memblock[0] << " memblock[100]: " << memblock[100] << "\n";
   }
