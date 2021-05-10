@@ -204,7 +204,7 @@ for(int i=0;i<5;i++){
     whitelist.reserve((int)size);
     DnaString line;
     while (getline(whitelistFile,line)){
-      whitelist.push_back(line)
+      whitelist.push_back(line);
     }
     std::cerr << "\nwhitelist[0]: " << whitelist[0] << " white[2]: " << whitelist[2] << "\n";
     // std::cerr << "\ns[0] "<< memblock[0] << " s[100] "<< memblock[100] << "\n";
