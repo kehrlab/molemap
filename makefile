@@ -39,7 +39,7 @@ all: $(TARGET1) $(TARGET2) $(TARGET3)
 # 	$(CC) -c $< -o $@
 
 $(TARGET1): $(OBJS)
-	$(CC) countKmers_omp_opt.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
+	$(CC) countKmers.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
 
 $(TARGET2): $(OBJS)
 	$(CC) barcodeMapper_omp_v2.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
