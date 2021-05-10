@@ -131,7 +131,7 @@ uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k
 uint_fast8_t window_count=100;   // amount of saved candidate windows
 
 // checking if whitelist exists
-std::ifstream whitelistFile (options.whitelist, std::ios::binary | std::ios::ate);
+std::ifstream whitelistFile (options.whitelist, std::ios::ate);
 if (!whitelistFile.is_open()) {
   std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1.\n\n";
   return 0;
@@ -199,10 +199,10 @@ for(int i=0;i<5;i++){
   }
   if (i==4){ // load whitelist
     std::streampos size=whitelistFile.tellg();
-    whitelistFile.seekg (0, ios::beg);
+    whitelistFile.seekg (0, std::ios::beg);
     std::vector<DnaString> whitelist;
     whitelist.reserve((int)size);
-    DnaString line;
+    std::string line;
     while (getline(whitelistFile,line)){
       whitelist.push_back(line);
     }
