@@ -131,12 +131,11 @@ uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k
 uint_fast8_t window_count=100;   // amount of saved candidate windows
 
 // checking if whitelist exists
-std::ifstream whitelistFile (options.whitelist);
+std::ifstream whitelistFile (options.whitelist, ios::binary|ios::ate);
 if (!whitelistFile.is_open()) {
-  std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1\n\n";
+  std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1.\n\n";
   return 0;
 }
-
 
 /*
 reading the Index
@@ -199,7 +198,18 @@ for(int i=0;i<5;i++){
     std::cerr << ".";
   }
   if (i==4){ // load whitelist
+    std::streampos size;
+    char * memblock;
 
+    if (whitelistFile.is_open())
+    {
+      size = whitelistFile.tellg();
+      memblock = new char [size];
+      whitelistFile.seekg (0, ios::beg);
+      whitelistFile.read (memblock, size);
+      whitelistFile.close();
+    }
+    std::cerr << "memblock[0]: " << memblock[0] << " memblock[100]: " << memblock[100] << "\n";
   }
 } //for omp
 
