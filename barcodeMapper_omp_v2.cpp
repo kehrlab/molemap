@@ -209,6 +209,10 @@ for(int i=0;i<5;i++){
       whitelistFile.read (memblock, size);
       whitelistFile.close();
     }
+    std::cerr "\n\n";
+    for(int i=0;i<100;i+=16){
+      std::cerr << memblock[i:i+15] << "\t";
+    }
     std::cerr << "memblock[0]: " << memblock[0] << " memblock[100]: " << memblock[100] << "\n";
   }
 } //for omp
