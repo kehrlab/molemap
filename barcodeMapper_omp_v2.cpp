@@ -198,19 +198,16 @@ for(int i=0;i<5;i++){
     std::cerr << ".";
   }
   if (i==4){ // load whitelist
-    std::streampos size;
-    std::string memblock;
-    // char * memblock;
-
-    if (whitelistFile.is_open())
-    {
-      size = whitelistFile.tellg();
-      // memblock = new char [size];
-      whitelistFile.seekg (0, std::ios::beg);
-      whitelistFile.read (memblock, size);
-      whitelistFile.close();
+    std::streampos size=file.tellg();
+    file.seekg (0, ios::beg);
+    std::vector<DnaString> whitelist;
+    whitelist.reserve((int)size);
+    DnaString line;
+    while (getline(whitelistFile,line)){
+      whitelist.push_back(line)
     }
-    std::cerr << "\ns[0] "<< memblock[0] << " s[100] "<< memblock[100] << "\n";
+    std::cerr << "\nwhitelist[0]: " << whitelist[0] << " white[2]: " << whitelist[2] << "\n";
+    // std::cerr << "\ns[0] "<< memblock[0] << " s[100] "<< memblock[100] << "\n";
   }
 } //for omp
 
