@@ -198,8 +198,8 @@ for(int i=0;i<5;i++){
     std::cerr << ".";
   }
   if (i==4){ // load whitelist
-    std::streampos size=file.tellg();
-    file.seekg (0, ios::beg);
+    std::streampos size=whitelistFile.tellg();
+    whitelistFile.seekg (0, ios::beg);
     std::vector<DnaString> whitelist;
     whitelist.reserve((int)size);
     DnaString line;
