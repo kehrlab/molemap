@@ -304,8 +304,9 @@ uint32_t skipreads2=0;
     std::vector<DnaString> reads={};
 
     #pragma omp ordered
+    {
     omp_set_lock(&file1lock);
-
+    }
     // align whitelisted barcodes and readfile
     while(!atEnd(file1) && new_barcode < whitebarcode){
       readRecord(id1, read1, file1);
