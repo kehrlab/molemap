@@ -462,7 +462,7 @@ std::cerr << ".........done.\n";
 std::cerr << "Writing results to file...";
 
 std::fstream resultfile;
-resultfile.open(file,std::ios::out | std::ios::app);
+resultfile.open(options.resultfile,std::ios::out | std::ios::app);
 resultfile << results;
 
 std::cerr << "........done.\n";
