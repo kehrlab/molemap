@@ -10,11 +10,12 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, CharString & id1, Dna5String & read1, uint32_t & skipreads);
 void skipReads2(SeqFileIn & file2, Dna5String & read2, CharString & id2, uint32_t & skipreads2);
 void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1);
 void readFromFile2(SeqFileIn & file2, Dna5String & read2, CharString & id2, std::vector<Dna5String> & reads);
+void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold);
 
 std::string results;
 
@@ -344,43 +345,7 @@ uint32_t skipreads2=0;
     omp_unset_lock(&file2lock);
 
     //process reads
-
-    std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-
-    for (std::vector<Dna5String>::iterator itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
-      std::pair <int64_t, int64_t> hash = hashkMer(infix(*itread,0,k),k);                                // calculation of the hash value for the first k-mer
-      int64_t minimizer_position=0;
-      int64_t minimizer = InitMini(infix(*itread,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-      uint_fast8_t minimizer_active_bases=1;
-      if (length(*itread)>mini_window_size){
-        for (uint_fast32_t t=0;t<(length(*itread)-1-mini_window_size);t++){
-          if (t!=minimizer_position){                 // if old minimizer in current window
-            rollinghashkMer(hash.first,hash.second,(*itread)[t+mini_window_size],k,maxhash); // inline?!
-            if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
-              AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
-              minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-              minimizer_position=t+1+mini_window_size-k;
-              minimizer_active_bases=0;
-            }
-            minimizer_active_bases++;
-          }else{
-            AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-            minimizer_position=t+1;
-            hash=hashkMer(infix(*itread,t+1,t+1+k),k);
-            minimizer=InitMini(infix(*itread,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-            minimizer_active_bases=1;
-          }
-        }
-        AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
-      }
-    } //for (itrreads = *(itrreadSetG).begin();
-
-
-    if (!kmer_list.empty()) {
-      sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file), *itrbc, options.q, options.l);
-    }
-
+    processReads(reads, barcode, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l){
 
   } // for (std::string& whitebarcode : whitelist)
 } //#pragma omp parallel
@@ -443,7 +408,7 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold){
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -604,5 +569,42 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     for (int i=0;i<readcount;i++){
       reads.push_back(read2);
       readRecord(id2, read2, file2);
+    }
+  }
+
+  void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold){
+    std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
+
+    for (std::vector<Dna5String>::iterator itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
+      std::pair <int64_t, int64_t> hash = hashkMer(infix(*itread,0,k),k);                                // calculation of the hash value for the first k-mer
+      int64_t minimizer_position=0;
+      int64_t minimizer = InitMini(infix(*itread,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
+      uint_fast8_t minimizer_active_bases=1;
+      if (length(*itread)>mini_window_size){
+        for (uint_fast32_t t=0;t<(length(*itread)-1-mini_window_size);t++){
+          if (t!=minimizer_position){                 // if old minimizer in current window
+            rollinghashkMer(hash.first,hash.second,(*itread)[t+mini_window_size],k,maxhash); // inline?!
+            if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
+              AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
+              minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
+              minimizer_position=t+1+mini_window_size-k;
+              minimizer_active_bases=0;
+            }
+            minimizer_active_bases++;
+          }else{
+            AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
+            minimizer_position=t+1;
+            hash=hashkMer(infix(*itread,t+1,t+1+k),k);
+            minimizer=InitMini(infix(*itread,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
+            minimizer_active_bases=1;
+          }
+        }
+        AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
+      }
+    } //for (itrreads = *(itrreadSetG).begin();
+
+    if (!kmer_list.empty()) {
+      sort(kmer_list.begin(),kmer_list.end());
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count, *itrbc, qualityThreshold, lengthThreshold);
     }
   }
