@@ -12,6 +12,7 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, CharString & id1, Dna5String & read1, uint32_t & skipreads);
+void skipReads2(SeqFileIn & file2, Dna5String & read2, CharString & id2, uint32_t & skipreads2);
 void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1);
 
 std::string results;
@@ -326,15 +327,16 @@ uint32_t skipreads2=0;
     readFromFile1(file1, new_barcode, *itrbc, reads, read1, id1);
 
     omp_set_lock(&file2lock);
+
     // transfer data from filelock1 to filelock2
     skipreads2=skipreads;
     skipreads=0;
+
     omp_unset_lock(&file1lock);
 
-    // skip reads with faulty barcodes
-    for (int i=0;i<skipreads2;i++){
-      readRecord(id2, read2, file2);
-    }
+    // skip reads with faulty barcodes in file2
+    skipReads2(file2, read2, id2, skipreads2);
+
     // read from file 2
     uint32_t readcount=reads.size();
     for (int i=0;i<readcount;i++){
@@ -643,6 +645,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       skipreads++;
     }
     return;
+  }
+
+  void skipReads2(SeqFileIn & file2, Dna5String & read2, CharString & id2, uint32_t & skipreads2){
+    for (int i=0;i<skipreads2;i++){
+      readRecord(id2, read2, file2);
+    }
   }
 
   void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1){
