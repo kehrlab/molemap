@@ -306,7 +306,7 @@ std::vector<std::string>::iterator itrbcG=whitelist.begin();
   for (int i=0; i<whitelist.size(); i++){
     std::vector<std::string>::iterator itrbc=itrbcG+i;
 
-    std::vector<DnaString> reads={};
+    std::vector<Dna5String> reads={};
 
     #pragma omp ordered
     {
@@ -360,7 +360,7 @@ std::vector<std::string>::iterator itrbcG=whitelist.begin();
       if (length(*itread)>mini_window_size){
         for (uint_fast32_t t=0;t<(length(*itread)-1-mini_window_size);t++){
           if (t!=minimizer_position){                 // if old minimizer in current window
-            rollinghashkMer(hash.first,hash.second,(read)[t+mini_window_size],k,maxhash); // inline?!
+            rollinghashkMer(hash.first,hash.second,(*itread)[t+mini_window_size],k,maxhash); // inline?!
             if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
               AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
               minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
