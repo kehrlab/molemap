@@ -298,13 +298,14 @@ readRecord(id2, read2, file2);
 uint32_t skipreads=0;
 uint32_t skipreads2=0;
 
-std::vector<std::string>::iterator itrbcG=whitelist.begin();
+// std::vector<std::string>::iterator itrbcG=whitelist.begin();
 
 #pragma omp parallel
 {
   #pragma omp for ordered schedule(dynamic)
-  for (int i=0; i<whitelist.size(); i++){
-    std::vector<std::string>::iterator itrbc=itrbcG+i;
+  for (std::vector<std::string>::iterator itrbc=whitelist.begin(); itrbc<whitelist.end(); itrbc++){
+  // for (int i=0; i<whitelist.size(); i++){
+    // std::vector<std::string>::iterator itrbc=itrbcG+i;
 
     std::vector<Dna5String> reads={};
 
