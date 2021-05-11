@@ -574,7 +574,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos){
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-
+    uint_fast8_t k_2=k+1;
+    uint_fast32_t bucket_number=length(C);
     for (std::vector<Dna5String>::iterator itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(*itread,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
