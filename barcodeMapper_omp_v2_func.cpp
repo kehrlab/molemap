@@ -345,7 +345,7 @@ uint32_t skipreads2=0;
     omp_unset_lock(&file2lock);
 
     //process reads
-    processReads(reads, barcode, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l){
+    processReads(reads, *itrbc, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l);
 
   } // for (std::string& whitebarcode : whitelist)
 } //#pragma omp parallel
