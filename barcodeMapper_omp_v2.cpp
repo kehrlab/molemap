@@ -148,6 +148,7 @@ String<uint32_t> dir;
 String<uint32_t> pos;
 String<uint_fast8_t> ref;
 String<int32_t> C;
+std::vector<std::string> whitelist;
 //
 std::string IndPos=options.index_name;
 IndPos.append("_pos.txt");
@@ -157,6 +158,7 @@ std::string IndDir=options.index_name;
 IndDir.append("_dir.txt");
 std::string IndC=options.index_name;
 IndC.append("_C.txt");
+
 
 //reading Index files in parallel
 #pragma omp parallel for
@@ -200,7 +202,6 @@ for(int i=0;i<5;i++){
   if (i==4){ // load whitelist
     std::streampos size=whitelistFile.tellg();
     whitelistFile.seekg (0, std::ios::beg);
-    std::vector<std::string> whitelist;
     whitelist.reserve((int)size);
     std::string line;
     while (getline(whitelistFile,line)){
