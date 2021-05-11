@@ -603,7 +603,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
 
     // Output
-    #pragma omp critical{
+    #pragma omp critical
+    {
     std::fstream results;
     results.open(file,std::ios::out | std::ios::app);
 
