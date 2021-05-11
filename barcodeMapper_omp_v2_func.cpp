@@ -314,7 +314,7 @@ uint32_t skipreads2=0;
     omp_set_lock(&file1lock);
     }
     // align whitelisted barcodes and readfile
-    skipReads(file1, new_barcode, white_barcode, id1, read1, skipreads);
+    skipReads(file1, new_barcode, *itrbc, id1, read1, skipreads);
 
     if (*itrbc < new_barcode){ // if whitelisted barcode not in readfile: skip barcode
       omp_unset_lock(&file1lock);
