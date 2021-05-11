@@ -12,6 +12,7 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, CharString & id1, Dna5String & read1, uint32_t & skipreads);
+void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1);
 
 std::string results;
 
@@ -211,7 +212,7 @@ for(int i=0;i<5;i++){
       whitelist.push_back(line);
     }
 
-    std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
+    // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
   }
 } //for omp
 
@@ -322,11 +323,7 @@ uint32_t skipreads2=0;
     }
 
     // read from file 1
-    while(!atEnd(file1) && new_barcode == *itrbc){
-      reads.push_back(read1);
-      readRecord(id1, read1, file1);
-      new_barcode=get10xBarcode(toCString(id1));
-    }
+    readFromFile1(file1, new_barcode, *itrbc, reads, read1, id1);
 
     omp_set_lock(&file2lock);
     // transfer data from filelock1 to filelock2
@@ -645,4 +642,14 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       new_barcode=get10xBarcode(toCString(id1));
       skipreads++;
     }
+    return;
+  }
+
+  void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1){
+    while(!atEnd(file1) && new_barcode == white_barcode){
+      reads.push_back(read1);
+      readRecord(id1, read1, file1);
+      new_barcode=get10xBarcode(toCString(id1));
+    }
+    return;
   }
