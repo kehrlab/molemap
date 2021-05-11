@@ -12,6 +12,8 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 
+std::string results;
+
 struct bcmapOptions{
   std::string readfile1;
   std::string readfile2;
@@ -456,6 +458,14 @@ close(file1);
 close(file2);
 
 std::cerr << ".........done.\n";
+
+std::cerr << "Writing results to file...";
+
+std::fstream resultfile;
+resultfile.open(file,std::ios::out | std::ios::app);
+resultfile << results;
+
+std::cerr << "........done.\n";
 // std::cerr << "Writing BarcodeIndex to file...";
 
 // write Barcode Index to file
@@ -609,10 +619,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
 
     // Output
-    #pragma omp critical
-    {
-    std::fstream results;
-    results.open(file,std::ios::out | std::ios::app);
+    // #pragma omp critical
+    // {
+    // std::fstream results;
+    // results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
@@ -621,10 +631,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       std::string start=std::to_string(std::get<2>(*itrbw));
       std::string end=std::to_string(std::get<3>(*itrbw));
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-      results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
+      #pragma omp atomic
+      results+=ref+"\t"+start+"\t"+end+"\t"+barcode+"\t"+qual+"\t"+len+"\n";
+      // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
-    results.close();
-  } //pragma omp critical
+    // results.close();
+  // } //pragma omp critical
     return;
   } //MapKmerList
