@@ -15,7 +15,7 @@ void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white
 void skipReads2(SeqFileIn & file2, Dna5String & read2, CharString & id2, uint32_t & skipreads2);
 void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1);
 void readFromFile2(SeqFileIn & file2, Dna5String & read2, CharString & id2, std::vector<Dna5String> & reads);
-void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold);
+void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos);
 
 std::string results;
 
@@ -345,7 +345,7 @@ uint32_t skipreads2=0;
     omp_unset_lock(&file2lock);
 
     //process reads
-    processReads(reads, *itrbc, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l);
+    processReads(reads, *itrbc, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l, C, dir, ref, pos);
 
   } // for (std::string& whitebarcode : whitelist)
 } //#pragma omp parallel
@@ -572,7 +572,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
   }
 
-  void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold){
+  void processReads(std::vector<Dna5String> & reads, std::string & barcode, int64_t maxhash, int64_t random_seed, uint_fast32_t max_window_size, uint_fast32_t max_gap_size, uint_fast8_t window_count, uint_fast8_t k, uint_fast8_t mini_window_size, unsigned qualityThreshold, unsigned lengthThreshold, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos){
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
 
     for (std::vector<Dna5String>::iterator itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
@@ -605,6 +605,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count, *itrbc, qualityThreshold, lengthThreshold);
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count, barcode, qualityThreshold, lengthThreshold);
     }
   }
