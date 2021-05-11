@@ -462,7 +462,7 @@ std::cerr << ".........done.\n";
 std::cerr << "Writing results to file...";
 
 std::fstream resultfile;
-resultfile.open(options.resultfile,std::ios::out | std::ios::app);
+resultfile.open(options.output_file,std::ios::out | std::ios::app);
 resultfile << results;
 
 std::cerr << "........done.\n";
@@ -631,8 +631,9 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       std::string start=std::to_string(std::get<2>(*itrbw));
       std::string end=std::to_string(std::get<3>(*itrbw));
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
+      std::string res=ref+"\t"+start+"\t"+end+"\t"+barcode+"\t"+qual+"\t"+len+"\n";
       #pragma omp atomic
-      results+=ref+"\t"+start+"\t"+end+"\t"+barcode+"\t"+qual+"\t"+len+"\n";
+      results+=res;
       // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
