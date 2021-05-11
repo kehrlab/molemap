@@ -640,7 +640,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   } //MapKmerList
 
   void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, CharString & id1, Dna5String & read1, uint32_t & skipreads){
-    while(!atEnd(file1) && new_barcode < *itrbc){
+    while(!atEnd(file1) && new_barcode < white_barcode){
       readRecord(id1, read1, file1);
       new_barcode=get10xBarcode(toCString(id1));
       skipreads++;
