@@ -300,7 +300,8 @@ uint32_t skipreads2=0;
 #pragma omp parallel
 {
   #pragma omp for ordered schedule(dynamic)
-  for (std::string& whitebarcode: whitelist){
+  for (std::vector<std::string>::iterator itrbc=whitelist.begin(); itrbc<whitelist.end(); itrbc++){
+
     std::vector<DnaString> reads={};
 
     #pragma omp ordered
@@ -308,18 +309,18 @@ uint32_t skipreads2=0;
     omp_set_lock(&file1lock);
     }
     // align whitelisted barcodes and readfile
-    while(!atEnd(file1) && new_barcode < whitebarcode){
+    while(!atEnd(file1) && new_barcode < *itrbc){
       readRecord(id1, read1, file1);
       new_barcode=get10xBarcode(toCString(id1));
       skipreads++;
     }
-    if (whitebarcode < barcode){ // if whitelisted barcode not in readfile: skip barcode
+    if (*itrbc < barcode){ // if whitelisted barcode not in readfile: skip barcode
       omp_unset_lock(&file1lock);
       continue;
     }
 
     // read from file 1
-    while(!atEnd(file1) && new_barcode == whitebarcode){
+    while(!atEnd(file1) && new_barcode == *itrbc){
       reads.push_back(read1);
       readRecord(id1, read1, file1);
       new_barcode=get10xBarcode(toCString(id1));
@@ -346,13 +347,13 @@ uint32_t skipreads2=0;
     //process reads
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-    for (DnaString& read: reads){                                            // Iterating over the reads
+    for (std::vector<Dna5String> itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(read,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
-      int64_t minimizer = InitMini(infix(read,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
+      int64_t minimizer = InitMini(infix(*itread,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
       uint_fast8_t minimizer_active_bases=1;
-      if (length(read)>mini_window_size){
-        for (uint_fast32_t t=0;t<(length(read)-1-mini_window_size);t++){
+      if (length(*itread)>mini_window_size){
+        for (uint_fast32_t t=0;t<(length(*itread)-1-mini_window_size);t++){
           if (t!=minimizer_position){                 // if old minimizer in current window
             rollinghashkMer(hash.first,hash.second,(read)[t+mini_window_size],k,maxhash); // inline?!
             if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
@@ -365,8 +366,8 @@ uint32_t skipreads2=0;
           }else{
             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
             minimizer_position=t+1;
-            hash=hashkMer(infix(read,t+1,t+1+k),k);
-            minimizer=InitMini(infix(read,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
+            hash=hashkMer(infix(*itread,t+1,t+1+k),k);
+            minimizer=InitMini(infix(*itread,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
             minimizer_active_bases=1;
           }
         }
@@ -377,7 +378,7 @@ uint32_t skipreads2=0;
 
     if (!kmer_list.empty()) {
       sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file), whitebarcode, options.q, options.l);
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file), *itrbc, options.q, options.l);
     }
 
 
