@@ -619,8 +619,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
 
     // Output
-    // #pragma omp critical
-    // {
     // std::fstream results;
     // results.open(file,std::ios::out | std::ios::app);
 
@@ -632,8 +630,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       std::string end=std::to_string(std::get<3>(*itrbw));
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
       std::string res=ref+"\t"+start+"\t"+end+"\t"+barcode+"\t"+qual+"\t"+len+"\n";
-      #pragma omp atomic
+      // #pragma omp atomic
+
+      #pragma omp critical
+      {
       results=results+res;
+      }
       // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
