@@ -318,7 +318,7 @@ std::vector<std::string>::iterator itrbcG=whitelist.begin();
       new_barcode=get10xBarcode(toCString(id1));
       skipreads++;
     }
-    if (*itrbc < barcode){ // if whitelisted barcode not in readfile: skip barcode
+    if (*itrbc < new_barcode){ // if whitelisted barcode not in readfile: skip barcode
       omp_unset_lock(&file1lock);
       continue;
     }
@@ -351,7 +351,8 @@ std::vector<std::string>::iterator itrbcG=whitelist.begin();
     //process reads
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-    for (std::vector<Dna5String> itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
+
+    for (std::vector<Dna5String>::iterator itread=reads.begin(); itread<reads.end();itread++){                                            // Iterating over the reads
       std::pair <int64_t, int64_t> hash = hashkMer(infix(read,0,k),k);                                // calculation of the hash value for the first k-mer
       int64_t minimizer_position=0;
       int64_t minimizer = InitMini(infix(*itread,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
