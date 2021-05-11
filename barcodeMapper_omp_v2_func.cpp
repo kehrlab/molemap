@@ -14,6 +14,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 void skipReads(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, CharString & id1, Dna5String & read1, uint32_t & skipreads);
 void skipReads2(SeqFileIn & file2, Dna5String & read2, CharString & id2, uint32_t & skipreads2);
 void readFromFile1(SeqFileIn & file1, std::string & new_barcode, std::string & white_barcode, std::vector<Dna5String> & reads, Dna5String & read1, CharString & id1);
+void readFromFile2(SeqFileIn & file2, Dna5String & read2, CharString & id2, std::vector<Dna5String> & reads);
 
 std::string results;
 
@@ -338,11 +339,8 @@ uint32_t skipreads2=0;
     skipReads2(file2, read2, id2, skipreads2);
 
     // read from file 2
-    uint32_t readcount=reads.size();
-    for (int i=0;i<readcount;i++){
-      reads.push_back(read2);
-      readRecord(id2, read2, file2);
-    }
+    readFromFile2(file2, read2, id2, reads);
+
     omp_unset_lock(&file2lock);
 
     //process reads
@@ -387,71 +385,10 @@ uint32_t skipreads2=0;
   } // for (std::string& whitebarcode : whitelist)
 } //#pragma omp parallel
 
-
-
-
-
-//
-// while (atEnd(file1)!=1) { // proceeding through files
-//   BCI_pos1=file1.stream.file.tellg();
-//   readRecord(id1, read1, file1);
-//   assignValue(reads,0,read1);
-//   meta=toCString(id1);
-//   new_barcode=meta.substr(meta.find("RX:Z:")+5,16);
-//   if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
-//     //append Barcode Index
-//     BCI_pos2=file2.stream.file.tellg();
-//     BCI_barcodes.push_back(new_barcode);
-//     BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
-//     // map barcode and clear k_mer list
-//     if (!kmer_list.empty()) {
-//       sort(kmer_list.begin(),kmer_list.end());
-//       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-//       kmer_list.clear();
-//     }
-//   }
-//
-//   readRecord(id2, read2, file2);
-//   assignValue(reads,1,read2);
-//   barcode=new_barcode;
-//
-//   for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
-//     std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
-//     int64_t minimizer_position=0;
-//     int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-//     uint_fast8_t minimizer_active_bases=1;
-//     if (length(*it)>mini_window_size){
-//       for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){
-//         if (t!=minimizer_position){                 // if old minimizer in current window
-//           rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-//           if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
-//             AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
-//             minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-//             minimizer_position=t+1+mini_window_size-k;
-//             minimizer_active_bases=0;
-//           }
-//           minimizer_active_bases++;
-//         }else{
-//           AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-//           minimizer_position=t+1;
-//           hash=hashkMer(infix(*it,t+1,t+1+k),k);
-//           minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-//           minimizer_active_bases=1;
-//         }
-//       }
-//       AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
-//     }
-//   }
-// }
-// if (!kmer_list.empty()) {
-//   sort(kmer_list.begin(),kmer_list.end());
-//   MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
-// }
-
 close(file1);
 close(file2);
 
-std::cerr << ".........done.\n";
+std::cerr << "..........done.\n";
 
 std::cerr << "Writing results to file...";
 
@@ -459,7 +396,7 @@ std::fstream resultfile;
 resultfile.open(options.output_file,std::ios::out | std::ios::app);
 resultfile << results;
 
-std::cerr << "........done.\n";
+std::cerr << ".......done.\n";
 // std::cerr << "Writing BarcodeIndex to file...";
 
 // write Barcode Index to file
@@ -660,4 +597,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       new_barcode=get10xBarcode(toCString(id1));
     }
     return;
+  }
+
+  void readFromFile2(SeqFileIn & file2, Dna5String & read2, CharString & id2, std::vector<Dna5String> & reads){
+    uint32_t readcount=reads.size();
+    for (int i=0;i<readcount;i++){
+      reads.push_back(read2);
+      readRecord(id2, read2, file2);
+    }
   }
