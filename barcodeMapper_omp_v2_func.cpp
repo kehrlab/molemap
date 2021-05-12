@@ -311,12 +311,12 @@ uint32_t skipreads2=0;
 {
   #pragma omp for ordered schedule(dynamic)
   for (std::vector<std::string>::iterator itrbc=whitelist.begin(); itrbc<whitelist.end(); itrbc++){
-    auto tbegin = std::chrono::high_resolution_clock::now();
     std::vector<Dna5String> reads={};
     #pragma omp ordered
     {
     omp_set_lock(&file1lock);
     }
+    auto tbegin = std::chrono::high_resolution_clock::now();
     // align whitelisted barcodes and readfile
     skipReads(file1, new_barcode, *itrbc, id1, read1, skipreads);
 
