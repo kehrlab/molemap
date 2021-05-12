@@ -284,11 +284,6 @@ std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
 std::streampos BCI_pos1;
 std::streampos BCI_pos2;
 
-//preparing locks
-omp_lock_t file1lock;
-omp_lock_t file2lock;
-omp_init_lock(&file1lock);
-omp_init_lock(&file2lock);
 
 //communication between threads
 Dna5String read1;
@@ -315,7 +310,6 @@ uint32_t skipreads2=0;
     skipReads(file1, new_barcode, *itrbc, id1, read1, skipreads);
 
     if (*itrbc < new_barcode){ // if whitelisted barcode not in readfile: skip barcode
-      omp_unset_lock(&file1lock);
       continue;
     }
 
@@ -516,10 +510,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       std::string res=ref+"\t"+start+"\t"+end+"\t"+barcode+"\t"+qual+"\t"+len+"\n";
       // #pragma omp atomic
 
-      #pragma omp critical
-      {
+      // #pragma omp critical
+      // {
       results=results+res;
-      }
+      // }
       // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
