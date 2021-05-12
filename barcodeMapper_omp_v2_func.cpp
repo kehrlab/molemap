@@ -311,8 +311,8 @@ uint32_t skipreads2=0;
 {
   #pragma omp for ordered schedule(dynamic)
   for (std::vector<std::string>::iterator itrbc=whitelist.begin(); itrbc<whitelist.end(); itrbc++){
+    auto tbegin = std::chrono::high_resolution_clock::now();
     std::vector<Dna5String> reads={};
-
     #pragma omp ordered
     {
     omp_set_lock(&file1lock);
@@ -334,6 +334,9 @@ uint32_t skipreads2=0;
     skipreads2=skipreads;
     skipreads=0;
 
+    std::cerr << " Readfile 1 read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+    tbegin = std::chrono::high_resolution_clock::now();
+
     omp_unset_lock(&file1lock);
 
     // skip reads with faulty barcodes in file2
@@ -344,8 +347,13 @@ uint32_t skipreads2=0;
 
     omp_unset_lock(&file2lock);
 
+    std::cerr << " Readfile 2 read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
+    tbegin = std::chrono::high_resolution_clock::now();
+
     //process reads
     processReads(reads, *itrbc, maxhash, random_seed, max_window_size, max_gap_size, window_count, k, mini_window_size, options.q , options.l, C, dir, ref, pos);
+
+    std::cerr << " Reads processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
   } // for (std::string& whitebarcode : whitelist)
 } //#pragma omp parallel
