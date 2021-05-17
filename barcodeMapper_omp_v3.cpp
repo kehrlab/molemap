@@ -539,7 +539,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     while(barcode==new_barcode){
       pos=file.stream.file.tellg();
       readRecord(id,read,file);
-      new_barcode=get10xBarcode(id);
+      new_barcode=get10xBarcode(toCString(id));
     }
     file.stream.file.seekg(pos);
     return new_barcode;
