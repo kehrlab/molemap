@@ -563,6 +563,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     return new_barcode;
   }
 
+
+  while (getline(input_stringstream,value,':'))
+  {
+
+  }
+
   // binary searches for barcode in readfile and returns readfile at start of barcode
   void binSearchBarcode(SeqFileIn & file, CharString id, std::streampos filesize){
     CharString new_id;
@@ -570,23 +576,33 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::streampos pos1=file.stream.file.tellg();
     std::streampos pos2=filesize;
     std::streampos pos=(pos1+pos2)/2;
+    std::string value;
+    std::string new_value;
+    std::stringstream stringstream_id(id);
     // locate barcode using binary search
     std::cerr << __LINE__ << "\n";
     while(id!=new_id){
       file.stream.file.seekg(pos);
       readRecord(new_id,read,file);
-      if (new_id<id){
-        std::cerr << __LINE__ << "\t" << new_id << "\n";
-        pos1=pos;
-        pos=(pos1+pos2)/2;
-      } else if(new_id>id){
-        std::cerr << __LINE__ << "\t" << new_id << "\n";
-        pos2=pos;
-        pos=(pos1+pos2)/2;
-      } else {
-        std::cerr << __LINE__ << "\t" << new_id << "\n";
-        file.stream.file.seekg(pos);
-        break;
+      std::stringstream stringstream_new_id(new_id);
+      while (getline(stringstream_id,value,':')) {
+        getline(stringstream_new_id, new_value,':');
+        if (stoi(new_value)<stoi(value)){
+          std::cerr << __LINE__ << "\t" << new_id << "\n";
+          pos1=pos;
+          pos=(pos1+pos2)/2;
+          break;
+        } else if(stoi(new_id)>stoi(id)){
+          std::cerr << __LINE__ << "\t" << new_id << "\n";
+          pos2=pos;
+          pos=(pos1+pos2)/2;
+          break;
+        } 
+        // else {
+        //   std::cerr << __LINE__ << "\t" << new_id << "\n";
+        //   file.stream.file.seekg(pos);
+        //   break;
+        // }
       }
     }
     return;
