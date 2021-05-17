@@ -263,6 +263,13 @@ file2.stream.file.seekg(0, std::ios::end);
 uint64_t readfile1_size=file1.stream.file.tellg();
 uint64_t readfile2_size=file2.stream.file.tellg();
 std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << readfile2_size << "\n";
+
+file1.stream.file.seekg((int)(readfile1_size/threads), std::ios::beg);
+readRecord(id1,read1,file1);
+std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
+
+
+
 file1.stream.file.seekg(0, std::ios::beg);
 file2.stream.file.seekg(0, std::ios::beg);
 // #pragma omp parallel for
