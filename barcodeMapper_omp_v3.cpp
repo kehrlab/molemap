@@ -569,10 +569,11 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     Dna5String read;
     std::streampos pos;
     file.stream.file.seekg(startpos);
+    std::cerr << "startpos: " << startpos << " endpos: " << endpos << "\n";
     while(new_id!=id){
       pos=file.stream.file.tellg();
       if (pos>endpos){
-        std::cerr << "ERROR!!! ID NOT FOUND!!\n";
+        // std::cerr << "ERROR!!! ID NOT FOUND!!\n";
       }
       readRecord(new_id,read,file);
     }
