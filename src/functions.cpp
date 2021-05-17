@@ -12,6 +12,9 @@ std::string get10xBarcode(std::string id1){
   return new_barcode;
 }
 
+CharString get10xID(std::string id){
+  return id.substr(0, id.find(" BX:Z:"));
+}
 // Loads BarcodeIndex from file into string
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
   //construct file names
