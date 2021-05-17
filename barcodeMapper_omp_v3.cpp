@@ -271,6 +271,7 @@ std::streampos readfile2_size=file2.stream.file.tellg();
 std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << readfile2_size << "\n";
 
 file1.stream.file.seekg((int)((int)readfile1_size/options.threads), std::ios::beg);
+file2.stream.file.seekg(0, std::ios::beg);
 
 barcode=skipToNextBarcode(file1);
 std::cerr << "next BC: " << barcode << "\n";
@@ -285,6 +286,7 @@ std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
 
 file1.stream.file.seekg(0, std::ios::beg);
 file2.stream.file.seekg(0, std::ios::beg);
+
 #pragma omp parallel for
 for (int t=0; t<options.threads; t++){
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
