@@ -296,7 +296,7 @@ for (int t=0; t<options.threads; t++){
   }
   //move file 2 to start position
   if(t!=0){
-    startpos=startpos-(readfile1_size/options.threads*3/4);
+    startpos=startpos-(readfile1_size/options.threads/2);
   }
 
   SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
