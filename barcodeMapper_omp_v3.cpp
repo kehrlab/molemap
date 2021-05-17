@@ -224,12 +224,6 @@ loading in the reads
 try {         // opening read-files
   SeqFileIn file1(toCString(options.readfile1));
   SeqFileIn file2(toCString(options.readfile2));
-  file1.stream.file.seekg(0, std::ios::end);
-  file2.stream.file.seekg(0, std::ios::end);
-  std::streampos readfile1_size=file1.stream.file.tellg();
-  std::streampos readfile2_size=file2.stream.file.tellg();
-  close(file1);
-  close(file2);
 }
 catch (ParseError const & e){
   std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
@@ -237,6 +231,12 @@ catch (ParseError const & e){
 catch (IOError const & e){
   std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
 }
+file1.stream.file.seekg(0, std::ios::end);
+file2.stream.file.seekg(0, std::ios::end);
+std::streampos readfile1_size=file1.stream.file.tellg();
+std::streampos readfile2_size=file2.stream.file.tellg();
+close(file1);
+close(file2);
 
 /*
 Searching for all kmers of reads with the same Barcode
