@@ -296,7 +296,7 @@ for (int t=0; t<options.threads; t++){
   }
   //move file 2 to start position
   if(t!=0){
-    startpos=startpos-(readfile1_size/options.threads/2);
+    startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
   }
 
   SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
@@ -559,20 +559,20 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   // searches for id in readfile and returns read and sets fileposition accordingly
   void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
-    std::cerr << "id: " << id << "\n";
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << "id: " << id << "\n";
+    // std::cerr << __LINE__ << "\n";
     CharString new_id;
     Dna5String read;
     std::streampos pos;
     file.stream.file.seekg(startpos);
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     while(new_id!=id){
-      std::cerr << __LINE__ << "\n";
-      std::cerr << "new_id: " << new_id << "\n";
+      // std::cerr << __LINE__ << "\n";
+      // std::cerr << "new_id: " << new_id << "\n";
       pos=file.stream.file.tellg();
       readRecord(new_id,read,file);
     }
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     file.stream.file.seekg(pos);
     return;
   }
