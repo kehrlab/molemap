@@ -265,8 +265,8 @@ uint64_t readfile2_size=file2.stream.file.tellg();
 std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << readfile2_size << "\n";
 close(file1);
 close(file2);
-SeqFileIn file1(toCString(options.readfile1));
-SeqFileIn file2(toCString(options.readfile2));
+file1(toCString(options.readfile1));
+file2(toCString(options.readfile2));
 
 #pragma omp parallel for
 
