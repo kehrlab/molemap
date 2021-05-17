@@ -570,40 +570,25 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::streampos pos1=file.stream.file.tellg();
     std::streampos pos2=filesize;
     std::streampos pos=(pos1+pos2)/2;
-    std::string value;
-    std::string new_value;
     // locate barcode using binary search
-    // std::cerr << __LINE__ << "\n";
     while(id!=new_id){
       file.stream.file.seekg(pos);
       readRecord(new_id,read,file);
-      std::stringstream stringstream_id(toCString(id));
-      std::stringstream stringstream_new_id(toCString(new_id));
-      std::cerr << "id:     " << id<<"\n";
-      // std::cerr << "new_id: " << new_id << "\n";
-      while (getline(stringstream_id,value,':')) {
-        getline(stringstream_new_id, new_value,':');
-        // std::cerr << __LINE__ << "\n";
-        // std::cerr << "value: " << value << " new_value: " << new_value << "\n";
-        if(value!=new_value){
-          if (std::stoi(new_value)<std::stoi(value)){
-            std::cerr << __LINE__ << "\t" << new_id << "\n";
-            std::cerr << "pos: " << pos << " pos1: " << pos1 << " pos2: " << pos2 << "\n";
-            pos1=pos;
-            pos=(pos1+pos2)/2;
-            break;
-          } else if(std::stoi(new_value)>std::stoi(value)){
-            std::cerr << __LINE__ << "\t" << new_id << "\n";
-            pos2=pos;
-            pos=(pos1+pos2)/2;
-            break;
-          }
-        }
-        // else {
-        //   std::cerr << __LINE__ << "\t" << new_id << "\n";
-        //   file.stream.file.seekg(pos);
-        //   break;
-        // }
+      if (new_id<id){
+        std::cerr << __LINE__ << "\tnew_id: " << new_id << "\n";
+        std::cerr << __LINE__ << "\tid:     " << id << "\n";
+
+        pos1=pos;
+        pos=(pos1+pos2)/2;
+      } else if(new_id>id){
+        std::cerr << __LINE__ << "\tnew_id: " << new_id << "\n";
+        std::cerr << __LINE__ << "\tid:     " << id << "\n";
+        pos2=pos;
+        pos=(pos1+pos2)/2;
+      } else {
+        std::cerr << __LINE__ << "\n";
+        file.stream.file.seekg(pos);
+        break;
       }
     }
     return;
