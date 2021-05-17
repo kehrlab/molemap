@@ -559,6 +559,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   // searches for id in readfile and returns read and sets fileposition accordingly
   void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
+    std::cerr << "id: " << id << "\n";
     std::cerr << __LINE__ << "\n";
     CharString new_id;
     Dna5String read;
