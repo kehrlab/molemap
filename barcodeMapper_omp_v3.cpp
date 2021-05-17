@@ -11,7 +11,7 @@ using namespace seqan;
 g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
-std::string skipToNextBarcode(SeqFileIn & file, CharString id1);
+std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
 
