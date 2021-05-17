@@ -277,8 +277,9 @@ barcode=skipToNextBarcode(file1);
 std::cerr << "next BC: " << barcode << "\n";
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
-std::cerr << "id: " << get10xID(toCString(id1)) << "\n";
-binSearchBarcode(file2, get10xID(toCString(id1)), readfile2_size);
+CharString id=get10xID(toCString(id1));
+std::cerr << "id: " << id << "\n";
+binSearchBarcode(file2, id, readfile2_size);
 readRecord(id2,read2,file2);
 std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
 
