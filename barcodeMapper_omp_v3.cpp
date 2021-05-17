@@ -300,7 +300,7 @@ for (int t=0; t<options.threads; t++){
   }
 
   SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
-
+  std::cerr << __LINE__ << "\n";
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
     // BCI_pos1=file1.stream.file.tellg();
