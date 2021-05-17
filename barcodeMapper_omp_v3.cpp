@@ -581,6 +581,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       readRecord(id,read,file);
       new_barcode=get10xBarcode(toCString(id));
       std::cerr << __LINE__ << "\n";
+      std::cerr << "barcode: " << barcode << " new_barcode: "<< new_barcode<< "\n";
       if (new_barcode<barcode){
         pos1=pos;
         pos=(pos1+pos2)/2;
