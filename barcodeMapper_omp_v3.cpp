@@ -540,7 +540,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
 
   //skips file to start of next barcode and returns the barcode
-  std::string skipToNextBarcode(SeqFileIn & file, CharString id1){
+  std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
     CharString id;
     Dna5String read;
     readRecord(id,read,file);
