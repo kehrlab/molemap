@@ -583,16 +583,18 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         getline(stringstream_new_id, new_value,':');
         std::cerr << __LINE__ << "\n";
         std::cerr << "value: " << value << " new_value: " << new_value << "\n";
-        if (std::stoi(new_value)<std::stoi(value)){
-          // std::cerr << __LINE__ << "\t" << new_id << "\n";
-          pos1=pos;
-          pos=(pos1+pos2)/2;
-          break;
-        } else if(std::stoi(new_value)>std::stoi(value)){
-          // std::cerr << __LINE__ << "\t" << new_id << "\n";
-          pos2=pos;
-          pos=(pos1+pos2)/2;
-          break;
+        if(value!=new_value){
+          if (std::stoi(new_value)<std::stoi(value)){
+            // std::cerr << __LINE__ << "\t" << new_id << "\n";
+            pos1=pos;
+            pos=(pos1+pos2)/2;
+            break;
+          } else if(std::stoi(new_value)>std::stoi(value)){
+            // std::cerr << __LINE__ << "\t" << new_id << "\n";
+            pos2=pos;
+            pos=(pos1+pos2)/2;
+            break;
+          }
         }
         // else {
         //   std::cerr << __LINE__ << "\t" << new_id << "\n";
