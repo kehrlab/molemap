@@ -298,8 +298,8 @@ for (int t=0; t<options.threads; t++){
   if(t!=0){
     startpos=startpos-(readfile1_size/options.threads*3/4);
   }
-
-  SearchID(file2, toCString(get10xID(id1)), startpos, readfile2_size);
+  std::string identifier=get10xID(id1);
+  SearchID(file2, toCString(identifier), startpos, readfile2_size);
 
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
