@@ -299,7 +299,7 @@ for (int t=0; t<options.threads; t++){
     startpos=startpos-(readfile1_size/options.threads*3/4);
   }
 
-  SearchID(file2, get10xID(toCString(id)), startpos, readfile2_size);
+  SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
