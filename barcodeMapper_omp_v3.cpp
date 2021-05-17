@@ -580,24 +580,24 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::string new_value;
     std::stringstream stringstream_id(id);
     // locate barcode using binary search
-    std::cerr << __LINE__ << "\n";
+    // std::cerr << __LINE__ << "\n";
     while(id!=new_id){
       file.stream.file.seekg(pos);
       readRecord(new_id,read,file);
       std::stringstream stringstream_new_id(new_id);
       while (getline(stringstream_id,value,':')) {
         getline(stringstream_new_id, new_value,':');
-        if (stoi(new_value)<stoi(value)){
-          std::cerr << __LINE__ << "\t" << new_id << "\n";
+        if (std::stoi(new_value)<std::stoi(value)){
+          // std::cerr << __LINE__ << "\t" << new_id << "\n";
           pos1=pos;
           pos=(pos1+pos2)/2;
           break;
-        } else if(stoi(new_id)>stoi(id)){
-          std::cerr << __LINE__ << "\t" << new_id << "\n";
+        } else if(std::stoi(new_id)>std::stoi(id)){
+          // std::cerr << __LINE__ << "\t" << new_id << "\n";
           pos2=pos;
           pos=(pos1+pos2)/2;
           break;
-        } 
+        }
         // else {
         //   std::cerr << __LINE__ << "\t" << new_id << "\n";
         //   file.stream.file.seekg(pos);
