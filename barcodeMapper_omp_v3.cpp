@@ -567,6 +567,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     file.stream.file.seekg(startpos);
     std::cerr << __LINE__ << "\n";
     while(new_id!=id){
+      std::cerr << __LINE__ << "\n";
+      std::cerr << "new_id: " << new_id << "\n";
       pos=file.stream.file.tellg();
       readRecord(new_id,read,file);
     }
