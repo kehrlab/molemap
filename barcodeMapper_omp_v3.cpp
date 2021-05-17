@@ -277,9 +277,8 @@ barcode=skipToNextBarcode(file1);
 std::cerr << "next BC: " << barcode << "\n";
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
-
-binSearchBarcode(file2, barcode, readfile2_size);
-std::cerr << __LINE__ << "\n";
+std::cerr << "id: " << get10xID(toCString(id1)) << "\n";
+binSearchBarcode(file2, get10xID(toCString(id1)), readfile2_size);
 readRecord(id2,read2,file2);
 std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
 
@@ -564,48 +563,27 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   }
 
   // binary searches for barcode in readfile and returns readfile at start of barcode
-  void binSearchBarcode(SeqFileIn & file, std::string barcode, std::streampos filesize){
-    std::string new_barcode;
-    CharString id;
+  void binSearchBarcode(SeqFileIn & file, CharString id, std::streampos filesize){
+    CharString new_id;
     Dna5String read;
     std::streampos pos1=file.stream.file.tellg();
     std::streampos pos2=filesize;
     std::streampos pos=(pos1+pos2)/2;
     // locate barcode using binary search
-    std::cerr << __LINE__ << "\n";
 
-    while(barcode!=new_barcode){
-      std::cerr << __LINE__ << "\n";
+    while(id!=new_id){
       file.stream.file.seekg(pos);
-      std::cerr << __LINE__ << "\n";
-      readRecord(id,read,file);
-      new_barcode=get10xBarcode(toCString(id));
-      std::cerr << __LINE__ << "\n";
-      std::cerr << "barcode: " << barcode << " new_barcode: "<< new_barcode<< "\n";
-      if (new_barcode<barcode){
+      readRecord(new_id,read,file);
+      if (new_id<id){
         pos1=pos;
         pos=(pos1+pos2)/2;
-      } else if(new_barcode>barcode){
+      } else if(new_id>id){
         pos2=pos;
         pos=(pos1+pos2)/2;
       } else {
+        file.stream.file.seekg(pos);
         break;
       }
-      std::cerr << __LINE__ << "\n";
     }
-    // jump back before start of barcode
-    std::cerr << __LINE__ << "\n";
-    while (barcode==new_barcode) {
-      pos-=10000;
-      file.stream.file.seekg(pos);
-      readRecord(id,read,file);
-      new_barcode=get10xBarcode(toCString(id));
-    }
-    // skip till begining of barcode
-    std::cerr << __LINE__ << "\n";
-    while (barcode!=new_barcode){
-      new_barcode=skipToNextBarcode(file);
-    }
-    std::cerr << __LINE__ << "\n";
     return;
   }
