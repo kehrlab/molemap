@@ -25,7 +25,7 @@ struct bcmapOptions{
   std::string output_file;
   unsigned q;
   unsigned l;
-  unsigned threads
+  unsigned threads;
   bcmapOptions() :
   k(31), mini_window_size(35), output_file("barcode_windows.bed"),l(1000) , q(20000), threads(16)
   {}
@@ -375,27 +375,27 @@ for (int t=0; t<options.threads; t++){
 std::cerr << ".........done.\n";
 std::cerr << "Writing BarcodeIndex to file...";
 
-// write Barcode Index to file
-std::string IndBC=options.bci_name;
-IndBC.append("_bc.txt");
-IndPos=options.bci_name;
-IndPos.append("_pos.txt");
-
-std::ofstream file_bc;
-file_bc.open(IndBC, std::ios::binary);
-for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
-  file_bc << *it << "\n";
-}
-file_bc.close();
-
-std::ofstream file_pos;
-file_pos.open(IndPos, std::ios::binary);
-for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BCI_positions.begin(); it!=BCI_positions.end(); it++){
-  file_bc << std::get<0>(*it) << "\n" << std::get<1>(*it) << "\n";
-}
-file_pos.close();
-
-std::cerr << ".done.\n";
+// // write Barcode Index to file
+// std::string IndBC=options.bci_name;
+// IndBC.append("_bc.txt");
+// IndPos=options.bci_name;
+// IndPos.append("_pos.txt");
+//
+// std::ofstream file_bc;
+// file_bc.open(IndBC, std::ios::binary);
+// for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
+//   file_bc << *it << "\n";
+// }
+// file_bc.close();
+//
+// std::ofstream file_pos;
+// file_pos.open(IndPos, std::ios::binary);
+// for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BCI_positions.begin(); it!=BCI_positions.end(); it++){
+//   file_bc << std::get<0>(*it) << "\n" << std::get<1>(*it) << "\n";
+// }
+// file_pos.close();
+//
+// std::cerr << ".done.\n";
 std::cerr << "Barcodes mapped sucessfully!\n";
 
 // Kontrollausgabe
