@@ -267,7 +267,8 @@ std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << r
 file1.stream.file.seekg((int)(readfile1_size/threads), std::ios::beg);
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
-
+readRecord(id1,read1,file1);
+std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
 
 
 file1.stream.file.seekg(0, std::ios::beg);
