@@ -12,7 +12,7 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 std::string skipToNextBarcode(SeqFileIn & file);
-void binSearchBarcode(SeqFileIn & file, std::string barcode, std::streampos filesize);
+void binSearchBarcode(SeqFileIn & file, CharString barcode, std::streampos filesize);
 
 
 struct bcmapOptions{
