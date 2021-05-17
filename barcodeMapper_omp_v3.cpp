@@ -12,7 +12,7 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 std::string skipToNextBarcode(SeqFileIn & file);
-SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
+void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
 
 struct bcmapOptions{
@@ -279,7 +279,7 @@ readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
 CharString id=get10xID(toCString(id1));
 std::cerr << "id: " << id << "\n";
-SearchID(file2, id, readfile2_size/options.threads*0.75, readfile2_size/options.threads*1.25);
+SearchID(file2, id, readfile2_size*3/(options.threads*4), readfile2_size*5/(options.threads*4));
 readRecord(id2,read2,file2);
 std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
 
@@ -306,7 +306,7 @@ for (int t=0; t<options.threads; t++){
   file1.stream.file.seekg(startpos);
   std::string barcode=skipToNextBarcode(file1);
   //move file 2 to start position
-  SearchID(file2, barcode, startpos-readfile1_size/options.threads*0.25 ,readfile2_size);
+  SearchID(file2, barcode, startpos-(readfile1_size/options.threads)/4 ,readfile2_size);
 
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
@@ -564,7 +564,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   }
 
   // searches for id in readfile and returns read and sets fileposition accordingly
-  SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
+  void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
     CharString new_id;
     Dna5String read;
     std::streampos pos;
@@ -572,10 +572,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     while(new_id!=id){
       pos=file.stream.file.tellg();
       if (pos>endpos){
-        std::cerr << "ERROR!!! ID NOT FOUND!!"
+        std::cerr << "ERROR!!! ID NOT FOUND!!\n";
       }
       readRecord(new_id,read,file);
     }
-    file.stream.file.seekg(pos)
+    file.stream.file.seekg(pos);
     return;
   }
