@@ -533,14 +533,14 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     CharString id;
     Dna5String read;
     readRecord(id,read,file);
-    std::string barcode=get10xBarcode(id);
+    std::string barcode=get10xBarcode(toCString(id));
     std::string new_barcode=barcode;
     std::streampos pos;
     while(barcode==new_barcode){
-      pos=file1.stream.file.tellg();
+      pos=file.stream.file.tellg();
       readRecord(id,read,file);
       new_barcode=get10xBarcode(id);
     }
-    file1.stream.file.seekg(pos);
+    file.stream.file.seekg(pos);
     return new_barcode;
   }
