@@ -11,7 +11,7 @@ using namespace seqan;
 g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
-std::string skipToNextBarcode(SeqFileIn & file);
+std::string skipToNextBarcode(SeqFileIn & file, CharString id1);
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
 
@@ -224,6 +224,10 @@ loading in the reads
 try {         // opening read-files
   SeqFileIn file1(toCString(options.readfile1));
   SeqFileIn file2(toCString(options.readfile2));
+  file1.stream.file.seekg(0, std::ios::end);
+  file2.stream.file.seekg(0, std::ios::end);
+  std::streampos readfile1_size=file1.stream.file.tellg();
+  std::streampos readfile2_size=file2.stream.file.tellg();
   close(file1);
   close(file2);
 }
@@ -261,31 +265,6 @@ CharString id2;
 
 std::cerr << "Processing read file...";
 
-// opening read files
-SeqFileIn file1(toCString(options.readfile1));
-SeqFileIn file2(toCString(options.readfile2));
-file1.stream.file.seekg(0, std::ios::end);
-file2.stream.file.seekg(0, std::ios::end);
-std::streampos readfile1_size=file1.stream.file.tellg();
-std::streampos readfile2_size=file2.stream.file.tellg();
-std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << readfile2_size << "\n";
-
-file1.stream.file.seekg((int)((int)readfile1_size/options.threads), std::ios::beg);
-file2.stream.file.seekg(0, std::ios::beg);
-
-barcode=skipToNextBarcode(file1);
-std::cerr << "next BC: " << barcode << "\n";
-readRecord(id1,read1,file1);
-std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
-CharString id=get10xID(toCString(id1));
-std::cerr << "id: " << id << "\n";
-SearchID(file2, id, readfile2_size*3/(options.threads*4), readfile2_size*5/(options.threads*4));
-readRecord(id2,read2,file2);
-std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
-
-
-file1.stream.file.seekg(0, std::ios::beg);
-file2.stream.file.seekg(0, std::ios::beg);
 
 #pragma omp parallel for
 for (int t=0; t<options.threads; t++){
@@ -303,10 +282,20 @@ for (int t=0; t<options.threads; t++){
   std::streampos startpos=readfile1_size/options.threads*t;
   std::streampos endpos=readfile1_size/options.threads*(t+1);
   //move file 1 to start position
-  file1.stream.file.seekg(startpos);
-  std::string barcode=skipToNextBarcode(file1);
+  if (t!=0){
+    file1.stream.file.seekg(startpos);
+    std::string barcode=skipToNextBarcode(file1, id1);
+  } else {
+    readRecord(id1, read1, file1);
+    std::string barcode=get10xBarcode(toCString(id1));
+    file1.stream.file.seekg(0);
+  }
   //move file 2 to start position
-  SearchID(file2, barcode, startpos-(readfile1_size/options.threads)/4 ,readfile2_size);
+  if(t!=0){
+    startpos=startpos-(readfile1_size/options.threads*3/4);
+  }
+
+  SearchID(file2, id1, startpos, readfile2_size);
 
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
@@ -547,7 +536,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
 
   //skips file to start of next barcode and returns the barcode
-  std::string skipToNextBarcode(SeqFileIn & file){
+  std::string skipToNextBarcode(SeqFileIn & file, CharString id1){
     CharString id;
     Dna5String read;
     readRecord(id,read,file);
@@ -560,6 +549,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       new_barcode=get10xBarcode(toCString(id));
     }
     file.stream.file.seekg(pos);
+    id1=id;
     return new_barcode;
   }
 
@@ -572,9 +562,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::cerr << "startpos: " << startpos << " endpos: " << endpos << "\n";
     while(new_id!=id){
       pos=file.stream.file.tellg();
-      if (pos>endpos){
-        // std::cerr << "ERROR!!! ID NOT FOUND!!\n";
-      }
       readRecord(new_id,read,file);
     }
     file.stream.file.seekg(pos);
