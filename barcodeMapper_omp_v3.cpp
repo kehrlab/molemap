@@ -299,7 +299,7 @@ for (int t=0; t<options.threads; t++){
     startpos=startpos-(readfile1_size/options.threads*3/4);
   }
 
-  SearchID(file2, id1, startpos, readfile2_size);
+  SearchID(file2, toCString(get10xID(id1)), startpos, readfile2_size);
 
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
@@ -563,7 +563,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     Dna5String read;
     std::streampos pos;
     file.stream.file.seekg(startpos);
-    std::cerr << "startpos: " << startpos << " endpos: " << endpos << "\n";
     while(new_id!=id){
       pos=file.stream.file.tellg();
       readRecord(new_id,read,file);
