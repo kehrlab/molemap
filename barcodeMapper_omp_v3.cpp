@@ -11,6 +11,7 @@ using namespace seqan;
 g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
+std::string skipToNextBarcode(SeqFileIn & file);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -267,9 +268,10 @@ std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << r
 file1.stream.file.seekg((int)(readfile1_size/threads), std::ios::beg);
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
+
+std::cerr << "next BC: " << skipToNextBarcode(file1) << "\n";
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
-
 
 file1.stream.file.seekg(0, std::ios::beg);
 file2.stream.file.seekg(0, std::ios::beg);
@@ -524,3 +526,21 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     results.close();
     return;
   } //MapKmerList
+
+
+  //skips file to start of next barcode and returns the barcode
+  std::string skipToNextBarcode(SeqFileIn & file){
+    CharString id;
+    Dna5String read;
+    readRecord(id,read,file);
+    std::string barcode=get10xBarcode(id);
+    std::string new_barcode=barcode;
+    std::streampos pos;
+    while(barcode==new_barcode){
+      pos=file1.stream.file.tellg();
+      readRecord(id,read,file);
+      new_barcode=get10xBarcode(id);
+    }
+    file1.stream.file.seekg(pos);
+    return new_barcode;
+  }
