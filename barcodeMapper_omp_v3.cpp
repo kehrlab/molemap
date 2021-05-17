@@ -244,10 +244,9 @@ std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator
 
 std::string barcode;
 std::string new_barcode;
-std::string meta;
-StringSet<Dna5String> reads;
+// StringSet<Dna5String> reads;
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-resize(reads, 2, Exact());
+// resize(reads, 2, Exact());
 Dna5String read1;
 Dna5String read2;
 CharString id1;
@@ -277,7 +276,9 @@ barcode=skipToNextBarcode(file1);
 std::cerr << "next BC: " << barcode << "\n";
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
+
 binSearchBarcode(file2, barcode, readfile2_size);
+std::cerr << __LINE__ << "\n";
 readRecord(id2,read2,file2);
 std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
 
@@ -288,7 +289,6 @@ file2.stream.file.seekg(0, std::ios::beg);
 for (int t=0; t<options.threads; t++){
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
   StringSet<Dna5String> reads;
-  typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   resize(reads, 2, Exact());
   Dna5String read1;
   Dna5String read2;
@@ -570,6 +570,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::streampos pos2=filesize;
     std::streampos pos=(pos1+pos2)/2;
     // locate barcode using binary search
+    std::cerr << __LINE__ << "\n";
+
     while(barcode!=new_barcode){
       file.stream.file.seekg(pos);
       readRecord(id,read,file);
@@ -585,6 +587,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
     }
     // jump back before start of barcode
+    std::cerr << __LINE__ << "\n";
     while (barcode==new_barcode) {
       pos-=10000;
       file.stream.file.seekg(pos);
@@ -592,7 +595,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       new_barcode=get10xBarcode(toCString(id));
     }
     // skip till begining of barcode
+    std::cerr << __LINE__ << "\n";
     while (barcode!=new_barcode){
       new_barcode=skipToNextBarcode(file);
     }
+    std::cerr << __LINE__ << "\n";
+    return;
   }
