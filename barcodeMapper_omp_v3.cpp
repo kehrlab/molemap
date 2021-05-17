@@ -12,6 +12,8 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
 std::string skipToNextBarcode(SeqFileIn & file);
+void binSearchBarcode(SeqFileIn & file, std::string barcode, std::streampos filesize);
+
 
 struct bcmapOptions{
   std::string readfile1;
@@ -261,17 +263,20 @@ SeqFileIn file1(toCString(options.readfile1));
 SeqFileIn file2(toCString(options.readfile2));
 file1.stream.file.seekg(0, std::ios::end);
 file2.stream.file.seekg(0, std::ios::end);
-uint64_t readfile1_size=file1.stream.file.tellg();
-uint64_t readfile2_size=file2.stream.file.tellg();
+std::streampos readfile1_size=file1.stream.file.tellg();
+std::streampos readfile2_size=file2.stream.file.tellg();
 std::cerr << "\nreadfile1_size: " << readfile1_size << "  readfile2_size: " << readfile2_size << "\n";
 
-file1.stream.file.seekg((int)(readfile1_size/threads), std::ios::beg);
-readRecord(id1,read1,file1);
-std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
+file1.stream.file.seekg((int)((int)readfile1_size/threads), std::ios::beg);
 
-std::cerr << "next BC: " << skipToNextBarcode(file1) << "\n";
+barcode=skipToNextBarcode(file1);
+std::cerr << "next BC: " << barcode << "\n";
 readRecord(id1,read1,file1);
 std::cerr << "id1: " << id1 << "\nread1: " << read1 <<"\n";
+binSearchBarcode(file2, barcode, readfile2_size);
+readRecord(id2,read2,file2);
+std::cerr << "id2: " << id2 << "\nread2: " << read2 << "\n";
+
 
 file1.stream.file.seekg(0, std::ios::beg);
 file2.stream.file.seekg(0, std::ios::beg);
@@ -543,4 +548,40 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
     file.stream.file.seekg(pos);
     return new_barcode;
+  }
+
+  // binary searches for barcode in readfile and returns readfile at start of barcode
+  void binSearchBarcode(SeqFileIn & file, std::string barcode, std::streampos filesize){
+    std::string new_barcode;
+    CharString id;
+    Dna5String read;
+    std::streampos pos1=file.stream.file.tellg();
+    std::streampos pos2=filesize;
+    std::streampos pos=(pos1+pos2)/2;
+    // locate barcode using binary search
+    while(barcode!=new_barcode){
+      file.stream.file.seekg(pos);
+      readRecord(id,read,file);
+      new_barcode=get10xBarcode(toCString(id));
+      if (new_barcode<barcode){
+        pos1=pos;
+        pos=(pos1+pos2)/2;
+      } else if(new_barcode>barcode){
+        pos2=pos;
+        pos=(pos1+pos2)/2;
+      } else {
+        break;
+      }
+    }
+    // jump back before start of barcode
+    while (barcode==new_barcode) {
+      pos-=10000;
+      file.stream.file.seekg(pos);
+      readRecord(id,read,file);
+      new_barcode=get10xBarcode(toCString(id));
+    }
+    // skip till begining of barcode
+    while (barcode!=new_barcode){
+      new_barcode=skipToNextBarcode(file);
+    }
   }
