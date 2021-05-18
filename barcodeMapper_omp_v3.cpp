@@ -268,6 +268,8 @@ for (int t=0; t<options.threads; t++){
   Dna5String read2;
   CharString id1;
   CharString id2;
+  std::string barcode;
+  std::string new_barcode;
   std::string results;
   //open readfiles
   SeqFileIn file1(toCString(options.readfile1));
