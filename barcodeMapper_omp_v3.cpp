@@ -10,7 +10,7 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results);
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
@@ -246,20 +246,9 @@ close(file2);
 Searching for all kmers of reads with the same Barcode
 */
 
-// building the kmer_list for a specific Barcode
-std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
-// auto tbegin = std::chrono::high_resolution_clock::now();
-
-std::string barcode;
-std::string new_barcode;
-// StringSet<Dna5String> reads;
 typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-// resize(reads, 2, Exact());
-Dna5String read1;
-Dna5String read2;
-CharString id1;
-CharString id2;
-
+omp_lock_t lock;
+omp_init_lock(&lock);
 
 // preparing barcode Index
 // std::vector<std::string> BCI_barcodes;
@@ -279,6 +268,7 @@ for (int t=0; t<options.threads; t++){
   Dna5String read2;
   CharString id1;
   CharString id2;
+  std::string results;
   //open readfiles
   SeqFileIn file1(toCString(options.readfile1));
   SeqFileIn file2(toCString(options.readfile2));
@@ -300,7 +290,7 @@ for (int t=0; t<options.threads; t++){
   }
 
   SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
-  std::cerr << __LINE__ << "\n";
+
   //proceed through readfile untill endpos
   while (atEnd(file1)!=1) { // proceeding through files
     // BCI_pos1=file1.stream.file.tellg();
@@ -314,8 +304,18 @@ for (int t=0; t<options.threads; t++){
       // map barcode and clear k_mer list
       if (!kmer_list.empty()) {
         sort(kmer_list.begin(),kmer_list.end());
-        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+        MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
         kmer_list.clear();
+        if (results.size()>100000) {
+          if (omp_test_lock(&lock)){
+            std::fstream output;
+            output.open(options.output_file,std::ios::out | std::ios::app);
+            output << results;
+            results="";
+            output.close();
+            omp_unset_lock(&lock);
+          }
+        }
       }
       if (file1.stream.file.tellg()>endpos){
         break;
@@ -357,11 +357,19 @@ for (int t=0; t<options.threads; t++){
   }
   if (!kmer_list.empty()) {
     sort(kmer_list.begin(),kmer_list.end());
-    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l);
+    MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
   }
 
   close(file1);
   close(file2);
+
+  omp_set_lock(&lock);
+  std::fstream output;
+  output.open(options.output_file,std::ios::out | std::ios::app);
+  output << results;
+  results="";
+  output.close();
+  omp_unset_lock(&lock);
 
 }
 
@@ -414,7 +422,7 @@ return 0;
 
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results){
 
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -521,8 +529,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     }
 
     // Output
-    std::fstream results;
-    results.open(file,std::ios::out | std::ios::app);
+    // std::fstream results;
+    // results.open(file,std::ios::out | std::ios::app);
 
     for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
@@ -531,10 +539,11 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       std::string start=std::to_string(std::get<2>(*itrbw));
       std::string end=std::to_string(std::get<3>(*itrbw));
       std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-      results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
+      results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual +"\t" + len + "\n");
+      // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
       // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
     }
-    results.close();
+    // results.close();
     return;
   } //MapKmerList
 
