@@ -367,9 +367,9 @@ int main(int argc, char const ** argv){
         // if new_barcode not in Whitelist: skip to next barcode
         itrwhitelist++;
         if (new_barcode!=*itrwhitelist) {
-          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n"
+          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
         } else {
-          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n"
+          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
         }
       }
 
