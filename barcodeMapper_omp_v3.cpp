@@ -42,13 +42,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
 
     // Define Options
-    std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
-    std::cerr << "inf_whitelist: " << inf_whitelist << "\n";
-    inf_whitelist+="/Whitelist.txt";
     addOption(parser, seqan::ArgParseOption(
         "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
         seqan::ArgParseArgument::INPUT_FILE, "Path to Whitelist.txt"));
-    setDefaultValue(parser, "w", inf_whitelist);
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -92,17 +88,22 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     if (res != seqan::ArgumentParser::PARSE_OK){
         return res;}
 
-    // Extract option values.
-    getOptionValue(options.k, parser, "k");
-    getOptionValue(options.mini_window_size, parser, "m");
-    getOptionValue(options.output_file, parser, "o");
-    getOptionValue(options.threads, parser, "t");
-    getOptionValue(options.whitelist, parser, "w");
-
+    // Extract argument and option values.
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
     getArgumentValue(options.index_name, parser, 2);
     getArgumentValue(options.bci_name, parser, 3);
+
+    getOptionValue(options.k, parser, "k");
+    getOptionValue(options.mini_window_size, parser, "m");
+    getOptionValue(options.output_file, parser, "o");
+    getOptionValue(options.threads, parser, "t");
+    std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
+    std::cerr << "inf_whitelist: " << inf_whitelist << "\n";
+    inf_whitelist+="/Whitelist.txt";
+    setDefaultValue(parser, "w", inf_whitelist);
+    getOptionValue(options.whitelist, parser, "w");
+
 
     return seqan::ArgumentParser::PARSE_OK;
 }
@@ -216,7 +217,7 @@ int main(int argc, char const ** argv){
         whitelist.push_back(line);
       }
 
-      std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
+      // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
     }
   } //for omp
 
