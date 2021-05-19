@@ -368,6 +368,7 @@ int main(int argc, char const ** argv){
         itrwhitelist++;
         if (new_barcode!=*itrwhitelist) {
           std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+          new_barcode=skipToNextBarcode(file1,id1);
         } else {
           std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
         }
