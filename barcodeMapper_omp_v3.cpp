@@ -309,10 +309,10 @@ int main(int argc, char const ** argv){
     //move file 1 to start position
     if (t!=0){
       file1.stream.file.seekg(startpos);
-      std::string barcode=skipToNextBarcode(file1, id1);
+      barcode=skipToNextBarcode(file1, id1);
     } else {
       readRecord(id1, read1, file1);
-      std::string barcode=get10xBarcode(toCString(id1));
+      barcode=get10xBarcode(toCString(id1));
       file1.stream.file.seekg(0);
     }
 
