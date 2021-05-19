@@ -321,7 +321,7 @@ int main(int argc, char const ** argv){
     }
     //align with whitelist
     std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    std::cerr << "barcode: " << barcode << " whitelist: " << itrwhitelist << "\n";
+    std::cerr << "barcode: " << barcode << " whitelist: " << *itrwhitelist << "\n";
 
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
