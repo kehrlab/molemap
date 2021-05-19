@@ -99,7 +99,6 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.output_file, parser, "o");
     getOptionValue(options.threads, parser, "t");
     std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
-    std::cerr << "inf_whitelist: " << inf_whitelist << "\n";
     inf_whitelist+="/Whitelist.txt";
     setDefaultValue(parser, "w", inf_whitelist);
     getOptionValue(options.whitelist, parser, "w");
@@ -323,8 +322,12 @@ int main(int argc, char const ** argv){
     }
     //align with whitelist
     std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    std::cerr << "barcode: " << barcode << " whitelist: " << *itrwhitelist << "\n";
-
+    while(barcode!=*itrwhitelist){ //skip to fist barcode that appears in whitelist
+      std::cerr << "barcode: " << barcode << "whitelist: " << *itrwhitelist << "\n";
+      barcode=skipToNextBarcode(file1, id1);
+      itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
+    }
+    //align file2 with file1
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
     //proceed through readfile untill endpos
