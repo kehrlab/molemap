@@ -375,9 +375,8 @@ int main(int argc, char const ** argv){
             std::cerr << "Whitelisted barcode not in file!\n";
             itrwhitelist++;
           }
-        std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
-        // } else {
         }
+        std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
       readRecord(id2, read2, file2);
