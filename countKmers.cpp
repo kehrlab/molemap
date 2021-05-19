@@ -232,13 +232,13 @@ int main(int argc, char const **argv){
   //write index to file
 
   std::string IndPos=options.index_name;
-  IndPos.append("/pos.txt");
+  IndPos.append("_pos.txt");
   std::string IndRef=options.index_name;
-  IndRef.append("/ref.txt");
+  IndRef.append("_ref.txt");
   std::string IndDir=options.index_name;
-  IndDir.append("/dir.txt");
+  IndDir.append("_dir.txt");
   std::string IndC=options.index_name;
-  IndC.append("/C.txt");
+  IndC.append("_C.txt");
 
   std::cerr << "Writing index to file...";
 
