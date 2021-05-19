@@ -327,6 +327,7 @@ int main(int argc, char const ** argv){
       barcode=skipToNextBarcode(file1, id1);
       itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
     }
+    std::cerr << "barcode: " << barcode << " whitelist: " << *itrwhitelist << " thread: " << t << "\n";
     if(atEnd(file1)){
       std::cerr << "I will continue!\n";
       continue;
