@@ -12,6 +12,8 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results);
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
+std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2);
+
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
 struct bcmapOptions{
@@ -368,7 +370,7 @@ int main(int argc, char const ** argv){
         while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
           if (new_barcode < *itrwhitelist){
             std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-            new_barcode=skipToNextBarcode(file1,id1);
+            new_barcode=skipToNextBarcode2(file1,file2);
           } else {
             std::cerr << "Whitelisted barcode not in file!\n";
             itrwhitelist++;
@@ -586,7 +588,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   return;
 } //MapKmerList
 
-//skips file to start of next barcode and returns the barcode
+//skips file1 to start of next barcode and returns the barcode
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
   CharString id;
   Dna5String read;
@@ -601,6 +603,24 @@ std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
   }
   file.stream.file.seekg(pos);
   id1=id;
+  return new_barcode;
+}
+
+//skips both files till next barcode
+std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2){
+  CharString id;
+  Dna5String read;
+  readRecord(id,read,file1);
+  std::string barcode=get10xBarcode(toCString(id));
+  std::string new_barcode=barcode;
+  std::streampos pos;
+  while(barcode==new_barcode){
+    pos=file.stream.file.tellg();
+    readRecord(id,read,file1);
+    new_barcode=get10xBarcode(toCString(id));
+    readRecord(id,read,file2);
+  }
+  file.stream.file.seekg(pos);
   return new_barcode;
 }
 
