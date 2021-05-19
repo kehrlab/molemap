@@ -317,10 +317,6 @@ int main(int argc, char const ** argv){
       file1.stream.file.seekg(0);
     }
 
-    //move file 2 to start position
-    if(t!=0){
-      startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
-    }
     //align with whitelist
     std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
     while(barcode!=*itrwhitelist && !atEnd(file1)){ //skip to fist barcode that appears in whitelist
@@ -333,6 +329,9 @@ int main(int argc, char const ** argv){
     }
 
     //align file2 with file1
+    if(t!=0){
+      startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
+    }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
     //proceed through readfile untill endpos
@@ -366,11 +365,16 @@ int main(int argc, char const ** argv){
         }
         // if new_barcode not in Whitelist: skip to next barcode
         itrwhitelist++;
-        if (new_barcode!=*itrwhitelist) {
-          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-          new_barcode=skipToNextBarcode(file1,id1);
-        } else {
-          std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
+        while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
+          if (new_barcode < *itrwhitelist){
+            std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+            new_barcode=skipToNextBarcode(file1,id1);
+          } else {
+            std::cerr << "Whitelisted barcode not in file!\n";
+            itrwhitelist++;
+          }
+        std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
+        // } else {
         }
       }
 
