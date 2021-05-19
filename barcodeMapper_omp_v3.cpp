@@ -322,11 +322,16 @@ int main(int argc, char const ** argv){
     }
     //align with whitelist
     std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    while(barcode!=*itrwhitelist){ //skip to fist barcode that appears in whitelist
+    while(barcode!=*itrwhitelist && !atEnd(file1)){ //skip to fist barcode that appears in whitelist
       std::cerr << "barcode: " << barcode << " whitelist: " << *itrwhitelist << " thread: " << t << "\n";
       barcode=skipToNextBarcode(file1, id1);
       itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
     }
+    if(atEnd(file1)){
+      continue;
+    }
+
+
     //align file2 with file1
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
