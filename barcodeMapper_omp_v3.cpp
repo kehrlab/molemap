@@ -379,8 +379,6 @@ int main(int argc, char const ** argv){
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
-GGAGCAACAGCCCCAG
-ATCTTATGATTTGGAT
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
       assignValue(reads,1,read2);
