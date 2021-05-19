@@ -369,16 +369,18 @@ int main(int argc, char const ** argv){
         itrwhitelist++;
         while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
           if (new_barcode < *itrwhitelist){
-            std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+            // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
             new_barcode=skipToNextBarcode2(file1,file2);
           } else {
-            std::cerr << "Whitelisted barcode not in file!\n";
+            // std::cerr << "Whitelisted barcode not in file!\n";
             itrwhitelist++;
           }
         }
-        std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
+        // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
+GGAGCAACAGCCCCAG
+ATCTTATGATTTGGAT
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
       assignValue(reads,1,read2);
