@@ -43,6 +43,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     // Define Options
     std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
+    std::cerr << "inf_whitelist: " << inf_whitelist << "\n";
     inf_whitelist+="/Whitelist.txt";
     addOption(parser, seqan::ArgParseOption(
         "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
