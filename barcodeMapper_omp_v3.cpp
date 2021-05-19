@@ -613,7 +613,7 @@ std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2){
   std::string barcode=get10xBarcode(toCString(id));
   std::string new_barcode=barcode;
   std::streampos pos;
-  while(barcode==new_barcode){
+  while(barcode==new_barcode && !atEnd(file1)){
     pos=file1.stream.file.tellg();
     readRecord(id,read,file1);
     new_barcode=get10xBarcode(toCString(id));
