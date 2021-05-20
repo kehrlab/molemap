@@ -337,7 +337,7 @@ int main(int argc, char const ** argv){
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
     //proceed through readfile untill endpos
-    while (atEnd(file1)!=1) { // proceeding through files
+    while (!atEnd(file1)) { // proceeding through files
       // BCI_pos1=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
       new_barcode=get10xBarcode(toCString(id1));
@@ -366,16 +366,16 @@ int main(int argc, char const ** argv){
           break;
         }
         // if new_barcode not in Whitelist: skip to next barcode
-        itrwhitelist++;
-        while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
-          if (new_barcode < *itrwhitelist){
-            // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-            new_barcode=skipToNextBarcode2(file1,file2);
-          } else if (itrwhitelist<whitelist.end()) {
-            // std::cerr << "Whitelisted barcode not in file!\n";
-            itrwhitelist++;
-          }
-        }
+        // itrwhitelist++;
+        // while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
+        //   if (new_barcode < *itrwhitelist){
+        //     // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+        //     new_barcode=skipToNextBarcode2(file1,file2);
+        //   } else if (itrwhitelist<whitelist.end()) {
+        //     // std::cerr << "Whitelisted barcode not in file!\n";
+        //     itrwhitelist++;
+        //   }
+        // }
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
