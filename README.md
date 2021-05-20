@@ -10,16 +10,18 @@ Needed directories etc.
 
 
 # Usage 
-How to run the program (put it here)
-## Data requirements
-- 10XGenomics Linked reads
-- sorted by barcode ([use bcctools](https://github.com/kehrlab/bcctools)
-- Barcode whitelist required
+1. build an index of the reference genome using countK
+2. Map barcodes to reference using bcmap
 
-## CountK
-- ./countK reference.fa OutputName
-- Optional k, 
+## Data requirements
+- 10XGenomics paired end Linked reads
+- sorted by barcode (use [bcctools](https://github.com/kehrlab/bcctools))
+- barcodes are stored in -RX: flag of read Ids
+- Barcode whitelist required (can be infered using [bcctools](https://github.com/kehrlab/bcctools))
+
+## countK
+- ./countK reference.fa IndexName
 
 ## bcmap
-- ./bcmap 1.fastq 2.fastq indexPrefix BCI(holder) -o outputFile
+- ./bcmap readfile1.fastq readfile2.fastq IndexName BCI(holder) -o outputFile
  
