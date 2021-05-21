@@ -170,7 +170,10 @@ int main(int argc, char const ** argv){
   std::string IndC=options.index_name;
   IndC.append("_C.txt");
 
+
   //reading Index files in parallel
+  auto tbegin = std::chrono::high_resolution_clock::now();
+
   #pragma omp parallel for
   for(int i=0;i<5;i++){
     if (i==0){
@@ -181,6 +184,8 @@ int main(int argc, char const ** argv){
       assign(pos, extpos, Exact());
       close(extpos);
       std::cerr <<".";
+      std::cerr << "\npos read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+
     }
     if (i==1){
       String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
@@ -190,6 +195,8 @@ int main(int argc, char const ** argv){
       assign(ref, extref, Exact());
       close(extref);
       std::cerr <<".";
+      std::cerr << "\nref read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+
     }
     if (i==2){
       String<uint32_t, External<> > extdir;
@@ -198,7 +205,9 @@ int main(int argc, char const ** argv){
       }
       assign(dir, extdir, Exact());
       close(extdir);
-      std::cerr <<".";
+      std::cerr
+      std::cerr << "\ndir read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+
     }
     if (i==3){
       String<int32_t, External<> > extC;
@@ -208,6 +217,8 @@ int main(int argc, char const ** argv){
       assign(C, extC, Exact());
       close(extC);
       std::cerr << ".";
+      std::cerr << "\nC read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+
     }
     if (i==4){ // load whitelist
       std::streampos size=whitelistFile.tellg();
@@ -217,7 +228,7 @@ int main(int argc, char const ** argv){
       while (getline(whitelistFile,line)){
         whitelist.push_back(line);
       }
-
+      std::cerr << "\nwhite read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
       // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
     }
   } //for omp
@@ -280,15 +291,10 @@ int main(int argc, char const ** argv){
 
   // preparing barcode Index
   // std::vector<std::string> BCI_barcodes;
-  auto tbegin = std::chrono::high_resolution_clock::now();
 
   std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
   BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
-  std::cerr << "\nBCI_pos prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-  std::cerr << "whitelist.size(): " << whitelist.size() << " BCI.size(): " << BCI_positions.size() << "\n";
-  std::cerr << "BCI[0]: " << std::get<0>(BCI_positions[0]) << ", " << std::get<1>(BCI_positions[0]) << "\n";
-  std::cerr << "BCI[0]: " << std::get<0>(BCI_positions[100]) << ", " << std::get<1>(BCI_positions[100]) << "\n";
 
   // std::streampos BCI_pos1;
   // std::streampos BCI_pos2;
