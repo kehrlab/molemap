@@ -373,12 +373,15 @@ int main(int argc, char const ** argv){
         // if new_barcode not in Whitelist: skip to next barcode
         itrwhitelist++;
         while (new_barcode!=*itrwhitelist && !atEnd(file1) && itrwhitelist<whitelist.end()) {
+          std::cerr << __LINE__ << "\n";
           if (new_barcode < *itrwhitelist){
             skipedBC++;
             // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
             skipToNextBarcode2(file1,file2,new_barcode);
+            std::cerr << __LINE__ << "\n";
           } else if (itrwhitelist<whitelist.end()) {
             // std::cerr << "Whitelisted barcode not in file!\n";
+            std::cerr << __LINE__ << "\n";
             itrwhitelist++;
           }
         }
