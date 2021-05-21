@@ -283,7 +283,7 @@ int main(int argc, char const ** argv){
   auto tbegin = std::chrono::high_resolution_clock::now();
 
   std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
-  BCI_positions.resize(whitelist.size(),std:make_pair(0,0));
+  BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
   std::cerr << "\nBCI_pos prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   std::cerr << "whitelist.size(): " << whitelist.size() << " BCI.size(): " << BCI_positions.size() << "\n";
