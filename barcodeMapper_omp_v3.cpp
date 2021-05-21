@@ -447,7 +447,7 @@ int main(int argc, char const ** argv){
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
   std::cerr << ".........done.\n";
-  std::cerr << "Writing BarcodeIndex to file...";
+  // std::cerr << "Writing BarcodeIndex to file...";
 
   // // write Barcode Index to file
   // std::string IndBC=options.bci_name;
