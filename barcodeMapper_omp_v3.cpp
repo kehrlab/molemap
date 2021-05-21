@@ -641,6 +641,8 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
   }
   file1.stream.file.seekg(pos);
   barcode==new_barcode;
+  std::cerr << "INSIDE new_barcode: " << new_barcode "\n";
+  std::cerr << "INSIDE barcode: " << barcode "\n";
   return;
 }
 
