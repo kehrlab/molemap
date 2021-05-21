@@ -280,7 +280,16 @@ int main(int argc, char const ** argv){
 
   // preparing barcode Index
   // std::vector<std::string> BCI_barcodes;
-  // std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
+  auto tbegin = std::chrono::high_resolution_clock::now();
+
+  std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
+  BCI_positions.resize(whitelist.size(),std:make_pair(0,0));
+
+  std::cerr << "\nBCI_pos prepared in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
+  std::cerr << "whitelist.size(): " << whitelist.size() << " BCI.size(): " << BCI_positions.size() << "\n";
+  std::cerr << "BCI[0]: " << std::get<0>(BCI_positions[0]) << ", " << std::get<1>(BCI_positions[0]) << "\n";
+  std::cerr << "BCI[0]: " << std::get<0>(BCI_positions[100]) << ", " << std::get<1>(BCI_positions[100]) << "\n";
+
   // std::streampos BCI_pos1;
   // std::streampos BCI_pos2;
 
@@ -389,6 +398,10 @@ int main(int argc, char const ** argv){
         }
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
+
+      // Barcodes processed:  1281285
+      // Barcodes skiped:    21574673
+
 
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
