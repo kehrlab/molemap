@@ -353,7 +353,7 @@ int main(int argc, char const ** argv){
         // BCI_barcodes.push_back(new_barcode);
         // BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
         // map barcode and clear k_mer list
-        processedBC++;
+        // processedBC++;
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
@@ -418,7 +418,7 @@ int main(int argc, char const ** argv){
       }
     }
     if (!kmer_list.empty()) {
-      processedBC++;
+      // processedBC++;
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
     }
@@ -441,8 +441,8 @@ int main(int argc, char const ** argv){
 
   }
 
-  std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
-  std::cerr <<     "Barcodes skiped:    " << skipedBarcodes << "\n";
+  // std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
+  // std::cerr <<     "Barcodes skiped:    " << skipedBarcodes << "\n";
 
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
