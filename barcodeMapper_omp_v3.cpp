@@ -372,7 +372,7 @@ int main(int argc, char const ** argv){
         }
         // if new_barcode not in Whitelist: skip to next barcode
         itrwhitelist++;
-        while (new_barcode!=*itrwhitelist && !atEnd(file1) && itrwhitelist<Whitelist.end()) {
+        while (new_barcode!=*itrwhitelist && !atEnd(file1) && itrwhitelist<whitelist.end()) {
           if (new_barcode < *itrwhitelist){
             skipedBC++;
             // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
