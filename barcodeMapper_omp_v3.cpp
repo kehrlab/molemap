@@ -286,6 +286,9 @@ int main(int argc, char const ** argv){
 
   std::cerr << "Processing read file...";
 
+  uint64_t skipedBarcodes=0;
+  uint64_t processedBarcodes=0;
+
   #pragma omp parallel for
   for (int t=0; t<options.threads; t++){
     //declare variables
@@ -299,7 +302,8 @@ int main(int argc, char const ** argv){
     std::string barcode;
     std::string new_barcode;
     std::string results;
-    uint64_t skipedBarcodes=0;
+    uint64_t skipedBC=0;
+    uint64_t processedBC=0;
 
     //open readfiles
     SeqFileIn file1(toCString(options.readfile1));
@@ -347,6 +351,7 @@ int main(int argc, char const ** argv){
         // BCI_barcodes.push_back(new_barcode);
         // BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
         // map barcode and clear k_mer list
+        processedBC++;
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
@@ -366,16 +371,17 @@ int main(int argc, char const ** argv){
           break;
         }
         // if new_barcode not in Whitelist: skip to next barcode
-        // itrwhitelist++;
-        // while (new_barcode!=*itrwhitelist && !atEnd(file1)) {
-        //   if (new_barcode < *itrwhitelist){
-        //     // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-        //     new_barcode=skipToNextBarcode2(file1,file2);
-        //   } else if (itrwhitelist<whitelist.end()) {
-        //     // std::cerr << "Whitelisted barcode not in file!\n";
-        //     itrwhitelist++;
-        //   }
-        // }
+        itrwhitelist++;
+        while (new_barcode!=*itrwhitelist && !atEnd(file1) && itrwhitelist<Whitelist.end()) {
+          if (new_barcode < *itrwhitelist){
+            skipedBC++;
+            // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+            new_barcode=skipToNextBarcode2(file1,file2);
+          } else if (itrwhitelist<whitelist.end()) {
+            // std::cerr << "Whitelisted barcode not in file!\n";
+            itrwhitelist++;
+          }
+        }
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
@@ -428,7 +434,15 @@ int main(int argc, char const ** argv){
     output.close();
     omp_unset_lock(&lock);
 
+    #pragma omp atomic
+    skipedBarcodes+=skipedBC;
+    #pragma omp atomic
+    processedBarcodes+=processedBC;
+
   }
+
+  std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
+  std::cerr << "Barcodes skiped:        " << skipedBarcodes << "\n";
 
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
