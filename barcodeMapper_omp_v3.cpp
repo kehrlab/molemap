@@ -377,6 +377,7 @@ int main(int argc, char const ** argv){
           if (new_barcode < *itrwhitelist){
             skipedBC++;
             // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
+            std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
             skipToNextBarcode2(file1,file2,new_barcode);
             std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
             std::cerr << __LINE__ << "\n";
