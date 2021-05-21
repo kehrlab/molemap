@@ -373,17 +373,17 @@ int main(int argc, char const ** argv){
         // if new_barcode not in Whitelist: skip to next barcode
         itrwhitelist++;
         while (new_barcode!=*itrwhitelist && !atEnd(file1) && itrwhitelist<whitelist.end()) {
-          std::cerr << __LINE__ << "\n";
+          // std::cerr << __LINE__ << "\n";
           if (new_barcode < *itrwhitelist){
             skipedBC++;
             // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-            std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
+            // std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
             skipToNextBarcode2(file1,file2,new_barcode);
-            std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << "new_barcode: " << new_barcode << " itrwhite: " << *itrwhitelist << "\n";
+            // std::cerr << __LINE__ << "\n";
           } else if (itrwhitelist<whitelist.end()) {
             // std::cerr << "Whitelisted barcode not in file!\n";
-            std::cerr << __LINE__ << "\n";
+            // std::cerr << __LINE__ << "\n";
             itrwhitelist++;
           }
         }
@@ -640,9 +640,7 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
     readRecord(id,read,file2);
   }
   file1.stream.file.seekg(pos);
-  barcode==new_barcode;
-  std::cerr << "INSIDE new_barcode: " << new_barcode << "\n";
-  std::cerr << "INSIDE barcode: " << barcode << "\n";
+  barcode=new_barcode;
   return;
 }
 
