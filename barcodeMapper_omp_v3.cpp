@@ -184,8 +184,6 @@ int main(int argc, char const ** argv){
       assign(pos, extpos, Exact());
       close(extpos);
       std::cerr <<".";
-      std::cerr << "\npos read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-
     }
     if (i==1){
       String<uint_fast8_t, External<ExternalConfigLarge<>> > extref;
@@ -195,8 +193,6 @@ int main(int argc, char const ** argv){
       assign(ref, extref, Exact());
       close(extref);
       std::cerr <<".";
-      std::cerr << "\nref read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-
     }
     if (i==2){
       String<uint32_t, External<> > extdir;
@@ -206,8 +202,6 @@ int main(int argc, char const ** argv){
       assign(dir, extdir, Exact());
       close(extdir);
       std::cerr << ".";
-      std::cerr << "\ndir read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-
     }
     if (i==3){
       String<int32_t, External<> > extC;
@@ -217,8 +211,6 @@ int main(int argc, char const ** argv){
       assign(C, extC, Exact());
       close(extC);
       std::cerr << ".";
-      std::cerr << "\nC read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-
     }
     if (i==4){ // load whitelist
       std::streampos size=whitelistFile.tellg();
@@ -228,7 +220,6 @@ int main(int argc, char const ** argv){
       while (getline(whitelistFile,line)){
         whitelist.push_back(line);
       }
-      std::cerr << "\nwhite read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
       // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
     }
   } //for omp
