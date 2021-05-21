@@ -12,7 +12,7 @@ g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results);
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
-std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2);
+void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode);
 
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 
@@ -376,7 +376,7 @@ int main(int argc, char const ** argv){
           if (new_barcode < *itrwhitelist){
             skipedBC++;
             // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " BAD!" << "\n";
-            new_barcode=skipToNextBarcode2(file1,file2);
+            new_barcode=skipToNextBarcode2(file1,file2,new_barcode);
           } else if (itrwhitelist<whitelist.end()) {
             // std::cerr << "Whitelisted barcode not in file!\n";
             itrwhitelist++;
@@ -419,6 +419,7 @@ int main(int argc, char const ** argv){
       }
     }
     if (!kmer_list.empty()) {
+      processedBC++;
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
     }
@@ -442,7 +443,7 @@ int main(int argc, char const ** argv){
   }
 
   std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
-  std::cerr << "Barcodes skiped:        " << skipedBarcodes << "\n";
+  std::cerr <<     "Barcodes skiped:    " << skipedBarcodes << "\n";
 
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
@@ -620,13 +621,13 @@ std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
 }
 
 //skips both files till next barcode
-std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2){
+void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode){
   CharString id;
   Dna5String read;
-  readRecord(id,read,file1);
-  std::string barcode=get10xBarcode(toCString(id));
-  std::string new_barcode=barcode;
   std::streampos pos;
+  pos=file1.stream.file.tellg();
+  readRecord(id,read,file1);
+  std::string new_barcode=get10xBarcode(toCString(id));
   while(barcode==new_barcode && !atEnd(file1)){
     pos=file1.stream.file.tellg();
     readRecord(id,read,file1);
@@ -634,7 +635,8 @@ std::string skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2){
     readRecord(id,read,file2);
   }
   file1.stream.file.seekg(pos);
-  return new_barcode;
+  barcode==new_barcode;
+  return;
 }
 
 // searches for id in readfile and returns read and sets fileposition accordingly
