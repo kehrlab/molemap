@@ -8,12 +8,13 @@ using namespace seqan;
 
 //retreive the barcode from 10x linked reads
 std::string get10xBarcode(std::string id1){
-  std::string new_barcode=id1.substr(id1.find("RX:Z:")+5,16);
+  std::string new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
   return new_barcode;
 }
 
 CharString get10xID(std::string id){
-  return id.substr(0, id.find(" BX:Z:"));
+  id=id.substr(0, id.find(" BX:Z:"));
+  return id;
 }
 // Loads BarcodeIndex from file into string
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
