@@ -205,7 +205,7 @@ int main(int argc, char const ** argv){
       }
       assign(dir, extdir, Exact());
       close(extdir);
-      std::cerr
+      std::cerr << ".";
       std::cerr << "\ndir read in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
 
     }
