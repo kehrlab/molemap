@@ -437,9 +437,9 @@ int main(int argc, char const ** argv){
     output.close();
     omp_unset_lock(&lock);
 
-    #pragma omp atomic
+    #pragma omp critical{
     BCI.emplace_back(BCI_local);
-
+    }
   }
 
   // std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
@@ -459,9 +459,9 @@ int main(int argc, char const ** argv){
   std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bci;
   file_bci.open(options.bci_name, std::ios::binary);
-  // for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
-  file_bci << BCI << "\n";
-  // }
+  for (i=0; i<BCI.size(); i++){
+  file_bci << BCI[i] << "\n";
+  }
   file_bc.close();
   //
   // std::ofstream file_pos;
