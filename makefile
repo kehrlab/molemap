@@ -1,5 +1,6 @@
 TARGET1 = countK
 TARGET2 = bcmap
+TARGET3 = getreads
 BUILD_DIR = ./build
 SRC_DIR = ./src
 
@@ -42,7 +43,10 @@ $(TARGET1): $(OBJS)
 	$(CC) countKmers.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
 
 $(TARGET2): $(OBJS)
-	$(CC) barcodeMapper_omp_v2.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
+	$(CC) barcodeMapper_omp_v3.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)
+
+$(TARGET3): $(OBJS)
+	$(CC) getReads.cpp $(OBJS) -o $@ $(LDLIBS) $(CXXFLAGS)		
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
