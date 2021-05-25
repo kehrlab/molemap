@@ -427,11 +427,11 @@ int main(int argc, char const ** argv){
     close(file1);
     close(file2);
 
-    #pragma omp ordered
+    #pragma omp critical ordered
     {
       BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
     }
-    
+
     omp_set_lock(&lock);
     std::fstream output;
     output.open(options.output_file,std::ios::out | std::ios::app);
@@ -456,7 +456,7 @@ int main(int argc, char const ** argv){
   // IndPos=options.bci_name;
   // IndPos.append("_pos.txt");
   //
-  std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
+  // std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bci;
   file_bci.open(options.bci_name /*, std::ios::binary*/);
   for (int i=0; i<BCI.size(); i++){
