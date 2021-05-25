@@ -92,15 +92,13 @@ int main(int argc, char const ** argv){
   std::vector<std::string> barcodes;
   std::string barcode;
 
-  try { // if barcodes provided in file: open barcodes file}
-    std::ifstream file_bc;
-    file_bc.open(options.barcodes /*, std::ios::binary*/);
+  std::ifstream file_bc;
+  if(file_bc.open(options.barcodes /*, std::ios::binary*/)){
     while(getline(file_bc, barcode)){
       barcodes.push_back(barcode);
     }
     file_bc.close();
-  }
-  catch(...){
+  } else {
     std::cerr << "Barcodes provided as Argument!\n";
   }
 
