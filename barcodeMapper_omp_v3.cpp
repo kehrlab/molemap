@@ -286,7 +286,7 @@ int main(int argc, char const ** argv){
 
   std::cerr << "Processing read file...";
 
-  #pragma omp parallel for ordered
+  #pragma omp parallel for ordered schedule(dynamic)
   for (int t=0; t<options.threads; t++){
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -437,7 +437,7 @@ int main(int argc, char const ** argv){
 
     #pragma omp ordered
     {
-    BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
+      BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
     }
   }
 
