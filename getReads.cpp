@@ -19,7 +19,7 @@ struct getReadsOptions{
   {}
 };
 
-seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
+seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("getReads");
 
@@ -100,7 +100,7 @@ int main(int argc, char const ** argv){
     file_bc.close();
   }
   catch(...){
-    std::cerr << "Barcodes provided as Argument!\n"
+    std::cerr << "Barcodes provided as Argument!\n";
   }
 
   close(file1);
