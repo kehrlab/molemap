@@ -456,6 +456,7 @@ int main(int argc, char const ** argv){
   // IndPos=options.bci_name;
   // IndPos.append("_pos.txt");
   //
+  std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bc;
   file_bci.open(options.bci_name, std::ios::binary);
   // for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
