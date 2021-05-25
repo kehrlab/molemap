@@ -460,10 +460,10 @@ int main(int argc, char const ** argv){
   std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bci;
   file_bci.open(options.bci_name, std::ios::binary);
-  for (i=0; i<BCI.size(); i++){
+  for (int i=0; i<BCI.size(); i++){
   file_bci << BCI[i] << "\n";
   }
-  file_bc.close();
+  file_bci.close();
   //
   // std::ofstream file_pos;
   // file_pos.open(IndPos, std::ios::binary);
