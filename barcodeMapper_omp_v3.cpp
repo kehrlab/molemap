@@ -345,6 +345,7 @@ int main(int argc, char const ** argv){
       new_barcode=get10xBarcode(toCString(id1));
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
         //append Barcode Index
+        BCI_1e=pos_temp;
         BCI_2e=file2.stream.file.tellg();
         BCI.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
         BCI_1s=pos_temp;
