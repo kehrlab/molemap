@@ -314,6 +314,8 @@ int main(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
+
     //move file 1 to start position
     if (t!=0){
       file1.stream.file.seekg(startpos);
@@ -323,6 +325,8 @@ int main(int argc, char const ** argv){
       barcode=get10xBarcode(toCString(id1));
       file1.stream.file.seekg(0);
     }
+
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
 
     //align file2 with file1
@@ -337,9 +341,9 @@ int main(int argc, char const ** argv){
     }
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
-
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     //proceed through readfile untill endpos
-    std::cerr << "Thread: " << t << " starting while loop!\n";
+    // std::cerr << "Thread: " << t << " starting while loop!\n";
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
