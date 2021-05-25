@@ -337,7 +337,7 @@ int main(int argc, char const ** argv){
 
     //skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
-      skipToNextBarcode2(file1,file2,new_barcode);
+      skipToNextBarcode2(file1,file2,barcode);
     }
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
