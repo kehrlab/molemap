@@ -438,7 +438,7 @@ int main(int argc, char const ** argv){
     omp_unset_lock(&lock);
 
     #pragma omp atomic
-    BCI.push_back(BCI_local);
+    BCI.emplace_back(BCI_local);
 
   }
 
@@ -457,7 +457,7 @@ int main(int argc, char const ** argv){
   // IndPos.append("_pos.txt");
   //
   std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
-  std::ofstream file_bc;
+  std::ofstream file_bci;
   file_bci.open(options.bci_name, std::ios::binary);
   // for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
   file_bci << BCI << "\n";
