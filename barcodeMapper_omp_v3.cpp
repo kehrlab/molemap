@@ -281,13 +281,10 @@ int main(int argc, char const ** argv){
   omp_init_lock(&lock);
 
   // preparing barcode Index
-  std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
+  std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
   // BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
   std::cerr << "Processing read file...";
-
-  // uint64_t skipedBarcodes=0;
-  // uint64_t processedBarcodes=0;
 
   #pragma omp parallel for
   for (int t=0; t<options.threads; t++){
@@ -302,10 +299,12 @@ int main(int argc, char const ** argv){
     std::string barcode;
     std::string new_barcode;
     std::string results;
-    // uint64_t skipedBC=0;
-    // uint64_t processedBC=0;
-    std::streampos BCI_pos1;
-    std::streampos BCI_pos2;
+    std::streampos pos_temp;
+    std::streampos BCI_1s;
+    std::streampos BCI_1e;
+    std::streampos BCI_2s;
+    std::streampos BCI_2e;
+    std::vector<std::tuple<std::string,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
 
     //open readfiles
     SeqFileIn file1(toCString(options.readfile1));
@@ -325,16 +324,6 @@ int main(int argc, char const ** argv){
       file1.stream.file.seekg(0);
     }
 
-    //align with whitelist
-    // std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    // while(barcode!=*itrwhitelist && !atEnd(file1)){ //skip to fist barcode that appears in whitelist
-    //   // skipedBarcodes++;
-    //   barcode=skipToNextBarcode(file1, id1);
-    //   itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    // }
-    // if(atEnd(file1)){
-    //   continue;
-    // }
 
     //align file2 with file1
     if(t!=0){
@@ -342,18 +331,28 @@ int main(int argc, char const ** argv){
     }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
+    //skip to first valid barcode
+    while (barcode[0]=='*' && !atEnd(file1)) {
+      skipToNextBarcode2(file1,file2,new_barcode);
+    }
+    BCI_1s=file1.stream.file.tellg();
+    BCI_2s=file2.stream.file.tellg();
+
     //proceed through readfile untill endpos
     while (!atEnd(file1)) { // proceeding through files
-      // BCI_pos1=file1.stream.file.tellg();
+      pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
       new_barcode=get10xBarcode(toCString(id1));
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
         //append Barcode Index
+        BCI_2e=file2.stream.file.tellg();
+        BCI.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
+        BCI_1s=pos_temp;
         // BCI_pos2=file2.stream.file.tellg();
         // BCI_barcodes.push_back(new_barcode);
         // BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
+
         // map barcode and clear k_mer list
-        // processedBC++;
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
@@ -377,8 +376,11 @@ int main(int argc, char const ** argv){
         while (new_barcode[0]=='*' && !atEnd(file1)) {
           readRecord(id2, read2, file2);
           skipToNextBarcode2(file1,file2,new_barcode);
+          BCI_1s=file1.stream.file.tellg();
           readRecord(id1, read1, file1);
         }
+        // BCI_1s=file1.stream.file.tellg();
+        BCI_2s=file2.stream.file.tellg();
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
@@ -435,10 +437,8 @@ int main(int argc, char const ** argv){
     output.close();
     omp_unset_lock(&lock);
 
-    // #pragma omp atomic
-    // skipedBarcodes+=skipedBC;
-    // #pragma omp atomic
-    // processedBarcodes+=processedBC;
+    #pragma omp atomic
+    BCI.push_back(BCI_local);
 
   }
 
@@ -448,7 +448,7 @@ int main(int argc, char const ** argv){
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
   std::cerr << ".........done.\n";
-  // std::cerr << "Writing BarcodeIndex to file...";
+  std::cerr << "Writing BarcodeIndex to file...";
 
   // // write Barcode Index to file
   // std::string IndBC=options.bci_name;
@@ -456,12 +456,12 @@ int main(int argc, char const ** argv){
   // IndPos=options.bci_name;
   // IndPos.append("_pos.txt");
   //
-  // std::ofstream file_bc;
-  // file_bc.open(IndBC, std::ios::binary);
+  std::ofstream file_bc;
+  file_bci.open(options.bci_name, std::ios::binary);
   // for (std::vector<std::string>::const_iterator it=BCI_barcodes.begin(); it!=BCI_barcodes.end(); it++){
-  //   file_bc << *it << "\n";
+  file_bci << BCI << "\n";
   // }
-  // file_bc.close();
+  file_bc.close();
   //
   // std::ofstream file_pos;
   // file_pos.open(IndPos, std::ios::binary);
@@ -470,7 +470,7 @@ int main(int argc, char const ** argv){
   // }
   // file_pos.close();
   //
-  // std::cerr << ".done.\n";
+  std::cerr << ".done.\n";
   std::cerr << "Barcodes mapped sucessfully!\n";
 
   return 0;
