@@ -76,6 +76,8 @@ int main(int argc, char const ** argv){
   try { // opening read-files
     SeqFileIn file1(toCString(options.readfile1));
     SeqFileIn file2(toCString(options.readfile2));
+    close(file1);
+    close(file2);
   }
   catch (ParseError const & e){
     std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
@@ -83,6 +85,8 @@ int main(int argc, char const ** argv){
   catch (IOError const & e){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
+  SeqFileIn file1(toCString(options.readfile1));
+  SeqFileIn file2(toCString(options.readfile2));
 
   std::vector<std::string> barcodes;
   std::string barcode;
