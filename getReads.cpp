@@ -101,14 +101,13 @@ int main(int argc, char const ** argv){
     file_bc.close();
   } else {
     std::size_t pos_s = 0;
-    std::size_t pos = options.barcodes.find(,);
+    std::size_t pos = options.barcodes.find(",");
     while (pos!=std::string::npos){
       barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
       pos_s=pos+1;
-      pos=options.barcodes.find(,);
+      pos=options.barcodes.find(",");
     }
     barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
-    
   }
 
   std::cerr << "\nBarcodes:\n";
