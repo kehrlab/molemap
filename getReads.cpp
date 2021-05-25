@@ -51,7 +51,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     // Extract argument and option values.
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
-    getArgumentValue(options.barcodes, parser, 2);
+    getArgumentValue(options.bci_name, parser, 2);
+    getArgumentValue(options.barcodes, parser, 3);
 
     getOptionValue(options.output_file, parser, "o");
 
