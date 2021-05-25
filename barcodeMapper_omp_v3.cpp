@@ -286,7 +286,7 @@ int main(int argc, char const ** argv){
 
   std::cerr << "Processing read file...";
 
-  #pragma omp parallel for ordered schedule(dynamic)
+  #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -427,6 +427,11 @@ int main(int argc, char const ** argv){
     close(file1);
     close(file2);
 
+    #pragma omp ordered
+    {
+      BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
+    }
+    
     omp_set_lock(&lock);
     std::fstream output;
     output.open(options.output_file,std::ios::out | std::ios::app);
@@ -435,10 +440,6 @@ int main(int argc, char const ** argv){
     output.close();
     omp_unset_lock(&lock);
 
-    #pragma omp ordered
-    {
-      BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
-    }
   }
 
   // std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
