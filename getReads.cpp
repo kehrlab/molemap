@@ -93,7 +93,8 @@ int main(int argc, char const ** argv){
   std::string barcode;
 
   std::ifstream file_bc;
-  if(file_bc.open(options.barcodes /*, std::ios::binary*/)){
+  file_bc.open(options.barcodes /*, std::ios::binary*/);
+  if(file_bc.is_open()){
     while(getline(file_bc, barcode)){
       barcodes.push_back(barcode);
     }
