@@ -427,9 +427,12 @@ int main(int argc, char const ** argv){
     close(file1);
     close(file2);
 
-    #pragma omp critical ordered
+    #pragma omp ordered
     {
+      #pragma omp critical
+      {
       BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
+      }
     }
 
     omp_set_lock(&lock);
