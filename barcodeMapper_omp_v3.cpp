@@ -346,11 +346,8 @@ int main(int argc, char const ** argv){
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
         //append Barcode Index
         BCI_2e=file2.stream.file.tellg();
-        // BCI.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
+        BCI.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
         BCI_1s=pos_temp;
-        // BCI_pos2=file2.stream.file.tellg();
-        // BCI_barcodes.push_back(new_barcode);
-        // BCI_positions.push_back(std::make_pair(BCI_pos1,BCI_pos2));
 
         // map barcode and clear k_mer list
         if (!kmer_list.empty()) {
@@ -459,15 +456,15 @@ int main(int argc, char const ** argv){
   //
   std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bci;
-  // file_bci.open(options.bci_name /*, std::ios::binary*/);
+  file_bci.open(options.bci_name /*, std::ios::binary*/);
   for (int i=0; i<BCI.size(); i++){
-  //   file_bci  << std::get<0>(BCI[i]) << "\t"
-  //             << std::get<1>(BCI[i]) << "\t"
-  //             << std::get<2>(BCI[i]) << "\t"
-  //             << std::get<3>(BCI[i]) << "\t"
-  //             << std::get<4>(BCI[i]) << "\n";
+    file_bci  << std::get<0>(BCI[i]) << "\t"
+              << std::get<1>(BCI[i]) << "\t"
+              << std::get<2>(BCI[i]) << "\t"
+              << std::get<3>(BCI[i]) << "\t"
+              << std::get<4>(BCI[i]) << "\n";
   }
-  // file_bci.close();
+  file_bci.close();
   //
   // std::ofstream file_pos;
   // file_pos.open(IndPos, std::ios::binary);
