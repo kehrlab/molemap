@@ -437,7 +437,8 @@ int main(int argc, char const ** argv){
     output.close();
     omp_unset_lock(&lock);
 
-    #pragma omp critical{
+    #pragma omp critical
+    {
     BCI.emplace_back(BCI_local);
     }
   }
