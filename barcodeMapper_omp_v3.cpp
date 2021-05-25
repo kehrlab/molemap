@@ -304,7 +304,7 @@ int main(int argc, char const ** argv){
     std::streampos BCI_1e;
     std::streampos BCI_2s;
     std::streampos BCI_2e;
-    std::vector<std::tuple<std::string,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
+    std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
 
     //open readfiles
     SeqFileIn file1(toCString(options.readfile1));
