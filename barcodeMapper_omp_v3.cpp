@@ -339,6 +339,7 @@ int main(int argc, char const ** argv){
     BCI_2s=file2.stream.file.tellg();
 
     //proceed through readfile untill endpos
+    std::cerr << "Thread: " << t << " starting while loop!\n";
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
