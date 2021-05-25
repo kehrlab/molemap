@@ -13,15 +13,19 @@ Needed directories etc.
 1. Build an index of the reference genome using countK
 2. Map barcodes to reference using bcmap
 
+- arguments and options are displayed by --help
+
 ## Data requirements
 - 10XGenomics paired-end Linked-reads
 - Sorted by barcode (use [bcctools](https://github.com/kehrlab/bcctools))
-- Barcodes are stored in RX:Z: flag of read Ids
-- Barcode whitelist required (can be infered using [bcctools](https://github.com/kehrlab/bcctools))
+- Barcodes are stored in BX:Z: flag of read Ids
 
 ## countK
 - ./countK reference.fa IndexName
 
 ## bcmap
 - ./bcmap readfile1.fastq readfile2.fastq IndexName BarcodeIndexName
+
+## getreads
+- ./getreads readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
  
