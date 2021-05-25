@@ -314,7 +314,7 @@ int main(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
-    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
+    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
     //move file 1 to start position
     if (t!=0){
