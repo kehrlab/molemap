@@ -20,7 +20,7 @@ struct bcmapOptions{
   std::string readfile1;
   std::string readfile2;
   std::string index_name;
-  std::string whitelist;
+  // std::string whitelist;
   std::string bci_name;
   unsigned k;
   unsigned mini_window_size;
@@ -44,9 +44,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
 
     // Define Options
-    addOption(parser, seqan::ArgParseOption(
-        "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
-        seqan::ArgParseArgument::INPUT_FILE, "Path to Whitelist.txt"));
+    // addOption(parser, seqan::ArgParseOption(
+    //     "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
+    //     seqan::ArgParseArgument::INPUT_FILE, "Path to Whitelist.txt"));
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -100,10 +100,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
     getOptionValue(options.threads, parser, "t");
-    std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
-    inf_whitelist+="/Whitelist.txt";
-    setDefaultValue(parser, "w", inf_whitelist);
-    getOptionValue(options.whitelist, parser, "w");
+    // std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
+    // inf_whitelist+="/Whitelist.txt";
+    // setDefaultValue(parser, "w", inf_whitelist);
+    // getOptionValue(options.whitelist, parser, "w");
 
 
     return seqan::ArgumentParser::PARSE_OK;
@@ -120,7 +120,7 @@ int main(int argc, char const ** argv){
             << "readfile1        \t" << options.readfile1 << '\n'
             << "readfile2        \t" << options.readfile2 << '\n'
             << "index_name       \t" << options.index_name << '\n'
-            << "whitelist        \t" << options.whitelist << '\n'
+            // << "whitelist        \t" << options.whitelist << '\n'
             << "barcodeindex_name\t" << options.bci_name << '\n'
             << "threads          \t" << options.threads << '\n'
             << "k                \t" << options.k << '\n'
@@ -143,11 +143,11 @@ int main(int argc, char const ** argv){
   uint_fast8_t window_count=100;   // amount of saved candidate windows
 
   // checking if whitelist exists
-  std::ifstream whitelistFile (options.whitelist, std::ios::ate);
-  if (!whitelistFile.is_open()) {
-    std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1.\n\n";
-    return 0;
-  }
+  // std::ifstream whitelistFile (options.whitelist, std::ios::ate);
+  // if (!whitelistFile.is_open()) {
+  //   std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1.\n\n";
+  //   return 0;
+  // }
   /*
   reading the Index
   */
@@ -158,7 +158,7 @@ int main(int argc, char const ** argv){
   String<uint32_t> pos;
   String<uint_fast8_t> ref;
   String<int32_t> C;
-  std::vector<std::string> whitelist;
+  // std::vector<std::string> whitelist;
 
   //
   std::string IndPos=options.index_name;
@@ -175,7 +175,7 @@ int main(int argc, char const ** argv){
   auto tbegin = std::chrono::high_resolution_clock::now();
 
   #pragma omp parallel for
-  for(int i=0;i<5;i++){
+  for(int i=0;i<4;i++){
     if (i==0){
       String<uint32_t, External<ExternalConfigLarge<>> > extpos;
       if (!open(extpos, IndPos.c_str(), OPEN_RDONLY)){
@@ -212,16 +212,16 @@ int main(int argc, char const ** argv){
       close(extC);
       std::cerr << ".";
     }
-    if (i==4){ // load whitelist
-      std::streampos size=whitelistFile.tellg();
-      whitelistFile.seekg (0, std::ios::beg);
-      whitelist.reserve((int)size);
-      std::string line;
-      while (getline(whitelistFile,line)){
-        whitelist.push_back(line);
-      }
-      // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
-    }
+    // if (i==4){ // load whitelist
+    //   std::streampos size=whitelistFile.tellg();
+    //   whitelistFile.seekg (0, std::ios::beg);
+    //   whitelist.reserve((int)size);
+    //   std::string line;
+    //   while (getline(whitelistFile,line)){
+    //     whitelist.push_back(line);
+    //   }
+    //   // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
+    // }
   } //for omp
 
   // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
@@ -282,7 +282,7 @@ int main(int argc, char const ** argv){
 
   // preparing barcode Index
   std::vector<std::pair<std::streampos,std::streampos>> BCI_positions;
-  BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
+  // BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
   std::cerr << "Processing read file...";
 
@@ -326,15 +326,15 @@ int main(int argc, char const ** argv){
     }
 
     //align with whitelist
-    std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    while(barcode!=*itrwhitelist && !atEnd(file1)){ //skip to fist barcode that appears in whitelist
-      // skipedBarcodes++;
-      barcode=skipToNextBarcode(file1, id1);
-      itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
-    }
-    if(atEnd(file1)){
-      continue;
-    }
+    // std::vector<std::string>::iterator itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
+    // while(barcode!=*itrwhitelist && !atEnd(file1)){ //skip to fist barcode that appears in whitelist
+    //   // skipedBarcodes++;
+    //   barcode=skipToNextBarcode(file1, id1);
+    //   itrwhitelist=std::lower_bound(whitelist.begin(), whitelist.end(), barcode); //position of first bc in whitelist that is not smaler than barcode
+    // }
+    // if(atEnd(file1)){
+    //   continue;
+    // }
 
     //align file2 with file1
     if(t!=0){
@@ -373,16 +373,17 @@ int main(int argc, char const ** argv){
           break;
         }
         // if new_barcode not in Whitelist: skip to next barcode
-        itrwhitelist++;
+        // itrwhitelist++;
         while (new_barcode[0]=='*' && !atEnd(file1)) {
+          readRecord(id2, read2, file2);
           skipToNextBarcode2(file1,file2,new_barcode);
+          readRecord(id1, read1, file1);
         }
         // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
 
       // Barcodes processed:  1281285
       // Barcodes skiped:    21574673
-
 
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
