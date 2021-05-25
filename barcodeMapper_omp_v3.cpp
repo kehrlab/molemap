@@ -436,7 +436,7 @@ int main(int argc, char const ** argv){
 
     #pragma omp critical
     {
-    // BCI.emplace_back(BCI_local);
+    BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
     }
   }
 
