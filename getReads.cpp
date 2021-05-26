@@ -163,7 +163,7 @@ std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::str
   std::string read;
   CharString id;
 
-  for (std::std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
+  for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
     uint_fast32_t pos = std::distance(BCI.begin(), std::lower_bound(BCI.begin(), BCI.end(), *itrbc));
     file1.stream.file.seekg(std::get<1>(BCI[pos]));
 
