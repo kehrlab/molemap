@@ -115,10 +115,10 @@ int main(int argc, char const ** argv){
   // load in barcode index
   std::ifstream file_bci;
   std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI;
-  std::streampos BCI_1s;
-  std::streampos BCI_1e;
-  std::streampos BCI_2s;
-  std::streampos BCI_2e;
+  std::string BCI_1s;
+  std::string BCI_1e;
+  std::string BCI_2s;
+  std::string BCI_2e;
   std::string BCI_bc;
   file_bci.open(options.bci_name /*, std::ios::binary*/);
   while (!file_bci.eof()){
@@ -127,7 +127,7 @@ int main(int argc, char const ** argv){
     file_bci >> BCI_1e;
     file_bci >> BCI_2s;
     file_bci >> BCI_2e;
-    BCI.push_back(make_tuple(BCI_bc, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
+    BCI.push_back(make_tuple(BCI_bc, std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
   }
   file_bci.close();
 
