@@ -92,6 +92,8 @@ int main(int argc, char const ** argv){
   std::vector<std::string> barcodes;
   std::string barcode;
 
+
+  // get barcodes
   std::ifstream file_bc;
   file_bc.open(options.barcodes /*, std::ios::binary*/);
   if(file_bc.is_open()){      // if barcodes provided as file: read bacodes from file
@@ -110,10 +112,36 @@ int main(int argc, char const ** argv){
     barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
   }
 
-  std::cerr << "\nBarcodes:\n";
-  for (int i = 0; i < barcodes.size(); i++){
-    std::cerr << barcodes[i] << "\n";
+  // load in barcode index
+  std::ifstream file_bci;
+  std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI;
+  std::streampos BCI_1s;
+  std::streampos BCI_1e;
+  std::streampos BCI_2s;
+  std::streampos BCI_2e;
+  std::string BCI_bc;
+  file_bci.open(options.bci_name /*, std::ios::binary*/);
+  while (!file_bci.eof()){
+    BCI_bc << file_bci;
+    BCI_1s << file_bci;
+    BCI_1e << file_bci;
+    BCI_2s << file_bci;
+    BCI_2e << file_bci;
+    BCI.push_back(make_tuple(BCI_bc, BCI_1s, BCI_1e, BCI_2s, BCI_2e))
   }
+  file_bci.close();
+
+  for (int i=0; i<BCI.size(); i++){
+    std::cerr  << std::get<0>(BCI[i]) << "\t"
+              << (int)std::get<1>(BCI[i]) << "\t"
+              << (int)std::get<2>(BCI[i]) << "\t"
+              << (int)std::get<3>(BCI[i]) << "\t"
+              << (int)std::get<4>(BCI[i]) << "\n";
+  }
+  // std::cerr << "\nBarcodes:\n";
+  // for (int i = 0; i < barcodes.size(); i++){
+  //   std::cerr << barcodes[i] << "\n";
+  // }
 
   close(file1);
   close(file2);
