@@ -61,7 +61,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
 }
 
 
-int main(int argc, char const ** argv){
+std::vector<std::string> main(int argc, char const ** argv){
 
   getReadsOptions options;
   seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
