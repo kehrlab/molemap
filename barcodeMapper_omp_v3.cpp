@@ -457,13 +457,10 @@ int main(int argc, char const ** argv){
   //
   // std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
   std::ofstream file_bci;
-  file_bci.open(options.bci_name /*, std::ios::binary*/);
+  // file_bci.open(options.bci_name /*, std::ios::binary*/);
+  file_bci.open(options.bci_name, std::ios::binary);
   for (int i=0; i<BCI.size(); i++){
-    file_bci  << std::get<0>(BCI[i]) << "\t"
-              << std::get<1>(BCI[i]) << "\t"
-              << std::get<2>(BCI[i]) << "\t"
-              << std::get<3>(BCI[i]) << "\t"
-              << std::get<4>(BCI[i]) << "\n";
+    file_bci  << BCI[i] << "\n";
   }
   file_bci.close();
   //
