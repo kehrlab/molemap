@@ -342,7 +342,7 @@ int main(int argc, char const ** argv){
         //append Barcode Index
         BCI_1e=pos_temp;
         BCI_2e=file2.stream.file.tellg();
-        BCI.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
+        BCI_local.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
         BCI_1s=pos_temp;
 
         // map barcode and clear k_mer list
@@ -413,8 +413,9 @@ int main(int argc, char const ** argv){
         }
       }
     }
-    if (!kmer_list.empty()) {
+    if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
       // processedBC++;
+      BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
     }
