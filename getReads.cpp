@@ -133,7 +133,7 @@ int main(int argc, char const ** argv){
     file_bci >> BCI_1e;
     file_bci >> BCI_2s;
     file_bci >> BCI_2e;
-    BCI.push_back(make_tuple(std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
+    BCI.push_back(std::make_tuple(std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
     BCI_BC.push_back(BCI_bc);
   }
   file_bci.close();
