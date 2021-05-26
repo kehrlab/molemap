@@ -149,10 +149,10 @@ int main(int argc, char const ** argv){
   std::vector<std::string> results;
   results=returnReads(BCI, barcodes, file1, file2);
 
-  std::cerr << "\nresults:\n";
-  for (int i = 0; i < results.size(); i++){
-    std::cerr << results[i] << "\n";
-  }
+  // std::cerr << "\nresults:\n";
+  // for (int i = 0; i < results.size(); i++){
+  //   std::cerr << results[i] << "\n";
+  // }
 
   close(file1);
   close(file2);
@@ -166,13 +166,14 @@ std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::str
   for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
     uint_fast32_t pos = std::distance(BCI.begin(), std::lower_bound(BCI.begin(), BCI.end(), *itrbc));
     file1.stream.file.seekg(std::get<1>(BCI[pos]));
-
-    while(file1.stream.file.tellg() < std::get<2>(BCI[pos])){
-      readRecord(id, read, file1);
-      result.push_back(read);
-      readRecord(id, read, file2);
-      result.push_back(read);
-    }
+    file2.stream.file.seekg(std::get<3>(BCI[pos]));
+    //
+    // while(file1.stream.file.tellg() < std::get<2>(BCI[pos])){
+    //   readRecord(id, read, file1);
+    //   result.push_back(read);
+    //   readRecord(id, read, file2);
+    //   result.push_back(read);
+    // }
   }
   return result;
 }
