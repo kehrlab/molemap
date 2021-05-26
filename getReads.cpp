@@ -7,7 +7,7 @@
 # include <time.h>
 using namespace seqan;
 
-std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2);
+std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2);
 
 struct getReadsOptions{
   std::string readfile1;
@@ -119,7 +119,8 @@ int main(int argc, char const ** argv){
 
   // load in barcode index
   std::ifstream file_bci;
-  std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI;
+  std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> BCI;
+  std::vector<std::string> BCI_BC;
   std::string BCI_1s;
   std::string BCI_1e;
   std::string BCI_2s;
@@ -132,7 +133,8 @@ int main(int argc, char const ** argv){
     file_bci >> BCI_1e;
     file_bci >> BCI_2s;
     file_bci >> BCI_2e;
-    BCI.push_back(make_tuple(BCI_bc, std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
+    BCI.push_back(make_tuple(std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
+    BCI_BC.push_back(BCI_bc);
   }
   file_bci.close();
 
@@ -147,7 +149,7 @@ int main(int argc, char const ** argv){
   // lookup barcodes
 
   std::vector<std::string> results;
-  results=returnReads(BCI, barcodes, file1, file2);
+  results=returnReads(BCI_BC, BCI, barcodes, file1, file2);
 
   // std::cerr << "\nresults:\n";
   // for (int i = 0; i < results.size(); i++){
@@ -158,22 +160,22 @@ int main(int argc, char const ** argv){
   close(file2);
 }
 
-std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
+std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
   std::vector<std::string> result;
   std::string read;
   CharString id;
 
   for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
-    // uint_fast32_t pos = std::distance(BCI.begin(), std::lower_bound(BCI.begin(), BCI.end(), *itrbc));
-    // file1.stream.file.seekg(std::get<1>(BCI[pos]));
-    // file2.stream.file.seekg(std::get<3>(BCI[pos]));
-    // //
-    // while(file1.stream.file.tellg() < std::get<2>(BCI[pos])){
-    //   readRecord(id, read, file1);
-    //   result.push_back(read);
-    //   readRecord(id, read, file2);
-    //   result.push_back(read);
-    // }
+    uint_fast32_t pos = std::distance(BCI_BC.begin(), std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc));
+    file1.stream.file.seekg(std::get<0>(BCI[pos]));
+    file2.stream.file.seekg(std::get<2>(BCI[pos]));
+
+    while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
+      readRecord(id, read, file1);
+      result.push_back(read);
+      readRecord(id, read, file2);
+      result.push_back(read);
+    }
   }
   return result;
 }
