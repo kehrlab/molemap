@@ -7,6 +7,7 @@
 # include <time.h>
 using namespace seqan;
 
+std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2);
 
 struct getReadsOptions{
   std::string readfile1;
@@ -111,6 +112,10 @@ int main(int argc, char const ** argv){
     }
     barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
   }
+  // std::cerr << "\nBarcodes:\n";
+  // for (int i = 0; i < barcodes.size(); i++){
+  //   std::cerr << barcodes[i] << "\n";
+  // }
 
   // load in barcode index
   std::ifstream file_bci;
@@ -131,18 +136,43 @@ int main(int argc, char const ** argv){
   }
   file_bci.close();
 
-  for (int i=0; i<BCI.size(); i++){
-    std::cerr  << std::get<0>(BCI[i]) << "\t"
-              << (int)std::get<1>(BCI[i]) << "\t"
-              << (int)std::get<2>(BCI[i]) << "\t"
-              << (int)std::get<3>(BCI[i]) << "\t"
-              << (int)std::get<4>(BCI[i]) << "\n";
-  }
-  // std::cerr << "\nBarcodes:\n";
-  // for (int i = 0; i < barcodes.size(); i++){
-  //   std::cerr << barcodes[i] << "\n";
+  // for (int i=0; i<BCI.size(); i++){
+  //   std::cerr  << std::get<0>(BCI[i]) << "\t"
+  //             << (int)std::get<1>(BCI[i]) << "\t"
+  //             << (int)std::get<2>(BCI[i]) << "\t"
+  //             << (int)std::get<3>(BCI[i]) << "\t"
+  //             << (int)std::get<4>(BCI[i]) << "\n";
   // }
+
+  // lookup barcodes
+
+  std::std::vector<std::string> results;
+  results=returnReads(BCI, barcodes, SeqFileIn file1, SeqFileIn file2);
+
+  std::cerr << "\nresults:\n";
+  for (int i = 0; i < results.size(); i++){
+    std::cerr << results[i] << "\n";
+  }
 
   close(file1);
   close(file2);
+}
+
+std::vector<std::string> returnReads(std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
+  std::vector<std::string> result;
+  std::string read;
+  CharString id;
+
+  for (std::std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
+    uint_fast32_t pos = std::distance(BCI.begin(), std::lower_bound(BCI.begin(), BCI.end(), *itrbc));
+    file1.stream.file.seekg(std::get<1>(BCI[pos]));
+
+    while(file1.stream.file.tellg() < std::get<2>(BCI[pos])){
+      readRecord(id, read, file1);
+      result.push_back(read);
+      readRecord(id, read, file2);
+      result.push_back(read);
+    }
+  }
+  return result;
 }

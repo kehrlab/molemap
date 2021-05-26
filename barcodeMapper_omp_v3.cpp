@@ -415,7 +415,7 @@ int main(int argc, char const ** argv){
     }
     if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
       // processedBC++;
-      BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
+      // BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results);
     }
@@ -425,10 +425,10 @@ int main(int argc, char const ** argv){
 
     #pragma omp ordered
     {
-      #pragma omp critical
-      {
+      // #pragma omp critical
+      // {
       BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
-      }
+      // }
     }
 
     omp_set_lock(&lock);
