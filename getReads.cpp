@@ -94,18 +94,18 @@ int main(int argc, char const ** argv){
 
   std::ifstream file_bc;
   file_bc.open(options.barcodes /*, std::ios::binary*/);
-  if(file_bc.is_open()){
+  if(file_bc.is_open()){      // if barcodes provided as file: read bacodes from file
     while(getline(file_bc, barcode)){
       barcodes.push_back(barcode);
     }
     file_bc.close();
-  } else {
+  } else {                  // if barcodes provided as argument: read barcodes from argument
     std::size_t pos_s = 0;
     std::size_t pos = options.barcodes.find(",");
-    while (pos!=std::string::npos){
+    while (pos!=std::string::npos/*<options.barcodes.end()*/){
       barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
       pos_s=pos+1;
-      pos=options.barcodes.find(",");
+      pos=options.barcodes.find(",",pos_s);
     }
     barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
   }
