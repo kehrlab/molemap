@@ -212,16 +212,6 @@ int main(int argc, char const ** argv){
       close(extC);
       std::cerr << ".";
     }
-    // if (i==4){ // load whitelist
-    //   std::streampos size=whitelistFile.tellg();
-    //   whitelistFile.seekg (0, std::ios::beg);
-    //   whitelist.reserve((int)size);
-    //   std::string line;
-    //   while (getline(whitelistFile,line)){
-    //     whitelist.push_back(line);
-    //   }
-    //   // std::cerr << "\nwhitelist.size(): " << whitelist.size() << "\n";
-    // }
   } //for omp
 
   // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
@@ -314,7 +304,7 @@ int main(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
     //move file 1 to start position
     if (t!=0){
@@ -326,7 +316,7 @@ int main(int argc, char const ** argv){
       file1.stream.file.seekg(0);
     }
 
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
 
     //align file2 with file1
@@ -341,8 +331,8 @@ int main(int argc, char const ** argv){
     // }
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     //proceed through readfile untill endpos
+    std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     // std::cerr << "Thread: " << t << " starting while loop!\n";
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
