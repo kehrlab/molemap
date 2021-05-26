@@ -122,11 +122,11 @@ int main(int argc, char const ** argv){
   std::string BCI_bc;
   file_bci.open(options.bci_name /*, std::ios::binary*/);
   while (!file_bci.eof()){
-    BCI_bc << file_bci;
-    BCI_1s << file_bci;
-    BCI_1e << file_bci;
-    BCI_2s << file_bci;
-    BCI_2e << file_bci;
+    file_bci >> BCI_bc;
+    file_bci >> BCI_1s;
+    file_bci >> BCI_1e;
+    file_bci >> BCI_2s;
+    file_bci >> BCI_2e;
     BCI.push_back(make_tuple(BCI_bc, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
   }
   file_bci.close();
