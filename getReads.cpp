@@ -151,10 +151,10 @@ int main(int argc, char const ** argv){
   std::vector<std::string> results;
   results=returnReads(BCI_BC, BCI, barcodes, file1, file2);
 
-  // std::cerr << "\nresults:\n";
-  // for (int i = 0; i < results.size(); i++){
-  //   std::cerr << results[i] << "\n";
-  // }
+  std::cerr << "\nresults:\n";
+  for (int i = 0; i < results.size(); i++){
+    std::cerr << results[i] << "\n";
+  }
 
   close(file1);
   close(file2);
