@@ -166,15 +166,18 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
   CharString id;
 
   for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
-    uint_fast32_t pos = std::distance(BCI_BC.begin(), std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc));
-    file1.stream.file.seekg(std::get<0>(BCI[pos]));
-    file2.stream.file.seekg(std::get<2>(BCI[pos]));
+    std::vector<std::string>::iterator itrpos=std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
+    if (itrpos!=BCI_BC.end()){
+      uint_fast32_t pos = std::distance(BCI_BC.begin(), itrpos);
+      file1.stream.file.seekg(std::get<0>(BCI[pos]));
+      file2.stream.file.seekg(std::get<2>(BCI[pos]));
 
-    while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
-      readRecord(id, read, file1);
-      result.push_back(read);
-      readRecord(id, read, file2);
-      result.push_back(read);
+      while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
+        readRecord(id, read, file1);
+        result.push_back(read);
+        readRecord(id, read, file2);
+        result.push_back(read);
+      }
     }
   }
   return result;
