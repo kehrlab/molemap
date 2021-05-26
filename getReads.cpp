@@ -127,7 +127,7 @@ int main(int argc, char const ** argv){
     BCI_1e << file_bci;
     BCI_2s << file_bci;
     BCI_2e << file_bci;
-    BCI.push_back(make_tuple(BCI_bc, BCI_1s, BCI_1e, BCI_2s, BCI_2e))
+    BCI.push_back(make_tuple(BCI_bc, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
   }
   file_bci.close();
 
