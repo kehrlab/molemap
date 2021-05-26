@@ -61,7 +61,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
 }
 
 
-std::vector<std::string> main(int argc, char const ** argv){
+int main(int argc, char const ** argv){
 
   getReadsOptions options;
   seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
@@ -151,15 +151,15 @@ std::vector<std::string> main(int argc, char const ** argv){
   std::vector<std::string> results;
   results=returnReads(BCI_BC, BCI, barcodes, file1, file2);
 
-  // std::cerr << "\nresults:\n";
-  // for (int i = 0; i < results.size(); i++){
-  //   std::cerr << results[i] << "\n";
-  // }
+  std::cerr << "\nresults:\n";
+  for (int i = 0; i < results.size(); i++){
+    std::cerr << results[i] << "\n";
+  }
 
   close(file1);
   close(file2);
 
-  return results;
+  return;
 }
 
 std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
