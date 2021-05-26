@@ -325,11 +325,11 @@ int main(int argc, char const ** argv){
     }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
-    skip to first valid barcode
+    // skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
       skipToNextBarcode2(file1,file2,barcode);
     }
-    
+
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
     //proceed through readfile untill endpos
