@@ -159,7 +159,6 @@ int main(int argc, char const ** argv){
   close(file1);
   close(file2);
 
-  return;
 }
 
 std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
