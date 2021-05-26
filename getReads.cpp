@@ -146,8 +146,8 @@ int main(int argc, char const ** argv){
 
   // lookup barcodes
 
-  std::std::vector<std::string> results;
-  results=returnReads(BCI, barcodes, SeqFileIn file1, SeqFileIn file2);
+  std::vector<std::string> results;
+  results=returnReads(BCI, barcodes, file1, file2);
 
   std::cerr << "\nresults:\n";
   for (int i = 0; i < results.size(); i++){
