@@ -271,7 +271,7 @@ int main(int argc, char const ** argv){
   omp_init_lock(&lock);
 
   // preparing barcode Index
-  std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
+  // std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
   // BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
   std::cerr << "Processing read file...";
@@ -325,10 +325,11 @@ int main(int argc, char const ** argv){
     }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
-    //skip to first valid barcode
-    // while (barcode[0]=='*' && !atEnd(file1)) {
-    //   skipToNextBarcode2(file1,file2,barcode);
-    // }
+    skip to first valid barcode
+    while (barcode[0]=='*' && !atEnd(file1)) {
+      skipToNextBarcode2(file1,file2,barcode);
+    }
+    
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
     //proceed through readfile untill endpos
@@ -425,9 +426,19 @@ int main(int argc, char const ** argv){
 
     #pragma omp ordered
     {
+      std::ofstream file_bci;
+      file_bci.open(options.bci_name , std::ios::app/*, std::ios::binary*/);
+      for (int i=0; i<BCI_local.size(); i++){
+        file_bci  << std::get<0>(BCI_local[i]) << "\t"
+                  << std::get<1>(BCI_local[i]) << "\t"
+                  << std::get<2>(BCI_local[i]) << "\t"
+                  << std::get<3>(BCI_local[i]) << "\t"
+                  << std::get<4>(BCI_local[i]) << "\n";
+      }
+      file_bci.close();
       // #pragma omp critical
       // {
-      BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
+      // BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
       // }
     }
 
@@ -456,16 +467,16 @@ int main(int argc, char const ** argv){
   // IndPos.append("_pos.txt");
   //
   // std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
-  std::ofstream file_bci;
-  file_bci.open(options.bci_name /*, std::ios::binary*/);
-  for (int i=0; i<BCI.size(); i++){
-    file_bci  << std::get<0>(BCI[i]) << "\t"
-              << std::get<1>(BCI[i]) << "\t"
-              << std::get<2>(BCI[i]) << "\t"
-              << std::get<3>(BCI[i]) << "\t"
-              << std::get<4>(BCI[i]) << "\n";
-  }
-  file_bci.close();
+  // std::ofstream file_bci;
+  // file_bci.open(options.bci_name /*, std::ios::binary*/);
+  // for (int i=0; i<BCI.size(); i++){
+  //   file_bci  << std::get<0>(BCI[i]) << "\t"
+  //             << std::get<1>(BCI[i]) << "\t"
+  //             << std::get<2>(BCI[i]) << "\t"
+  //             << std::get<3>(BCI[i]) << "\t"
+  //             << std::get<4>(BCI[i]) << "\n";
+  // }
+  // file_bci.close();
   //
   // std::ofstream file_pos;
   // file_pos.open(IndPos, std::ios::binary);
