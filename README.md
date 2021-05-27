@@ -2,13 +2,13 @@
 Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score.
 
 # Installation
-- Clone this repository using the command "git clone https://github.com/kehrlab/Barcode_assignment.git"
 - Install [SeqAn2](https://seqan.readthedocs.io/en/master/Infrastructure/Use/Install.html#infra-use-install)
+- Update line XX in the makefile to link and include the SeqAn directory
+- run make
+
 ## Prerequisites
-- Seqan
+- SeqAn2
 - gcc version XXX
-- Other libs
-Needed directories etc.
 
 # Usage 
 1. Build an index of the reference genome using countK
