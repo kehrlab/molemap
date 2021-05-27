@@ -276,8 +276,7 @@ int main(int argc, char const ** argv){
 
   std::cerr << "Processing read file...";
 
-  // #pragma omp parallel for ordered
-  #pragma omp target teams distribute num_teams(16) 
+  #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
@@ -387,7 +386,6 @@ int main(int argc, char const ** argv){
       assignValue(reads,1,read2);
       barcode=new_barcode;
 
-      #pragma omp parallel for
       for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
         std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
         int64_t minimizer_position=0;
