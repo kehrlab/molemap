@@ -14,7 +14,10 @@ int main(int argc, char const ** argv){
   std::string arg1(argv[1]);
   --argc;
   argv++;
-  if(arg1=="index"){
+  if (argc==0){
+    std::cerr << "\nNo command! " << arg1 << ".\nCommands are: index, map, get.\nUse './bcmap [command] --help' for more information.\n";
+  }
+  else if(arg1=="index"){
     index(argc, argv);
   }
   else if(arg1=="map"){
@@ -24,7 +27,7 @@ int main(int argc, char const ** argv){
     get(argc, argv);
   }
   else{
-    std::cerr << "\ninvalid Command " << arg1 << ".\nCommands are: index, map, get.\nUse './bcmap [Command] --help' for more information.\n";
+    std::cerr << "\nInvalid command! " << arg1 << ".\nCommands are: index, map, get.\nUse './bcmap [command] --help' for more information.\n";
   }
 
 }
