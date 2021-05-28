@@ -2,7 +2,7 @@
 # include <seqan/sequence.h>
 # include <iostream>
 # include <fstream>
-#include "functions.h"
+# include "functions.h"
 
 using namespace seqan;
 
@@ -121,10 +121,10 @@ void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>>
       uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
       uint_fast32_t abundance=dir[c+1]-dir[c];
       if (abundance<=10){
-        #pragma omp atomic
+        // #pragma omp atomic
         kmer_list.reserve(kmer_list.size()+abundance);
         for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-          #pragma omp atomic
+          // #pragma omp atomic
           kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
       }
