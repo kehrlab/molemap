@@ -14,7 +14,7 @@ int main(int argc, char const ** argv){
 
   if (argc==0){
     std::cerr << "\nNo command!\nCommands are: index, map, get.\nUse './bcmap [command] --help' for more information.\n";
-    return;
+    return 0;
   }
 
   std::string arg1(argv[1]);
