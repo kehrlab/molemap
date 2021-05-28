@@ -23,5 +23,8 @@ int main(int argc, char const ** argv){
   else if(arg1=="get"){
     get(argc, argv);
   }
+  else{
+    std::cerr << "\ninvalid Command " << arg1 << ".\nCommands are: index, map, get.\nUse './bcmap [Command] --help' for more information.\n"
+  }
 
 }
