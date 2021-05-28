@@ -17,7 +17,7 @@ struct getReadsOptions{
   std::string barcodes;
   std::string output_file;
   getReadsOptions() :
-  output_file("getReadsOut.fastq")
+  output_file("bcmapGetOut.fastq")
   {}
 };
 
@@ -26,15 +26,15 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     seqan::ArgumentParser parser("bcmap get");
 
     // Define arguments.
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile1.fastq"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile2.fastq"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcodes to search for"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1.fastq"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2.fastq"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcodes"));
 
     addOption(parser, seqan::ArgParseOption(
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
-    setDefaultValue(parser, "o", "getReadsOut.fastq");
+    setDefaultValue(parser, "o", "bcmapGetOut.fastq");
 
     setShortDescription(parser, "Retreive all reads of a list of barcodes");
     setVersion(parser, "1.0");

@@ -29,7 +29,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("bcmap index");
 
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to reference.(fastq/fasta)"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "reference(.fastq/.fasta)"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
 
     // Define Options
