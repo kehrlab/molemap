@@ -23,7 +23,7 @@ struct getReadsOptions{
 
 seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
-    seqan::ArgumentParser parser("get");
+    seqan::ArgumentParser parser("bcmap get");
 
     // Define arguments.
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile1.fastq"));
@@ -37,7 +37,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     setDefaultValue(parser, "o", "getReadsOut.fastq");
 
     setShortDescription(parser, "Retreive all reads of a list of barcodes");
-    setVersion(parser, "0.1");
+    setVersion(parser, "1.0");
     setDate(parser, "May 25 2021");
     addDescription(parser,
                "Retreives all reads belonging to the given set of barcodes. "

@@ -36,7 +36,7 @@ struct bcmapOptions{
 
 seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
-    seqan::ArgumentParser parser("map");
+    seqan::ArgumentParser parser("bcmap map");
 
     // Define arguments.
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to readfile1.fastq"));
@@ -76,7 +76,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     setDefaultValue(parser, "t", "16");
 
     setShortDescription(parser, "Map barcodes to reference.");
-    setVersion(parser, "0.1");
+    setVersion(parser, "1.0");
     setDate(parser, "March 24 2021");
     addDescription(parser,
                "Barcodes will be mapped to reference genome. "
@@ -322,7 +322,9 @@ int map(int argc, char const ** argv){
 
     //align file2 with file1
     if(t!=0){
-      startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
+      // startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
+      startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4);
+
     }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 

@@ -27,7 +27,7 @@ struct countKOptions{
 
 seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
-    seqan::ArgumentParser parser("index");
+    seqan::ArgumentParser parser("bcmap index");
 
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "Path to reference.(fastq/fasta)"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
@@ -45,7 +45,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     setDefaultValue(parser, "b", "3221225472");
 
     setShortDescription(parser, "Build an index of a reference genome.");
-    setVersion(parser, "0.1");
+    setVersion(parser, "1.0");
     setDate(parser, "March 24 2021");
     addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
 
