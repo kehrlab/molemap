@@ -14,20 +14,28 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 1. Build an index of the reference genome using countK
 2. Map barcodes to reference using bcmap
 
-- arguments and options are explained using --help for every command
-
 ## Data requirements
 - 10XGenomics paired-end Linked-reads
 - Sorted by barcode (use [bcctools](https://github.com/kehrlab/bcctools))
 - Barcodes are stored in BX:Z: flag of read Ids
 
-# Comands
+# Commands
+For detailed information on Arguments and parameters use:
+
+./bcmap [command] --help
+
 ## index
-- ./bcmap index reference.fa IndexName
+Builds an open addressing k-mer index of the reference genome. The index is required to run "map".
+
+- ./bcmap index reference.fa RefIndexName
 
 ## map
-- ./bcmap map readfile1.fastq readfile2.fastq IndexName BarcodeIndexName
+Maps the barcodes of the provided to the reference and creates an barcode index of the readfiles to quickly retrieve all reads of a given barcode.
+
+- ./bcmap map readfile1.fastq readfile2.fastq RefIndexName BarcodeIndexName
 
 ## get
+Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
+
 - ./bcmap get readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
  
