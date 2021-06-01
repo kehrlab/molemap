@@ -21,12 +21,13 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Sorted by barcode (use [bcctools](https://github.com/kehrlab/bcctools))
 - Barcodes are stored in BX:Z: flag of read Ids
 
-## countK
-- ./countK reference.fa IndexName
+# Comands
+## index
+- ./bcmap index reference.fa IndexName
 
-## bcmap
-- ./bcmap readfile1.fastq readfile2.fastq IndexName BarcodeIndexName
+## map
+- ./bcmap map readfile1.fastq readfile2.fastq IndexName BarcodeIndexName
 
-## getreads
-- ./getreads readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
+## get
+- ./bcmap get readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
  
