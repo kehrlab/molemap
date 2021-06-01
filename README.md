@@ -1,4 +1,4 @@
-# Barcode_assignment
+# bcmap
 Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score.
 
 # Installation
@@ -10,14 +10,14 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - SeqAn2
 - gcc version XXX
 
-# Usage 
-1. Build an index of the reference genome using countK
-2. Map barcodes to reference using bcmap
-
 ## Data requirements
 - 10XGenomics paired-end Linked-reads
 - Sorted by barcode (use [bcctools](https://github.com/kehrlab/bcctools))
 - Barcodes are stored in BX:Z: flag of read Ids
+
+# Example 
+
+
 
 # Commands
 For detailed information on Arguments and parameters use:
