@@ -35,7 +35,7 @@ for line in bcmap_res:
     barcode=getbarcode(line)
     if barcode==old_barcode:
         #append mappings
-        mappings+=getmapping(line)
+        mappings[-0]=getmapping(line)
 
     else:
         barcodecount+=1
@@ -57,7 +57,7 @@ for line in bcmap_res:
         print(mappings,"\n\n")
         old_barcode=barcode
         mappings=[[]]
-        mappings+=getmapping(line)
+        mappings[0]=getmapping(line)
 
 print("\n")
 # print("readcount:     " , readcount , "\n")
