@@ -6,9 +6,8 @@ def getbarcode(line):
     return barcode
 
 def get10xbarcode(line):
-    print(line,"\n")
-    barcode=line.split('\t')[1]
-    # print(barcode, " ")
+    barcode=line.split(' ')[1][5:]
+    print(barcode, " ")
     return barcode
 
 def getmapping(line):
