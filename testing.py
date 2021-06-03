@@ -15,7 +15,7 @@ def evaluate(bwa_line, mappings):
     print("bwamap: ",bwamap,"\n")
     for mapping in mappings:
         if mapping[0]==bwamap[2]:
-            if (int(bwamap[3])>int(mapping[1]) && int(bwamap[3])<int(mapping[2]) && int(bwamap[7])>int(mapping[1]) && int(bwamap[7])<int(mapping[2])):
+            if (int(bwamap[3])>int(mapping[1]) and int(bwamap[3])<int(mapping[2]) and int(bwamap[7])>int(mapping[1]) and int(bwamap[7])<int(mapping[2])):
                 print("mapping: ",mapping,"\n")
                 return 1
     return 0
