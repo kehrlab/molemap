@@ -6,7 +6,7 @@ def getbarcode(line):
     return barcode
 
 def get10xbarcode(line):
-    # print("line: ",line,"\n")
+    print("line: ",line,"\n")
     barcode=line.split(' ')[1][5:]
     print(barcode, " ")
     return barcode
@@ -64,7 +64,7 @@ for line in bcmap_res:
         bwa_line=bwa_res.readline()
         correct+=evaluate(bwa_line, mappings)
         #evaluate bwa_line
-        while get10xbarcode(readfile.readline())==old_barcode:
+        while tenXbc<old_barcode and tenXbc!='*':
             readfile.readline()
             readfile.readline()
             readfile.readline()
