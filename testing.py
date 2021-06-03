@@ -7,22 +7,54 @@ def getbarcode(line):
 
 def getmapping(line):
     mapping=line.split('\t')[0:2]
-    pring(mapping)
+    print(mapping)
     return mapping
 
+def evaluate(bwa_line, mappings):
+    for mapping in mappings:
+        if #ref correct
+            if #pos correct
+                return 1
+# parameters:
+tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
+#files:
 bcmap_res=open('res5bc.bed','r')
 # bwa_res=open('','r')
-# readfile=open('159916111600 25. Feb 14:36 NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
-
+readfile=open('NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
+readcount=0
+barcodecount=0
+tp=0
 old_barcode=''
 mappings=[[]]
 for line in bcmap_res:
+    readcount++
     barcode=getbarcode(line)
     if barcode==old_barcode:
-        mappings+=getmapping(line)
         #append mappings
+        mappings+=getmapping(line)
 
     else:
+        barcodecount++
+        # #evaluate
+        # while getbarcode(readfile1.readline())<old_barcode:
+        #     readfile1.readline()
+        #     readfile1.readline()
+        #     readfile1.readline()
+        #     bwa_res.readline()
+        # bwa_line=bwa_res.readline()
+        # tp+=evaluate(bwa_line, mappings)
+        # #evaluate bwa_line
+        # while getbarcode(readfile1.readline())==old_barcode:
+        #     bwa_line=bwa_res.readline()
+
+
+        #create new mappings
+        old_barcode=barcode
         mappings=[[]]
-        #evaluate and create new mappings
+        mappings+=getmapping(line)
+
+print("\n")
+print("readcount:     " , readcount , "\n")
+print("barcodecount:  " , barcodecount , "\n")
+print("true positives:" , tp, "\n")
