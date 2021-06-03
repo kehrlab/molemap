@@ -11,7 +11,7 @@ def getmapping(line):
     return mapping
 
 
-bcmap_res=open('resall.bed','r')
+bcmap_res=open('res5bc.bed','r')
 # bwa_res=open('','r')
 # readfile=open('159916111600 25. Feb 14:36 NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
 
