@@ -52,6 +52,7 @@ for line in bcmap_res:
         #evaluate
         correct=0
         tenXbc=get10xbarcode(readfile.readline())
+        print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
         while tenXbc<old_barcode or tenXbc=='*':
             readfile.readline()
             readfile.readline()
