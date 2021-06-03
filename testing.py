@@ -50,10 +50,12 @@ for line in bcmap_res:
         barcodecount+=1
         #evaluate
         correct=0
-        while x=get10xbarcode(readfile.readline())<old_barcode and x!='*':
+        tenXbc=get10xbarcode(readfile.readline())
+        while tenXbc<old_barcode and tenXbc!='*':
             readfile1.readline()
             readfile1.readline()
             readfile1.readline()
+            tenXbc=get10xbarcode(readfile.readline())
             bwa_res.readline()
             bwa_res.readline()
         bwa_line=bwa_res.readline()
@@ -62,8 +64,13 @@ for line in bcmap_res:
         correct+=evaluate(bwa_line, mappings)
         #evaluate bwa_line
         while get10xbarcode(readfile.readline())==old_barcode:
+            readfile1.readline()
+            readfile1.readline()
+            readfile1.readline()
             bwa_line=bwa_res.readline()
-
+            correct+=evaluate(bwa_line, mappings)
+            bwa_line=bwa_res.readline()
+            correct+=evaluate(bwa_line, mappings)
         #create new mappings
         print("bc: ",old_barcode,"\n")
         print(mappings,"\n\n")
