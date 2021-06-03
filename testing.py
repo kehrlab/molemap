@@ -24,7 +24,7 @@ tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified 
 
 #files:
 bcmap_res=open('res5bc.bed','r')
-bwa_res=open('./bwa/res5bc.sam','r')
+bwa_res=open('res5bc.sam','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
