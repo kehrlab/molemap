@@ -2,12 +2,12 @@
 
 def getbarcode(line):
     barcode=line.split('\t')[3]
-    print(barcode)
+    # print(barcode)
     return barcode
 
 def getmapping(line):
-    mapping=line.split('\t')[0:2]
-    print(mapping)
+    mapping=line.split('\t')[0:3]
+    # print(mapping)
     return mapping
 
 # def evaluate(bwa_line, mappings):
@@ -26,13 +26,12 @@ while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
 # print('bwa_line#1: ' , bwa_line, "\n")
 readfile=open('./testdata/NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
-readcount=0
+# readcount=0
 barcodecount=0
 tp=0
 old_barcode=''
 mappings=[[]]
 for line in bcmap_res:
-    readcount+=1
     barcode=getbarcode(line)
     if barcode==old_barcode:
         #append mappings
@@ -54,11 +53,13 @@ for line in bcmap_res:
 
 
         #create new mappings
+        print("bc: ",old_barcode,"\n")
+        print(mappings,"\n\n")
         old_barcode=barcode
         mappings=[[]]
         mappings+=getmapping(line)
 
 print("\n")
-print("readcount:     " , readcount , "\n")
+# print("readcount:     " , readcount , "\n")
 print("barcodecount:  " , barcodecount , "\n")
 print("true positives:" , tp, "\n")
