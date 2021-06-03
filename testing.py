@@ -18,12 +18,13 @@ def getmapping(line):
 
 def evaluate(bwa_line, mappings):
     bwamap=bwa_line.split('\t')
-    print("bwamap: ",bwamap,"\n")
     for mapping in mappings:
         if mapping[0]==bwamap[2]:
             if (int(bwamap[3])>int(mapping[1]) and int(bwamap[3])<int(mapping[2]) and int(bwamap[7])>int(mapping[1]) and int(bwamap[7])<int(mapping[2])):
-                print("mapping: ",mapping,"\n")
+                # print("mapping: ",mapping,"\n")
                 return 1
+
+    print("bwamap: ",bwamap,"\n")
     return 0
 # parameters:
 tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
