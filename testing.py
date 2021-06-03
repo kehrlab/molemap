@@ -13,7 +13,7 @@ old_barcode=''
 
 for line in bcmap_res:
     barcode=getbarcode(line)
-    if barcode==old_barcode
+    # if barcode==old_barcode
         #append mappings
 
     else
