@@ -6,9 +6,9 @@ def getbarcode(line):
     return barcode
 
 def get10xbarcode(line):
-    print("line: ",line,"\n")
+    # print("line: ",line,"\n")
     barcode=line.split(' ')[1][5:21]
-    print(barcode, " ")
+    # print(barcode, " ")
     return barcode
 
 def getmapping(line):
@@ -51,24 +51,27 @@ for line in bcmap_res:
         barcodecount+=1
         #evaluate
         correct=0
+        reads=0
         tenXbc=get10xbarcode(readfile.readline())
         readfile.readline()
         readfile.readline()
         readfile.readline()
-        print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
+        # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
         while tenXbc<old_barcode or tenXbc=='*':
             tenXbc=get10xbarcode(readfile.readline())
             readfile.readline()
             readfile.readline()
             readfile.readline()
-            print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
+            # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
             bwa_res.readline()
             bwa_res.readline()
         #evaluate bwa_line
         while tenXbc==old_barcode:
             bwa_line=bwa_res.readline()
+            reads+=1
             correct+=evaluate(bwa_line, mappings)
             bwa_line=bwa_res.readline()
+            reads+=1
             correct+=evaluate(bwa_line, mappings)
             readline=readfile.readline()
             if readline!="":
@@ -80,12 +83,16 @@ for line in bcmap_res:
                 break;
 
         bwa_line=bwa_res.readline()
+        reads+=1
         correct+=evaluate(bwa_line, mappings)
         bwa_line=bwa_res.readline()
+        read+=1
         correct+=evaluate(bwa_line, mappings)
         #create new mappings
         print("bc: ",old_barcode,"\n")
-        print(mappings,"\n\n")
+        print(mappings,"\n")
+        print("reads:   ", reads, "\n")
+        print("correct: ", correct, "\n\n")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
