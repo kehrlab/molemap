@@ -53,9 +53,9 @@ for line in bcmap_res:
         correct=0
         tenXbc=get10xbarcode(readfile.readline())
         while tenXbc<old_barcode and tenXbc!='*':
-            readfile1.readline()
-            readfile1.readline()
-            readfile1.readline()
+            print(readfile1.readline(),"\n")
+            print(readfile1.readline(),"\n")
+            print(readfile1.readline(),"\n")
             tenXbc=get10xbarcode(readfile.readline())
             bwa_res.readline()
             bwa_res.readline()
