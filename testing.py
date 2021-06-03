@@ -86,7 +86,7 @@ for line in bcmap_res:
         reads+=1
         correct+=evaluate(bwa_line, mappings)
         bwa_line=bwa_res.readline()
-        read+=1
+        reads+=1
         correct+=evaluate(bwa_line, mappings)
         #create new mappings
         print("bc: ",old_barcode,"\n")
