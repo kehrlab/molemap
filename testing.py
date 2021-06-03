@@ -32,14 +32,14 @@ tp=0
 old_barcode=''
 mappings=[[]]
 for line in bcmap_res:
-    readcount++
+    readcount+=1
     barcode=getbarcode(line)
     if barcode==old_barcode:
         #append mappings
         mappings+=getmapping(line)
 
     else:
-        barcodecount++
+        barcodecount+=1
         # #evaluate
         # while getbarcode(readfile1.readline())<old_barcode:
         #     readfile1.readline()
