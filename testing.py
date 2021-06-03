@@ -10,11 +10,11 @@ def getmapping(line):
     print(mapping)
     return mapping
 
-def evaluate(bwa_line, mappings):
-    for mapping in mappings:
-        if #ref correct
-            if #pos correct
-                return 1
+# def evaluate(bwa_line, mappings):
+#     for mapping in mappings:
+#         if #ref correct
+#             if #pos correct
+#                 return 1
 # parameters:
 tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
