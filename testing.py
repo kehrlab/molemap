@@ -50,7 +50,7 @@ for line in bcmap_res:
         barcodecount+=1
         #evaluate
         correct=0
-        while get10xbarcode(readfile.readline())<old_barcode:
+        while x=get10xbarcode(readfile.readline())<old_barcode and x!='*':
             readfile1.readline()
             readfile1.readline()
             readfile1.readline()
