@@ -16,5 +16,5 @@ for line in bcmap_res:
     # if barcode==old_barcode
         #append mappings
 
-    else
+    # else
         #evaluate and create new mappings
