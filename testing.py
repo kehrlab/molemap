@@ -20,7 +20,11 @@ tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified 
 
 #files:
 bcmap_res=open('res5bc.bed','r')
-# bwa_res=open('','r')
+bwa_res=open('./bwa/resall32.sam','r')
+bwa_line=bwa_res.readline()
+while bwa_line[0]=='@':
+    bwa_line=bwa_res.readline()
+print('bwa_line#1: ' , bwa_line, "\n")
 readfile=open('NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
 readcount=0
 barcodecount=0
