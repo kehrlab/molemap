@@ -5,6 +5,11 @@ def getbarcode(line):
     # print(barcode)
     return barcode
 
+def get10xbarcode(line):
+    barcode=line.split('\t')[1][5:]
+    print(barcode, " ")
+    return barcode
+
 def getmapping(line):
     mapping=line.split('\t')[0:3]
     # print(mapping)
@@ -45,7 +50,7 @@ for line in bcmap_res:
         barcodecount+=1
         #evaluate
         correct=0
-        while getbarcode(readfile1.readline())<old_barcode:
+        while get10xbarcode(readfile.readline())<old_barcode:
             readfile1.readline()
             readfile1.readline()
             readfile1.readline()
@@ -56,7 +61,7 @@ for line in bcmap_res:
         bwa_line=bwa_res.readline()
         correct+=evaluate(bwa_line, mappings)
         #evaluate bwa_line
-        while getbarcode(readfile1.readline())==old_barcode:
+        while get10xbarcode(readfile.readline())==old_barcode:
             bwa_line=bwa_res.readline()
 
         #create new mappings
