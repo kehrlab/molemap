@@ -35,7 +35,7 @@ bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
 # print('bwa_line#1: ' , bwa_line, "\n")
-readfile=open('./testdata/NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
+readfile=open('./testdata/NA12878_WGS_v2_S1_L001_5Barcodes_corrected.1.fastq','r')
 # readcount=0
 barcodecount=0
 tp=0
