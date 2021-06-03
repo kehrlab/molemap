@@ -6,7 +6,7 @@ def getbarcode(line):
     return barcode
 
 def get10xbarcode(line):
-    barcode=line.split('\t')[1][5:]
+    barcode=line.split('\t')[1]
     print(barcode, " ")
     return barcode
 
