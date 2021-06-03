@@ -52,12 +52,15 @@ for line in bcmap_res:
         #evaluate
         correct=0
         tenXbc=get10xbarcode(readfile.readline())
+        readfile.readline()
+        readfile.readline()
+        readfile.readline()
         print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
         while tenXbc<old_barcode or tenXbc=='*':
-            readfile.readline()
-            readfile.readline()
-            readfile.readline()
             tenXbc=get10xbarcode(readfile.readline())
+            readfile.readline()
+            readfile.readline()
+            readfile.readline()
             print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
             bwa_res.readline()
             bwa_res.readline()
@@ -67,10 +70,11 @@ for line in bcmap_res:
             correct+=evaluate(bwa_line, mappings)
             bwa_line=bwa_res.readline()
             correct+=evaluate(bwa_line, mappings)
-            readfile.readline()
-            readfile.readline()
-            readfile.readline()
             tenXbc=get10xbarcode(readfile.readline())
+            readfile.readline()
+            readfile.readline()
+            readfile.readline()
+
         bwa_line=bwa_res.readline()
         correct+=evaluate(bwa_line, mappings)
         bwa_line=bwa_res.readline()
