@@ -40,7 +40,7 @@ readfile=open('./testdata/NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
 barcodecount=0
 tp=0
 old_barcode=getbarcode(bcmap_res.readline())
-mappings=[[]]
+mappings=[]
 for line in bcmap_res:
     barcode=getbarcode(line)
     if barcode==old_barcode:
