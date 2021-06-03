@@ -10,17 +10,21 @@ def getmapping(line):
     # print(mapping)
     return mapping
 
-# def evaluate(bwa_line, mappings):
-#     for mapping in mappings:
-#         if #ref correct
-#             if #pos correct
-#                 return 1
+def evaluate(bwa_line, mappings):
+    bwamap=bwa_line.split('\t')
+    print("bwamap: ",bwamap,"\n")
+    for mapping in mappings:
+        if mapping[0]==bwamap[2]:
+            if (int(bwamap[3])>int(mapping[1]) && int(bwamap[3])<int(mapping[2]) && int(bwamap[7])>int(mapping[1]) && int(bwamap[7])<int(mapping[2])):
+                print("mapping: ",mapping,"\n")
+                return 1
+    return 0
 # parameters:
 tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
 #files:
 bcmap_res=open('res5bc.bed','r')
-bwa_res=open('./bwa/resall32.sam','r')
+bwa_res=open('./bwa/res5bc.sam','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
@@ -39,18 +43,21 @@ for line in bcmap_res:
 
     else:
         barcodecount+=1
-        # #evaluate
-        # while getbarcode(readfile1.readline())<old_barcode:
-        #     readfile1.readline()
-        #     readfile1.readline()
-        #     readfile1.readline()
-        #     bwa_res.readline()
-        # bwa_line=bwa_res.readline()
-        # tp+=evaluate(bwa_line, mappings)
-        # #evaluate bwa_line
-        # while getbarcode(readfile1.readline())==old_barcode:
-        #     bwa_line=bwa_res.readline()
-
+        #evaluate
+        correct=0
+        while getbarcode(readfile1.readline())<old_barcode:
+            readfile1.readline()
+            readfile1.readline()
+            readfile1.readline()
+            bwa_res.readline()
+            bwa_res.readline()
+        bwa_line=bwa_res.readline()
+        correct+=evaluate(bwa_line, mappings)
+        bwa_line=bwa_res.readline()
+        correct+=evaluate(bwa_line, mappings)
+        #evaluate bwa_line
+        while getbarcode(readfile1.readline())==old_barcode:
+            bwa_line=bwa_res.readline()
 
         #create new mappings
         print("bc: ",old_barcode,"\n")
