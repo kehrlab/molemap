@@ -6,8 +6,8 @@ def getbarcode(line):
     return barcode
 
 bcmap_res=open('resall.bed','r')
-bwa_res=open('','r')
-readfile=open('159916111600 25. Feb 14:36 NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
+# bwa_res=open('','r')
+# readfile=open('159916111600 25. Feb 14:36 NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
 
 old_barcode=''
 
