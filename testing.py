@@ -24,8 +24,8 @@ bwa_res=open('./bwa/resall32.sam','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
-print('bwa_line#1: ' , bwa_line, "\n")
-readfile=open('NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
+# print('bwa_line#1: ' , bwa_line, "\n")
+readfile=open('.testdata/NA12878_WGS_v2_S1_L001_all_corrected.1.fastq','r')
 readcount=0
 barcodecount=0
 tp=0
