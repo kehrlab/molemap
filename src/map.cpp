@@ -139,7 +139,7 @@ int map(int argc, char const ** argv){
   defining Parameters
   */
 
-  uint_fast32_t max_window_size=200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
+  uint_fast32_t max_window_size=300000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
   uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
   uint_fast8_t window_count=100;   // amount of saved candidate windows
 
