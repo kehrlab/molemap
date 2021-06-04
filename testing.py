@@ -18,9 +18,10 @@ def getmapping(line):
 
 def evaluate(bwa_line, mappings):
     bwamap=bwa_line.split('\t')
+    give=20000
     for mapping in mappings:
         if mapping[0]==bwamap[2]:
-            if (int(bwamap[3])>int(mapping[1])-10000 and int(bwamap[3])<int(mapping[2])+10000 and int(bwamap[7])>int(mapping[1])-10000 and int(bwamap[7])<int(mapping[2])+10000):
+            if (int(bwamap[3])>int(mapping[1])-give and int(bwamap[3])<int(mapping[2])+give and int(bwamap[7])>int(mapping[1])-give and int(bwamap[7])<int(mapping[2])+give):
                 # print("mapping: ",mapping,"\n")
                 return 1
 
