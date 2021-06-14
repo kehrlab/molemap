@@ -137,9 +137,14 @@ for line in bcmap_res:
         # print(mappings,"\n")
         # print("reads:   ", reads, "\n")
         # print("correct: ", correct, "\n\n")
+        for mapping in mapping_list:
+            if mapping==0:
+                FP+=1
+            else:
+                TP+=1
         if sum(mapping_list)/reads<tp_per:
             FN+=1
-        print("FN: " , round(FN/barcodecount*100,2),"% ")
+        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", FP/(FP+TP)*100,"% TP: ", TP/(FP+TP)*100,"%")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
