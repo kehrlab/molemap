@@ -36,7 +36,7 @@ def evaluate(bwa_line, mappings):
     # print("bwamap: ",bwamap,"\n")
     return 0
 # parameters:
-tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
+tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
 #files:
 bcmap_res=open('resallsorted.bed','r')
