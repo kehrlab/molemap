@@ -85,7 +85,7 @@ for line in bcmap_res:
         mappings+=[getmapping(line)]
 
     else:
-        mapping_list=[0]*len(mapping)
+        mappinglist=[0]*len(mapping)
         barcodecount+=1
         #evaluate
         correct=0
@@ -137,12 +137,12 @@ for line in bcmap_res:
         # print(mappings,"\n")
         # print("reads:   ", reads, "\n")
         # print("correct: ", correct, "\n\n")
-        for mapping in mapping_list:
+        for mapping in mappinglist:
             if mapping==0:
                 FP+=1
             else:
                 TP+=1
-        if sum(mapping_list)/reads<tp_per:
+        if sum(mappinglist)/reads<tp_per:
             FN+=1
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", FP/(FP+TP)*100,"% TP: ", TP/(FP+TP)*100,"%")
         old_barcode=barcode
