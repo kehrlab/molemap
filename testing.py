@@ -46,16 +46,19 @@ print(readfile.readline())
 print(readfile.readline())
 print(bwa_line)
 print(bwa_res.readline())
+
 while tenXbc=='*':
-    tenXbc=get10xbarcode(readfile.readline())
+    readfileline=readfile.readline()
+    tenXbc=get10xbarcode(readfileline)
+    print(readfileline)
     readfile.readline()
     readfile.readline()
     readfile.readline()
+    print(bwa_res.readline())
     bwa_res.readline()
-    bwa_res.readline()
-print("tenXbc: ", tenXbc)
-print("readfile: ", readfile.readline())
-print("bwa_res: ", bwa_res.readline())
+# print("tenXbc: ", tenXbc)
+# print("readfile: ", readfile.readline())
+# print("bwa_res: ", bwa_res.readline())
 
 # # readcount=0
 # barcodecount=0
