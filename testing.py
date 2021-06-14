@@ -7,12 +7,12 @@ def getbarcode(line):
 
 def get10xbarcode(line):
     # print("line: ",line,"\n")
-    barcode=line.split(' ')[1][5:]
+    barcode=line.split(' ')[1][5:21]
     # print(barcode, " ")
     return barcode
 
 def get10xID(line):
-    id=line.split('\t')[0][1:]
+    id=line.split(' ')[0][1:]
     return id
 
 def getbwaID(line):
@@ -47,6 +47,9 @@ while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
 readfileline=readfile.readline()
 tenXbc=get10xbarcode(readfileline)
+readfile.readline()
+readfile.readline()
+readfile.readline()
 
 print("bwa_id: ", getbwaID(bwa_line))
 print("10x_id: ", get10xID(readfileline))
