@@ -31,75 +31,95 @@ def evaluate(bwa_line, mappings):
 tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
 #files:
-bcmap_res=open('res5bc.bed','r')
-bwa_res=open('res5bc.sam','r')
+bcmap_res=open('resallsorted.bed','r')
+bwa_res=open('resallbwa.sam','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
 # print('bwa_line#1: ' , bwa_line, "\n")
-readfile=open('./testdata/NA12878_WGS_v2_S1_L001_5Barcodes_corrected.1.fastq','r')
-# readcount=0
-barcodecount=0
-tp=0
-old_barcode=getbarcode(bcmap_res.readline())
-mappings=[]
-for line in bcmap_res:
-    barcode=getbarcode(line)
-    if barcode==old_barcode:
-        #append mappings
-        mappings+=[getmapping(line)]
+readfile=open('./testdata/new_and_corrected.1.fastq','r')
 
-    else:
-        barcodecount+=1
-        #evaluate
-        correct=0
-        reads=0
-        tenXbc=get10xbarcode(readfile.readline())
-        readfile.readline()
-        readfile.readline()
-        readfile.readline()
-        # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
-        while tenXbc<old_barcode or tenXbc=='*':
-            tenXbc=get10xbarcode(readfile.readline())
-            readfile.readline()
-            readfile.readline()
-            readfile.readline()
-            # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
-            bwa_res.readline()
-            bwa_res.readline()
-        #evaluate bwa_line
-        while tenXbc==old_barcode:
-            bwa_line=bwa_res.readline()
-            reads+=1
-            correct+=evaluate(bwa_line, mappings)
-            bwa_line=bwa_res.readline()
-            reads+=1
-            correct+=evaluate(bwa_line, mappings)
-            readline=readfile.readline()
-            if readline!="":
-                tenXbc=get10xbarcode(readline)
-                readfile.readline()
-                readfile.readline()
-                readfile.readline()
-            else:
-                break;
+tenXbc=get10xbarcode(readfile.readline())
+readfile.readline()
+readfile.readline()
+readfile.readline()
+bwa_res.readline()
+bwa_res.readline()
+while tenXbc=='*':
+    tenXbc=get10xbarcode(readfile.readline())
+    readfile.readline()
+    readfile.readline()
+    readfile.readline()
+    bwa_res.readline()
+    bwa_res.readline()
+print("tenXbc: ", tenXbc)
+print("readfile: ", readfile.readline())
+print("bwa_res: ", bwa_res.readline())
 
-        bwa_line=bwa_res.readline()
-        reads+=1
-        correct+=evaluate(bwa_line, mappings)
-        bwa_line=bwa_res.readline()
-        reads+=1
-        correct+=evaluate(bwa_line, mappings)
-        #create new mappings
-        print("bc: ",old_barcode,"\n")
-        print(mappings,"\n")
-        print("reads:   ", reads, "\n")
-        print("correct: ", correct, "\n\n")
-        old_barcode=barcode
-        mappings=[[]]
-        mappings[0]=getmapping(line)
-
-print("\n")
-# print("readcount:     " , readcount , "\n")
-print("barcodecount:  " , barcodecount , "\n")
-print("true positives:" , tp, "\n")
+# # readcount=0
+# barcodecount=0
+# tp=0
+# old_barcode=getbarcode(bcmap_res.readline())
+# mappings=[]
+# for line in bcmap_res:
+#     barcode=getbarcode(line)
+#     if barcode=='*':
+#
+#     else if barcode==old_barcode:
+#         #append mappings
+#         mappings+=[getmapping(line)]
+#
+#     else:
+#         barcodecount+=1
+#         #evaluate
+#         correct=0
+#         reads=0
+#         tenXbc=get10xbarcode(readfile.readline())
+#         readfile.readline()
+#         readfile.readline()
+#         readfile.readline()
+#         print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode)
+#         while tenXbc<old_barcode or tenXbc=='*':
+#             tenXbc=get10xbarcode(readfile.readline())
+#             readfile.readline()
+#             readfile.readline()
+#             readfile.readline()
+#             # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
+#             bwa_res.readline()
+#             bwa_res.readline()
+#         #evaluate bwa_line
+#         while tenXbc==old_barcode:
+#             bwa_line=bwa_res.readline()
+#             reads+=1
+#             correct+=evaluate(bwa_line, mappings)
+#             bwa_line=bwa_res.readline()
+#             reads+=1
+#             correct+=evaluate(bwa_line, mappings)
+#             readline=readfile.readline()
+#             if readline!="":
+#                 tenXbc=get10xbarcode(readline)
+#                 readfile.readline()
+#                 readfile.readline()
+#                 readfile.readline()
+#             else:
+#                 break;
+#
+#         bwa_line=bwa_res.readline()
+#         reads+=1
+#         correct+=evaluate(bwa_line, mappings)
+#         bwa_line=bwa_res.readline()
+#         reads+=1
+#         correct+=evaluate(bwa_line, mappings)
+#         #create new mappings
+#         print("bc: ",old_barcode,"\n")
+#         print(mappings,"\n")
+#         print("reads:   ", reads, "\n")
+#         print("correct: ", correct, "\n\n")
+#         old_barcode=barcode
+#         mappings=[[]]
+#         mappings[0]=getmapping(line)
+#
+# print("\n")
+# # print("readcount:     " , readcount , "\n")
+# print("barcodecount:  " , barcodecount , "\n")
+# print("true positives:" , tp, "\n")
