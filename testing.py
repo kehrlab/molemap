@@ -90,7 +90,7 @@ for line in bcmap_res:
         # readfile.readline()
         # readfile.readline()
         # readfile.readline()
-        print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode)
+        # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode)
         while tenXbc<old_barcode:# or tenXbc=='*':      # skipping till barcodes match
             while getbwaID(bwa_line)==tenXid:
                 bwa_line=bwa_res.readline()
