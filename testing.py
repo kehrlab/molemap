@@ -133,7 +133,7 @@ for line in bcmap_res:
         # print("correct: ", correct, "\n\n")
         if correct/reads<tp_per:
             FN+=1
-        print("false negative rate: " , FN/barcodecount)
+        print("FN: " , round(FN/barcodecount*100,2))
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
