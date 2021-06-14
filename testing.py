@@ -36,7 +36,12 @@ bwa_res=open('resallbwa.sam','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
-# print('bwa_line#1: ' , bwa_line, "\n")
+print(bwa_line)
+print(bwa_res.readline())
+print(readfile.readline())
+print(readfile.readline())
+print(readfile.readline())
+print(readfile.readline())
 readfile=open('./testdata/new_and_corrected.1.fastq','r')
 
 tenXbc=get10xbarcode(readfile.readline())
