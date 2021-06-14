@@ -144,7 +144,7 @@ for line in bcmap_res:
                 TP+=1
         if sum(mappinglist)/reads<tp_per:
             FN+=1
-        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", FP/(FP+TP)*100,"% TP: ", TP/(FP+TP)*100,"%")
+        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
