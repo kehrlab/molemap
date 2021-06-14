@@ -67,6 +67,7 @@ while tenXbc=='*':
 print("tenXbc: ", tenXbc)
 print("readfile: ", readfileline)
 print("bwa_res: ", bwa_line)
+print(readfile.readline())
 
 # # readcount=0
 # barcodecount=0
