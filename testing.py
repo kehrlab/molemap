@@ -113,7 +113,7 @@ for line in bcmap_res:
             while getbwaID(bwa_line)==tenXid:
                 res=evaluate(bwa_line, mappings)
                 if res!=-1:
-                    mapping_list[res]+=1
+                    mappinglist[res]+=1
                 reads+=1
                 bwa_line=bwa_res.readline()
             readfileline=readfile.readline()
