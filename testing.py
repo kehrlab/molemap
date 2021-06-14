@@ -111,7 +111,7 @@ for line in bcmap_res:
                 bwa_line=bwa_res.readline()
             readfileline=readfile.readline()
             if readfileline!="":
-                tenXbc=get10xbarcode(readline)
+                tenXbc=get10xbarcode(readfileline)
                 tenXid=get10xID(readfileline)
                 readfile.readline()
                 readfile.readline()
