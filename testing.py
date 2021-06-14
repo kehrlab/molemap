@@ -7,16 +7,16 @@ def getbarcode(line):
 
 def get10xbarcode(line):
     # print("line: ",line,"\n")
-    barcode=line.split(' ')[1][5:21]
+    barcode=line.split(' ')[1][5:]
     # print(barcode, " ")
     return barcode
 
 def get10xID(line):
-    barcode=line.split('\t')[0][1:]
+    id=line.split('\t')[0][1:]
     return id
 
 def getbwaID(line):
-    barcode=line.split('\t')[0]
+    id=line.split('\t')[0]
     return id
 
 def getmapping(line):
