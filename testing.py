@@ -47,12 +47,12 @@ while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
 readfileline=readfile.readline()
 tenXbc=get10xbarcode(readfileline)
+tenXid=get10xID(readfileline)
 readfile.readline()
 readfile.readline()
 readfile.readline()
-
-print("bwa_id: ", getbwaID(bwa_line))
-print("10x_id: ", get10xID(readfileline))
+while getbwaID(bwa_line)==tenXid:
+    bwa_line=bwa_res.readline()
 
 while tenXbc=='*':
     readfileline=readfile.readline()
