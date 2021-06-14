@@ -85,7 +85,7 @@ for line in bcmap_res:
         mappings+=[getmapping(line)]
 
     else:
-        mappinglist=[0]*len(mapping)
+        mappinglist=[0]*len(mappings)
         barcodecount+=1
         #evaluate
         correct=0
