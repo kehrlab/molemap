@@ -51,18 +51,18 @@ tenXid=get10xID(readfileline)
 readfile.readline()
 readfile.readline()
 readfile.readline()
-while getbwaID(bwa_line)==tenXid:
-    bwa_line=bwa_res.readline()
+# while getbwaID(bwa_line)==tenXid:
+#     bwa_line=bwa_res.readline()
 
 while tenXbc=='*':
+    while getbwaID(bwa_line)==tenXid:
+        bwa_line=bwa_res.readline()
     readfileline=readfile.readline()
     tenXbc=get10xbarcode(readfileline)
     tenXid=get10xID(readfileline)
     readfile.readline()
     readfile.readline()
     readfile.readline()
-    while getbwaID(bwa_line)==tenXid:
-        bwa_line=bwa_res.readline()
 
 print("tenXbc: ", tenXbc)
 print("readfile: ", readfileline)
