@@ -72,6 +72,7 @@ while tenXbc=='*':
 # readcount=0
 barcodecount=0
 tp=0
+FN=0
 old_barcode=getbarcode(bcmap_res.readline())
 mappings=[]
 for line in bcmap_res:
@@ -126,10 +127,13 @@ for line in bcmap_res:
         # reads+=1
         # correct+=evaluate(bwa_line, mappings)
         #create new mappings
-        print("bc: ",old_barcode,"\n")
-        print(mappings,"\n")
-        print("reads:   ", reads, "\n")
-        print("correct: ", correct, "\n\n")
+        # print("bc: ",old_barcode,"\n")
+        # print(mappings,"\n")
+        # print("reads:   ", reads, "\n")
+        # print("correct: ", correct, "\n\n")
+        if correct/reads<tp_per:
+            FN+=1
+        print("false negative rate: " , FN/barcodecount)
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
