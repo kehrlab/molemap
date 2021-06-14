@@ -44,7 +44,6 @@ readfile.readline()
 readfile.readline()
 readfile.readline()
 bwa_res.readline()
-bwa_res.readline()
 while tenXbc=='*':
     tenXbc=get10xbarcode(readfile.readline())
     readfile.readline()
