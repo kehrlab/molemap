@@ -33,6 +33,7 @@ tp_per=0.9 #fraction of reads that have to be bwa_mapped to an bcmap_identified 
 #files:
 bcmap_res=open('resallsorted.bed','r')
 bwa_res=open('resallbwa.sam','r')
+readfile=open('./testdata/new_and_corrected.1.fastq','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
@@ -42,7 +43,6 @@ print(readfile.readline())
 print(readfile.readline())
 print(readfile.readline())
 print(readfile.readline())
-readfile=open('./testdata/new_and_corrected.1.fastq','r')
 
 tenXbc=get10xbarcode(readfile.readline())
 readfile.readline()
