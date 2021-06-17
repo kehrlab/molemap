@@ -579,7 +579,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
       start_position=POS(itrstart);
     }else{
-      std::cerr << "Somethings wrong!";
+      std::cerr << "\nREF(itrk): " << REF(itrk) << " reference: " << reference << "\nPOS(itrk): " << POS(itrk) << " start_position: " << start_position << " end_position: " << end_position << "\n";
+      std::cerr << "POS(itrstart): " << POS(itrstart) << " REF(itrstart): " << REF(itrstart) << "\n";
     }
   }
   candidate=std::make_tuple(window_quality,REF(itrk),POS(itrstart),POS(itrk));
