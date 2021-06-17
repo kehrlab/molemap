@@ -540,7 +540,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
       end_position=POS(itrk);
 
-    }else if (REF(itrk)!=reference || (POS(itrk)-end_position) > max_gap_size){  // if k_mer hit from next reference or gapsize to large: report current window or candiadate window and initialize new window
+    }else if (REF(itrk)!=reference || (POS(itrk)-end_position) >= max_gap_size){  // if k_mer hit from next reference or gapsize to large: report current window or candiadate window and initialize new window
 
       if(window_quality > std::get<0>(candidate)){ // report current window or candidate
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
@@ -558,7 +558,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       reference=REF(itrk);
       start_position=POS(itrk);
       end_position=POS(itrk);
-    }else if ((POS(itrk)-start_position) > max_window_size){ // maximum window size criterion hurt: shrink window from start and save better one as candidate
+    }else if ((POS(itrk)-start_position) >= max_window_size){ // maximum window size criterion hurt: shrink window from start and save better one as candidate
       if (window_quality > std::get<0>(candidate)) { // check if current window better than candidate: if yes: replace candidate
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
       }
