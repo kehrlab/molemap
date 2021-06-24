@@ -188,8 +188,8 @@ for line in bcmap_res:
         FN+=cluster(unmapped)
         # if sum(mappinglist)/reads<tp_per:
         #     FN+=1
-        print("barcodecount: ",barcodecount)
-        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
+        # print("barcodecount: ",barcodecount)
+        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),4)*100,"% TP: ", round(TP/(FP+TP),4)*100,"%")
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
@@ -197,6 +197,9 @@ for line in bcmap_res:
         mappings[0]=getmapping(line)
         unmapped=[]
 
-print("\n")
+print("\n\n")
 # print("readcount:     " , readcount , "\n")
 print("barcodecount:  " , barcodecount , "\n")
+print("TP: " , TP)
+print("FP: " , FP)
+print("FN: " , FN , "\n\n")
