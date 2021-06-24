@@ -42,25 +42,33 @@ def evaluate(bwa_line, mappings):
 def cluster(unmapped):
     unmapped=[map for map in unmapped if str(map[2])>0 and map[0]!='*']
     unmapped.sort()
-    print("\n\n" , unmapped , "\n\n")
-    # cluster=0
-    # ref=0
-    # pos=0
-    # for map in unmapped:
-    #     if ref==map[0]:
-    #         if map[1]-pos<300000:
-    #             cluster+=1
-    #         else:
-    #             if cluster>5:
-    #                 # print("\n\n" , unmapped , "\n\n")
-    #
-    #             pos=map[1]:
-    #             cluster=1
-    #
-    #     else:
-    #         ref=map[0]
-    #         pos=map[1]
-    #         cluster=1
+    # print("\n\n" , unmapped , "\n\n")
+    cluster=0
+    ref=0
+    pos=0
+    FN=0
+    for map in unmapped:
+        if ref==map[0]:
+            if map[1]-pos<300000:
+                cluster+=1
+            else:
+                if cluster>5:
+                    print("\n\n" , unmapped , "\n\n")
+                    FN+=1
+
+                pos=map[1]:
+                cluster=1
+
+        else:
+            if cluster>5:
+                print("\n\n" , unmapped , "\n\n")
+                FN+=1
+            ref=map[0]
+            pos=map[1]
+            cluster=1
+    if cluster>5:
+        print("\n\n" , unmapped , "\n\n")
+        FN+=1
     return FN;
 
 
