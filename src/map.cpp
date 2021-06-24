@@ -21,7 +21,6 @@ struct bcmapOptions{
   std::string readfile1;
   std::string readfile2;
   std::string index_name;
-  // std::string whitelist;
   std::string bci_name;
   unsigned k;
   unsigned mini_window_size;
@@ -100,7 +99,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
+    getOptionValue(options.q, parser, "q");
+    getOptionValue(options.l, parser, "l");
     getOptionValue(options.threads, parser, "t");
+
     // std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
     // inf_whitelist+="/Whitelist.txt";
     // setDefaultValue(parser, "w", inf_whitelist);
