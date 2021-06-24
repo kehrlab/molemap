@@ -37,6 +37,19 @@ def evaluate(bwa_line, mappings):
 
     # print("bwamap: ",bwamap,"\n")
     return -1
+
+
+def cluster(unmapped):
+    unmapped.sort()
+    print("\n\n" , unmapped , "\n\n")
+
+    return FN;
+
+
+
+
+
+
 # parameters:
 tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
@@ -116,7 +129,7 @@ for line in bcmap_res:
                 if res!=-1:
                     mappinglist[res]+=1
                 else:
-                    unmapped+=[bwa_line.split('\t')[2:4]];
+                    unmapped+=[bwa_line.split('\t')[2:5]];
                 reads+=1
                 bwa_line=bwa_res.readline()
             readfileline=readfile.readline()
@@ -145,11 +158,13 @@ for line in bcmap_res:
                 FP+=1
             else:
                 TP+=1
-        if sum(mappinglist)/reads<tp_per:
-            FN+=1
+
+        FN+=cluster(unmapped)
+        # if sum(mappinglist)/reads<tp_per:
+        #     FN+=1
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
 
-        print("\n\n" , unmapped , "\n" , mappings, "\n\n")
+        # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
