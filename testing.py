@@ -40,7 +40,7 @@ def evaluate(bwa_line, mappings):
 
 
 def cluster(unmapped):
-    unmapped=[map for map in unmapped if str(map[2])>0 and map[0]!='*']
+    unmapped=[map for map in unmapped if int(map[2])>0 and map[0]!='*']
     unmapped.sort()
     # print("\n\n" , unmapped , "\n\n")
     cluster=0
