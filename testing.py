@@ -43,32 +43,32 @@ def cluster(unmapped):
     unmapped=[map for map in unmapped if int(map[2])>0 and map[0]!='*']
     unmapped.sort()
     print("\n\n" , unmapped , "\n\n")
-    # cluster=0
-    # ref=0
-    # pos=0
-    # FN=0
-    # for map in unmapped:
-    #     if ref==map[0]:
-    #         if map[1]-pos<300000:
-    #             cluster+=1
-    #         else:
-    #             if cluster>5:
-    #                 print("\n\n" , unmapped , "\n\n")
-    #                 FN+=1
-    #
-    #             pos=map[1]
-    #             cluster=1
-    #
-    #     else:
-    #         if cluster>5:
-    #             print("\n\n" , unmapped , "\n\n")
-    #             FN+=1
-    #         ref=map[0]
-    #         pos=map[1]
-    #         cluster=1
-    # if cluster>5:
-    #     print("\n\n" , unmapped , "\n\n")
-    #     FN+=1
+    cluster=0
+    ref=0
+    pos=0
+    FN=0
+    for map in unmapped:
+        if ref==map[0]:
+            if map[1]-pos<300000:
+                cluster+=1
+            else:
+                if cluster>5:
+                    print("\n\n" , unmapped , "\n\n")
+                    FN+=1
+
+                pos=map[1]
+                cluster=1
+
+        else:
+            if cluster>5:
+                print("\n\n" , unmapped , "\n\n")
+                FN+=1
+            ref=map[0]
+            pos=map[1]
+            cluster=1
+    if cluster>5:
+        print("\n\n" , unmapped , "\n\n")
+        FN+=1
     return FN;
 
 
@@ -188,6 +188,7 @@ for line in bcmap_res:
         FN+=cluster(unmapped)
         if sum(mappinglist)/reads<tp_per:
             FN+=1
+        print("barcodecount: ",barcodecount)
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
