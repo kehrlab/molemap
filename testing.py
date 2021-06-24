@@ -49,14 +49,14 @@ def cluster(unmapped):
     FN=0
     for map in unmapped:
         if ref==map[0]:
-            if map[1]-pos<300000:
+            if int(map[1])-pos<300000:
                 cluster+=1
             else:
                 if cluster>5:
                     print("\n\n" , unmapped , "\n\n")
                     FN+=1
 
-                pos=map[1]
+                pos=int(map[1])
                 cluster=1
 
         else:
@@ -64,7 +64,7 @@ def cluster(unmapped):
                 print("\n\n" , unmapped , "\n\n")
                 FN+=1
             ref=map[0]
-            pos=map[1]
+            pos=int(map[1])
             cluster=1
     if cluster>5:
         print("\n\n" , unmapped , "\n\n")
