@@ -30,7 +30,7 @@ Builds an open addressing k-mer index of the reference genome. The index is requ
 - ./bcmap index reference.fa RefIndexName
 
 ## map
-Maps the barcodes of the provided to the reference and creates an barcode index of the readfiles to quickly retrieve all reads of a given barcode.
+Maps the barcodes of the provided readfiles to the reference and creates a barcode index of the readfiles to quickly retrieve all reads of a given barcode.
 
 - ./bcmap map readfile1.fastq readfile2.fastq RefIndexName BarcodeIndexName
 
