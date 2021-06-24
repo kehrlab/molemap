@@ -42,9 +42,9 @@ def evaluate(bwa_line, mappings):
 def cluster(unmapped):
     unmapped=[map for map in unmapped if int(map[2])>0 and map[0]!='*']
     unmapped.sort()
-    print("\n\n" , unmapped , "\n\n")
+    # print("\n\n" , unmapped , "\n\n")
     cluster=0
-    ref=0
+    ref="*"
     pos=0
     FN=0
     for map in unmapped:
