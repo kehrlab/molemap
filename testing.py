@@ -78,6 +78,7 @@ FN=0
 FP=0
 old_barcode=getbarcode(bcmap_res.readline())
 mappings=[]
+unmapped=[]
 for line in bcmap_res:
     barcode=getbarcode(line)
     if barcode==old_barcode:
@@ -114,6 +115,8 @@ for line in bcmap_res:
                 res=evaluate(bwa_line, mappings)
                 if res!=-1:
                     mappinglist[res]+=1
+                else:
+                    unmapped+=[bwa_line.split('\t')];
                 reads+=1
                 bwa_line=bwa_res.readline()
             readfileline=readfile.readline()
@@ -145,11 +148,13 @@ for line in bcmap_res:
         if sum(mappinglist)/reads<tp_per:
             FN+=1
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
+
+        print("\n\n" , unmapped , "\n\n")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
+        unmapped=[]
 
 print("\n")
 # print("readcount:     " , readcount , "\n")
 print("barcodecount:  " , barcodecount , "\n")
-print("true positives:" , tp, "\n")
