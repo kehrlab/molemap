@@ -40,6 +40,7 @@ def evaluate(bwa_line, mappings):
 
 
 def cluster(unmapped):
+    unmapped=[map in unmapped if map[2]>0]
     unmapped.sort()
     print("\n\n" , unmapped , "\n\n")
 
@@ -160,8 +161,8 @@ for line in bcmap_res:
                 TP+=1
 
         FN+=cluster(unmapped)
-        # if sum(mappinglist)/reads<tp_per:
-        #     FN+=1
+        if sum(mappinglist)/reads<tp_per:
+            FN+=1
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
