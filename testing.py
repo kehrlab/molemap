@@ -40,7 +40,7 @@ def evaluate(bwa_line, mappings):
 
 
 def cluster(unmapped):
-    unmapped=[map in unmapped if map[2]>0]
+    unmapped=[map for map in unmapped if map[2]>0]
     unmapped.sort()
     print("\n\n" , unmapped , "\n\n")
 
