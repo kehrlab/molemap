@@ -52,7 +52,7 @@ def cluster(unmapped):
             if int(map[1])-pos<300000:
                 cluster+=1
             else:
-                if cluster>5:
+                if cluster>10:
                     print("\n\n" , unmapped , "\n\n")
                     FN+=1
 
@@ -60,13 +60,13 @@ def cluster(unmapped):
                 cluster=1
 
         else:
-            if cluster>5:
+            if cluster>10:
                 print("\n\n" , unmapped , "\n\n")
                 FN+=1
             ref=map[0]
             pos=int(map[1])
             cluster=1
-    if cluster>5:
+    if cluster>10:
         print("\n\n" , unmapped , "\n\n")
         FN+=1
     return FN;
@@ -186,8 +186,8 @@ for line in bcmap_res:
                 TP+=1
 
         FN+=cluster(unmapped)
-        if sum(mappinglist)/reads<tp_per:
-            FN+=1
+        # if sum(mappinglist)/reads<tp_per:
+        #     FN+=1
         print("barcodecount: ",barcodecount)
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
 
