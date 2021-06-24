@@ -31,7 +31,7 @@ def evaluate(bwa_line, mappings):
     for mapping in mappings:
         res+=1
         if mapping[0]==bwamap[2]:
-            if (int(bwamap[3])>int(mapping[1])-give and int(bwamap[3])<int(mapping[2])+give and int(bwamap[7])>int(mapping[1])-give and int(bwamap[7])<int(mapping[2])+give):
+            if (int(bwamap[3])>int(mapping[1])-give and int(bwamap[3])<int(mapping[2])+give):
                 # print("mapping: ",mapping,"\n")
                 return res
 
@@ -116,7 +116,7 @@ for line in bcmap_res:
                 if res!=-1:
                     mappinglist[res]+=1
                 else:
-                    unmapped+=[bwa_line.split('\t')];
+                    unmapped+=[bwa_line.split('\t')[2:4]];
                 reads+=1
                 bwa_line=bwa_res.readline()
             readfileline=readfile.readline()
@@ -149,7 +149,7 @@ for line in bcmap_res:
             FN+=1
         print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),2)*100,"% TP: ", round(TP/(FP+TP),2)*100,"%")
 
-        print("\n\n" , unmapped , "\n\n")
+        print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
         mappings=[[]]
         mappings[0]=getmapping(line)
