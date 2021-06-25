@@ -82,7 +82,7 @@ def cluster(unmapped):
 tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
 
 #files:
-bcmap_res=open('resallsorted_new.bed','r')
+bcmap_res=open('resallsorted.bed','r')
 bwa_res=open('/fast/users/luepkenr_c/scratch/BIH_TRASH/2021-06-18/resallbwa.sam','r')
 readfile=open('./testdata/new_and_corrected.1.fastq','r')
 bwa_line=bwa_res.readline()
@@ -191,7 +191,8 @@ for line in bcmap_res:
         # if sum(mappinglist)/reads<tp_per:
         #     FN+=1
         # print("barcodecount: ",barcodecount)
-        print("FN: " , round(FN/barcodecount*100,2),"% ","FP: ", round(FP/(FP+TP),4)*100,"% TP: ", round(TP/(FP+TP),4)*100,"%")
+        print("FN: " , FN ," FP: ", FP , " TP: ",TP)
+        print("Precision: " , TP/(TP+FP), "Recall: " ,TP/(TP+FN))
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
