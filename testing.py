@@ -55,7 +55,7 @@ def cluster(unmapped):
                     pos=int(map[1])
             else:
                 if cluster>10:
-                    print("\n\n" , unmapped , "\n\n")
+                    # print("\n\n" , unmapped , "\n\n")
                     FN+=1
 
                 pos=int(map[1])
@@ -63,13 +63,13 @@ def cluster(unmapped):
 
         else:
             if cluster>10:
-                print("\n\n" , unmapped , "\n\n")
+                # print("\n\n" , unmapped , "\n\n")
                 FN+=1
             ref=map[0]
             pos=int(map[1])
             cluster=1
     if cluster>10:
-        print("\n\n" , unmapped , "\n\n")
+        # print("\n\n" , unmapped , "\n\n")
         FN+=1
     return FN;
 
@@ -192,7 +192,7 @@ for line in bcmap_res:
         #     FN+=1
         # print("barcodecount: ",barcodecount)
         print("FN: " , FN ," FP: ", FP , " TP: ",TP)
-        print("Precision: " , TP/(TP+FP), "Recall: " ,TP/(TP+FN))
+        print("Precision: " , round(TP/(TP+FP),2), "Recall: " ,round(TP/(TP+FN),2))
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
