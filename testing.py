@@ -50,7 +50,9 @@ def cluster(unmapped):
     for map in unmapped:
         if ref==map[0]:
             if int(map[1])-pos<300000:
-                cluster+=1
+                if int(map[1])-pos>200:
+                    cluster+=1
+                    pos=int(map[1])
             else:
                 if cluster>10:
                     print("\n\n" , unmapped , "\n\n")
