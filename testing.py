@@ -192,7 +192,7 @@ for line in bcmap_res:
         #     FN+=1
         # print("barcodecount: ",barcodecount)
         print("FN: " , FN ," FP: ", FP , " TP: ",TP)
-        print("Precision: " , round(TP/(TP+FP),2), "Recall: " ,round(TP/(TP+FN),2))
+        print("Precision: " , round(TP/(TP+FP)*100,2), "Recall: " ,round(TP/(TP+FN)*100,2))
 
         # print("\n\n" , unmapped , "\n" , mappings, "\n\n")
         old_barcode=barcode
