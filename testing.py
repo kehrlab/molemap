@@ -80,11 +80,10 @@ def cluster(unmapped):
 
 # parameters:
 tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
-rfile="resallq" + str(sys.argv[1]) + "ksorted.bed"
-print(rfile)
+rfile="resallq" + str(sys.argv[1]) + "sorted.bed"
 
 #files:
-bcmap_res=open('resallsorted.bed','r')
+bcmap_res=open(rfile,'r')
 bwa_res=open('/fast/users/luepkenr_c/scratch/BIH_TRASH/2021-06-18/resallbwa.sam','r')
 readfile=open('./testdata/new_and_corrected.1.fastq','r')
 bwa_line=bwa_res.readline()
