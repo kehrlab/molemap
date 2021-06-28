@@ -1,4 +1,4 @@
-
+import sys
 
 def getbarcode(line):
     barcode=line.split('\t')[3]
@@ -80,6 +80,7 @@ def cluster(unmapped):
 
 # parameters:
 tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
+print(str(sys(argv)[1])
 
 #files:
 bcmap_res=open('resallsorted.bed','r')
@@ -202,7 +203,9 @@ for line in bcmap_res:
 
 print("\n\n")
 # print("readcount:     " , readcount , "\n")
+print("score_threshold: ", str(sys.argv)[1])
 print("barcodecount:  " , barcodecount , "\n")
 print("TP: " , TP)
 print("FP: " , FP)
 print("FN: " , FN , "\n\n")
+print("Precision: " , round(TP/(TP+FP)*100,2), "Recall: " ,round(TP/(TP+FN)*100,2))
