@@ -115,7 +115,7 @@ while tenXbc=='*':
 
 # readcount=0
 barcodecount=0
-TP=0
+TP=1
 FN=0
 FP=0
 old_barcode=getbarcode(bcmap_res.readline())
