@@ -183,7 +183,7 @@ for line in bcmap_res:
         # print("reads:   ", reads, "\n")
         # print("correct: ", correct, "\n\n")
         for mapping in mappinglist:
-            if mapping<5:
+            if mapping==0:
                 FP+=1
             else:
                 TP+=1
