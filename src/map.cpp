@@ -207,6 +207,11 @@ int map(int argc, char const ** argv){
       }
       input.close();
 
+      std::cerr << "\n";
+      for (int i = 0; i<lookChrom.size();i++){
+        std::cerr << lookChrom[i] <<"\t";
+      }
+
       std::cerr <<".";
     }
     if (i==2){
