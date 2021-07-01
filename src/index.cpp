@@ -105,6 +105,28 @@ int index(int argc, char const **argv){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
+  // read .fai file
+  std::ifstream input;
+  std::string InFai=options.reference_file;
+  InFai.append(".fai");
+  input.open(toCString(InFai), std::ios::in);
+  std::string line;
+  std::vector<std::string> lookChrom;
+  while ( getline (input,line) ){
+    lookChrom.push_back(line.substr(0,find('\t')));
+    std::cerr << line.substr(0,find('\t')) << "\n";
+  }
+
+  std::fstream output;
+  std::string IndFai=options.index_name;
+  IndFai.append("/fai.txt");
+  output.open(toCString(IndFai),std::ios::out);
+  output << lookChrom;
+  results="";
+  output.close();
+
+  // write chromosome names to file
+
   std::cerr << "..done.\n";
   std::cerr << "Preparing index...";
 
@@ -233,7 +255,7 @@ int index(int argc, char const **argv){
 
   //write index to file
   if (mkdir(toCString(options.index_name), 0777) == -1){
-        std::cerr << "Error :  " << strerror(errno) << "\n";
+        // std::cerr << "Error :  " << strerror(errno) << "\n";
   }
 
   std::string IndPos=options.index_name;
