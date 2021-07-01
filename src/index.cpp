@@ -119,18 +119,18 @@ int index(int argc, char const **argv){
   // write chromosome names to file
 
   std::cerr << "..done.\n";
-  std::cerr << "Loading ref.fai..."
+  std::cerr << "Loading ref.fai...";
 
   FaiIndex faiIndex;
   if (!open(faiIndex, toCString(options.reference_file))){
-    std::cerr << "...failed.\nBuilding ref.fai.."
+    std::cerr << "...failed.\nBuilding ref.fai..";
     if (!build(faiIndex, toCString(options.reference_file))){
         std::cerr << "\nERROR: FASTA index could not be loaded or built.\n";
       return 1;
     }
     if (!save(faiIndex)) // Name is stored from when reading.
       {
-        std::cerr << "WARNING: FASTA index could not be written to disk.\n";
+        std::cerr << "\nWARNING: FASTA index could not be written to disk.\n";
       }
   }
 
