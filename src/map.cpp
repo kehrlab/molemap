@@ -174,6 +174,7 @@ int map(int argc, char const ** argv){
   IndC.append("/C.txt");
   std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
+  std::vector<std::string> lookChrom;
 
 
   //reading Index files in parallel
@@ -201,7 +202,6 @@ int map(int argc, char const ** argv){
       std::ifstream input;
       input.open(toCString(IndFai), std::ios::in);
       std::string line;
-      std::vector<std::string> lookChrom;
       while(getline(input,line)){
         lookChrom.push_back(line);
       }
