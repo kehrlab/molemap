@@ -119,9 +119,9 @@ int index(int argc, char const **argv){
 
   // write chromosome names to file
   if (mkdir(toCString(options.index_name), 0777) == -1){
-        // std::cerr << "Error :  " << strerror(errno) << "\n";
+        std::cerr << "Error :  " << strerror(errno) << "\n";
   }
-    
+
   std::fstream output;
   std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
