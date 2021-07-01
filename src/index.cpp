@@ -114,7 +114,7 @@ int index(int argc, char const **argv){
   std::vector<std::string> lookChrom;
   while ( getline (input,line) ){
     lookChrom.push_back(line.substr(0,find('\t')));
-    std::cerr << line.substr(0,find('\t')) << "\n";
+    std::cerr << line.substr(0,line.find('\t')) << "\n";
   }
 
   std::fstream output;
