@@ -117,6 +117,11 @@ int index(int argc, char const **argv){
     std::cerr << line.substr(0,line.find('\t')) << "\n";
   }
 
+  // write chromosome names to file
+  if (mkdir(toCString(options.index_name), 0777) == -1){
+        // std::cerr << "Error :  " << strerror(errno) << "\n";
+  }
+    
   std::fstream output;
   std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
@@ -125,8 +130,6 @@ int index(int argc, char const **argv){
     output << lookChrom[i] << "\n";
   }
   output.close();
-
-  // write chromosome names to file
 
   std::cerr << "..done.\n";
   std::cerr << "Preparing index...";
@@ -255,9 +258,6 @@ int index(int argc, char const **argv){
   std::cerr << "done. \n";
 
   //write index to file
-  if (mkdir(toCString(options.index_name), 0777) == -1){
-        // std::cerr << "Error :  " << strerror(errno) << "\n";
-  }
 
   std::string IndPos=options.index_name;
   IndPos.append("/pos.txt");
