@@ -121,7 +121,7 @@ int index(int argc, char const **argv){
   std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
   output.open(toCString(IndFai),std::ios::out);
-  for (int i=0; i<lookChrom.length(); i++){
+  for (int i=0; i<lookChrom.size(); i++){
     output << lookChrom[i] << "\n";
   }
   output.close();
