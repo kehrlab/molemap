@@ -232,7 +232,7 @@ int index(int argc, char const **argv){
   std::cerr << "done. \n";
 
   //write index to file
-  if (mkdir(options.index_name, 0777) == -1){
+  if (mkdir(toCString(options.index_name), 0777) == -1){
         std::cerr << "Error :  " << strerror(errno) << "\n";
   }
 
