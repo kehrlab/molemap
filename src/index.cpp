@@ -233,7 +233,7 @@ int index(int argc, char const **argv){
 
   //write index to file
   if (mkdir(options.index_name, 0777) == -1){
-        cerr << "Error :  " << strerror(errno) << endl;
+        std::cerr << "Error :  " << strerror(errno) << "\n";
   }
 
   std::string IndPos=options.index_name;
