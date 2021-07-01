@@ -128,7 +128,10 @@ int index(int argc, char const **argv){
         std::cerr << "\nERROR: FASTA index could not be loaded or built.\n";
       return 1;
     }
-
+    if (!save(faiIndex)) // Name is stored from when reading.
+      {
+        std::cerr << "\nWARNING: FASTA index could not be written to disk.\n";
+      }
   }
 
   if (mkdir(toCString(options.index_name), 0777) == -1){
