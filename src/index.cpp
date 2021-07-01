@@ -114,12 +114,11 @@ int index(int argc, char const **argv){
   std::vector<std::string> lookChrom;
   while ( getline (input,line) ){
     lookChrom.push_back(line.substr(0,line.find('\t')));
-    std::cerr << line.substr(0,line.find('\t')) << "\n";
   }
 
   // write chromosome names to file
   if (mkdir(toCString(options.index_name), 0777) == -1){
-        std::cerr << "Error :  " << strerror(errno) << "\n";
+        std::cerr << "Error for index target:  " << strerror(errno) << "\n";
   }
 
   std::fstream output;
