@@ -172,7 +172,7 @@ int map(int argc, char const ** argv){
   IndDir.append("/dir.txt");
   std::string IndC=options.index_name;
   IndC.append("/C.txt");
-  std::string InFai=options.index_name;
+  std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
 
 
