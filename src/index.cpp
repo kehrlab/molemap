@@ -135,7 +135,7 @@ int index(int argc, char const **argv){
   }
 
   if (mkdir(toCString(options.index_name), 0777) == -1){
-    std::cerr << "Error for index target:  " << strerror(errno) << "\n";
+    // std::cerr << "Error for index target:  " << strerror(errno) << "\n";
   }
 
   std::fstream output;
