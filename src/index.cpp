@@ -106,31 +106,48 @@ int index(int argc, char const **argv){
   }
 
   // read .fai file
-  std::ifstream input;
-  std::string InFai=options.reference_file;
-  InFai.append(".fai");
-  input.open(toCString(InFai), std::ios::in);
-  std::string line;
-  std::vector<std::string> lookChrom;
-  while ( getline (input,line) ){
-    lookChrom.push_back(line.substr(0,line.find('\t')));
-  }
+  // std::ifstream input;
+  // std::string InFai=options.reference_file;
+  // InFai.append(".fai");
+  // input.open(toCString(InFai), std::ios::in);
+  // std::string line;
+  // std::vector<std::string> lookChrom;
+  // while ( getline (input,line) ){
+  //   lookChrom.push_back(line.substr(0,line.find('\t')));
+  // }
 
   // write chromosome names to file
+
+  std::cerr << "..done.\n";
+  std::cerr << "Loading ref.fai..."
+
+  FaiIndex faiIndex;
+  if (!open(faiIndex, toCString(options.reference_file))){
+    std::cerr << "...failed.\nBuilding ref.fai.."
+    if (!build(faiIndex, toCString(options.reference_file))){
+        std::cerr << "\nERROR: FASTA index could not be loaded or built.\n";
+      return 1;
+    }
+    if (!save(faiIndex)) // Name is stored from when reading.
+      {
+        std::cerr << "WARNING: FASTA index could not be written to disk.\n";
+      }
+  }
+
   if (mkdir(toCString(options.index_name), 0777) == -1){
-        std::cerr << "Error for index target:  " << strerror(errno) << "\n";
+    std::cerr << "Error for index target:  " << strerror(errno) << "\n";
   }
 
   std::fstream output;
   std::string IndFai=options.index_name;
   IndFai.append("/fai.txt");
   output.open(toCString(IndFai),std::ios::out);
-  for (int i=0; i<lookChrom.size(); i++){
-    output << lookChrom[i] << "\n";
+  for (int id=0; id<numSeqs(faiIndex); id++){
+    output << sequenceName(faiIndex, id) << "\n";
   }
   output.close();
 
-  std::cerr << "..done.\n";
+  std::cerr << ".......done.\n";
   std::cerr << "Preparing index...";
 
   int64_t maxhash;
