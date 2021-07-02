@@ -178,7 +178,7 @@ int index(int argc, char const **argv){
   {
     #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
-      CHROM=j;
+
       TStringSetIterator seq=seqG+j;
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
@@ -200,7 +200,7 @@ int index(int argc, char const **argv){
       #pragma omp atomic
       dir[c+1]+=1;
       #pragma omp atomic
-      // CHROM++;
+      CHROM++;
       std::cerr << "." ;
       if ((CHROM-5)%29==0) {std::cerr << "\n";}
     }
