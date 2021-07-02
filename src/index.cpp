@@ -105,19 +105,6 @@ int index(int argc, char const **argv){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
-  // read .fai file
-  // std::ifstream input;
-  // std::string InFai=options.reference_file;
-  // InFai.append(".fai");
-  // input.open(toCString(InFai), std::ios::in);
-  // std::string line;
-  // std::vector<std::string> lookChrom;
-  // while ( getline (input,line) ){
-  //   lookChrom.push_back(line.substr(0,line.find('\t')));
-  // }
-
-  // write chromosome names to file
-
   std::cerr << "..done.\n";
   std::cerr << "Loading ref.fai...";
 
@@ -180,7 +167,6 @@ int index(int argc, char const **argv){
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint32_t c;
-  uint_fast8_t CHROMG = 0;
 
   std::cerr << "...done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
@@ -192,6 +178,7 @@ int index(int argc, char const **argv){
   {
     #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
+      CHROM=j;
       TStringSetIterator seq=seqG+j;
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
@@ -213,7 +200,7 @@ int index(int argc, char const **argv){
       #pragma omp atomic
       dir[c+1]+=1;
       #pragma omp atomic
-      CHROM++;
+      // CHROM++;
       std::cerr << "." ;
       if ((CHROM-5)%29==0) {std::cerr << "\n";}
     }
@@ -244,7 +231,7 @@ int index(int argc, char const **argv){
     #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
       TStringSetIterator seq=seqG+j;
-      CHROM=j;
+      uint_fast8_t Chromosome=j;
       // filling pos
 
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -252,7 +239,7 @@ int index(int argc, char const **argv){
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
         pos[dir[c+1]]=i;
-        ref[dir[c+1]]=CHROM;
+        ref[dir[c+1]]=Chromosome;
         dir[c+1]++;
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -264,11 +251,11 @@ int index(int argc, char const **argv){
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
       pos[dir[c+1]]=length(*seq)-k;
-      ref[dir[c+1]]=CHROM;
+      ref[dir[c+1]]=Chromosome;
       dir[c+1]++;
 
       std::cerr << ".";
-      if ((CHROM-2)%29==0) {std::cerr << "\n";}
+      if ((Chromosome-2)%29==0) {std::cerr << "\n";}
     }
   }
   std::cerr << "done. \n";
