@@ -634,7 +634,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
     std::string qual=std::to_string((int)std::get<0>(*itrbw));
-    std::cerr << std::get<1>(*itrbw) << " ";  
+    std::cerr << (int)std::get<1>(*itrbw) << " ";  
     std::string ref=lookChrom[std::get<1>(*itrbw)];
     std::string start=std::to_string(std::get<2>(*itrbw));
     std::string end=std::to_string(std::get<3>(*itrbw));
