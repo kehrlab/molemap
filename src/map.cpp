@@ -538,6 +538,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
   if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
+    std::cerr << "I am not redundant!\n";
     window_quality+=0.00032*ACT(kmer_list.begin());
   }else{
     window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
@@ -552,6 +553,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     if (reference==REF(itrk) && (POS(itrk)-start_position) < max_window_size && (POS(itrk)-end_position) < max_gap_size) { //checking break criteria
       //append window by kmer_hit
       if(ABU(itrk)>99){
+        std::cerr << "I am not redundant!\n";
         window_quality+=0.00032*ACT(itrk);
       }else{
         window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
@@ -568,6 +570,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       }
 
       if(ABU(itrk)>99){ // initialize new window
+        std::cerr << "I am not redundant!\n";
         window_quality=0.00032*ACT(itrk);
       }else{
         window_quality=lookQual[ABU(itrk)]*ACT(itrk);
@@ -581,6 +584,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
       }
       if(ABU(itrk)>99){ //Append window by new kmer_hit
+        std::cerr << "I am not redundant!\n";
         window_quality+=0.00032*ACT(itrk);
       }else{
         window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
@@ -589,9 +593,10 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
       while (POS(itrk)-POS(itrstart)>max_window_size){ //shrinking window untill max_window_size criterion met
         if(ABU(itrstart)>99){
+          std::cerr << "I am not redundant!\n";
           window_quality-=0.00032*ACT(itrstart);
         }else{
-          window_quality-=lookQual[ABU(itrstart)*ACT(itrstart)];
+          window_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
         }
         itrstart++;
       }
