@@ -27,15 +27,15 @@ For detailed information on Arguments and parameters use:
 ## index
 Builds an open addressing k-mer index of the reference genome. The index is required to run "map".
 
-- ./bcmap index reference.fa RefIndexName
+```./bcmap index reference.fa RefIndexName```
 
 ## map
 Maps the barcodes of the provided readfiles to the reference and creates a barcode index of the readfiles to quickly retrieve all reads of a given barcode.
 
-- ./bcmap map readfile1.fastq readfile2.fastq RefIndexName BarcodeIndexName
+```./bcmap map readfile1.fastq readfile2.fastq RefIndexName BarcodeIndexName```
 
 ## get
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
-- ./bcmap get readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
+```./bcmap get readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes```
  
