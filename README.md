@@ -16,6 +16,8 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Barcodes are stored in BX:Z: flag of read Ids
 
 # Example 
+I think you should use an
+`<addr>` element here instead.
 
 
 
