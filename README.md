@@ -16,15 +16,13 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Barcodes are stored in BX:Z: flag of read Ids
 
 # Example 
-I think you should use an
-`<addr>` element here instead.
 
 
 
 # Commands
 For detailed information on Arguments and parameters use:
 
-./bcmap [command] --help
+```./bcmap [command] --help```
 
 ## index
 Builds an open addressing k-mer index of the reference genome. The index is required to run "map".
