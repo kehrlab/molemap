@@ -369,7 +369,7 @@ int map(int argc, char const ** argv){
           if(barcode=="AAAAAATTAGCCAGGC"){
             std::cerr << "\n\nkmer-List:\n";
             for (int i=0; i<kmer_list.size(); i++){
-              std::cerr << (int)std::get<0>(kmer_list[i]) << "\t";
+              std::cerr << lookChrom[(int)std::get<0>(kmer_list[i])] << " " << std::get<1>(kmer_list[i]) << "\n";
             }
           }
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
