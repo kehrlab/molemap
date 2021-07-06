@@ -185,7 +185,7 @@ int index(int argc, char const **argv){
 
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
-        #pragma omp atomic
+        // #pragma omp atomic
         dir[c+1]+=1;
         if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -197,9 +197,9 @@ int index(int argc, char const **argv){
       }
 
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
-      #pragma omp atomic
+      // #pragma omp atomic
       dir[c+1]+=1;
-      #pragma omp atomic
+      // #pragma omp atomic
       // CHROM++;
       // std::cerr << "." ;
       // if ((CHROM-5)%29==0) {std::cerr << "\n";}
