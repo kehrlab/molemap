@@ -137,15 +137,15 @@ int get(int argc, char const ** argv){
     file_bci >> BCI_1e;
     file_bci >> BCI_2s;
     file_bci >> BCI_2e;
-    std::cerr << "LINE: " << __LINE__ << "\n";
-    std::cerr << BCI_1s << " " << std::stoi(BCI_1s) << "\n";
-    std::cerr << BCI_1e << " " << std::stoi(BCI_1e) << "\n";
-    std::cerr << BCI_2s << " " << std::stoi(BCI_2s) << "\n";
-    std::cerr << BCI_2e << " " << std::stoi(BCI_2e) << "\n";
-    BCI.push_back(std::make_tuple(std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
-    std::cerr << "LINE: " << __LINE__ << "\n";
+    // std::cerr << "LINE: " << __LINE__ << "\n";
+    // std::cerr << BCI_1s << " " << std::stoi(BCI_1s) << "\n";
+    // std::cerr << BCI_1e << " " << std::stoi(BCI_1e) << "\n";
+    // std::cerr << BCI_2s << " " << std::stoi(BCI_2s) << "\n";
+    // std::cerr << BCI_2e << " " << std::stoi(BCI_2e) << "\n";
+    BCI.push_back(std::make_tuple(std::stoll(BCI_1s), std::stoll(BCI_1e), std::stoll(BCI_2s), std::stoll(BCI_2e)));
+    // std::cerr << "LINE: " << __LINE__ << "\n";
     BCI_BC.push_back(BCI_bc);
-    std::cerr << "LINE: " << __LINE__ << "\n";
+    // std::cerr << "LINE: " << __LINE__ << "\n";
   }
   file_bci.close();
 
