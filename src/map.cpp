@@ -363,12 +363,6 @@ int map(int argc, char const ** argv){
         // map barcode and clear k_mer list
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
-          if(barcode=="AAAAAATTAGCCAGGC" || new_barcode=="AAAAAATTAGCCAGGC"){
-            std::cerr << "\n\nkmer-List:\n";
-            for (int i=0; i<kmer_list.size(); i++){
-              std::cerr << lookChrom[(int)std::get<0>(kmer_list[i])] << " " << std::get<1>(kmer_list[i]) << "\n";
-            }
-          }
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
           kmer_list.clear();
           if (results.size()>100000) {
@@ -478,34 +472,7 @@ int map(int argc, char const ** argv){
   // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
   // tbegin = std::chrono::high_resolution_clock::now();
   std::cerr << ".........done.\n";
-  std::cerr << "Writing BarcodeIndex to file...";
 
-  // // write Barcode Index to file
-  // std::string IndBC=options.bci_name;
-  // IndBC.append("_bc.txt");
-  // IndPos=options.bci_name;
-  // IndPos.append("_pos.txt");
-  //
-  // std::cerr << "\nBCI.size(): " << BCI.size() << "\n";
-  // std::ofstream file_bci;
-  // file_bci.open(options.bci_name /*, std::ios::binary*/);
-  // for (int i=0; i<BCI.size(); i++){
-  //   file_bci  << std::get<0>(BCI[i]) << "\t"
-  //             << std::get<1>(BCI[i]) << "\t"
-  //             << std::get<2>(BCI[i]) << "\t"
-  //             << std::get<3>(BCI[i]) << "\t"
-  //             << std::get<4>(BCI[i]) << "\n";
-  // }
-  // file_bci.close();
-  //
-  // std::ofstream file_pos;
-  // file_pos.open(IndPos, std::ios::binary);
-  // for (std::vector<std::pair<std::streampos,std::streampos>>::const_iterator it=BCI_positions.begin(); it!=BCI_positions.end(); it++){
-  //   file_bc << std::get<0>(*it) << "\n" << std::get<1>(*it) << "\n";
-  // }
-  // file_pos.close();
-  //
-  std::cerr << ".done.\n";
   std::cerr << "Barcodes mapped sucessfully!\n";
 
   return 0;
@@ -521,8 +488,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
 
   // std::vector<std::string> lookChrom2={"chr1", "chr10", "chr11", "chr11_KI270721v1_random", "chr12", "chr13", "chr14", "chr14_GL000009v2_random", "chr14_GL000194v1_random", "chr14_GL000225v1_random", "chr14_KI270722v1_random", "chr14_KI270723v1_random", "chr14_KI270724v1_random", "chr14_KI270725v1_random", "chr14_KI270726v1_random", "chr15", "chr15_KI270727v1_random", "chr16", "chr16_KI270728v1_random", "chr17", "chr17_GL000205v2_random", "chr17_KI270729v1_random", "chr17_KI270730v1_random", "chr18", "chr19", "chr1_KI270706v1_random", "chr1_KI270707v1_random", "chr1_KI270708v1_random", "chr1_KI270709v1_random", "chr1_KI270710v1_random", "chr1_KI270711v1_random", "chr1_KI270712v1_random", "chr1_KI270713v1_random", "chr1_KI270714v1_random", "chr2", "chr20", "chr21", "chr22", "chr22_KI270731v1_random", "chr22_KI270732v1_random", "chr22_KI270733v1_random", "chr22_KI270734v1_random", "chr22_KI270735v1_random", "chr22_KI270736v1_random", "chr22_KI270737v1_random", "chr22_KI270738v1_random", "chr22_KI270739v1_random", "chr2_KI270715v1_random", "chr2_KI270716v1_random", "chr3", "chr3_GL000221v1_random", "chr4", "chr4_GL000008v2_random", "chr5", "chr5_GL000208v1_random", "chr6", "chr7", "chr8", "chr9", "chr9_KI270717v1_random", "chr9_KI270718v1_random", "chr9_KI270719v1_random", "chr9_KI270720v1_random", "chrM", "chrUn_GL000195v1", "chrUn_GL000213v1", "chrUn_GL000214v1", "chrUn_GL000216v2", "chrUn_GL000218v1", "chrUn_GL000219v1", "chrUn_GL000220v1", "chrUn_GL000224v1", "chrUn_GL000226v1", "chrUn_KI270302v1", "chrUn_KI270303v1", "chrUn_KI270304v1", "chrUn_KI270305v1", "chrUn_KI270310v1", "chrUn_KI270311v1", "chrUn_KI270312v1", "chrUn_KI270315v1", "chrUn_KI270316v1", "chrUn_KI270317v1", "chrUn_KI270320v1", "chrUn_KI270322v1", "chrUn_KI270329v1", "chrUn_KI270330v1", "chrUn_KI270333v1", "chrUn_KI270334v1", "chrUn_KI270335v1", "chrUn_KI270336v1", "chrUn_KI270337v1", "chrUn_KI270338v1", "chrUn_KI270340v1", "chrUn_KI270362v1", "chrUn_KI270363v1", "chrUn_KI270364v1", "chrUn_KI270366v1", "chrUn_KI270371v1", "chrUn_KI270372v1", "chrUn_KI270373v1", "chrUn_KI270374v1", "chrUn_KI270375v1", "chrUn_KI270376v1", "chrUn_KI270378v1", "chrUn_KI270379v1", "chrUn_KI270381v1", "chrUn_KI270382v1", "chrUn_KI270383v1", "chrUn_KI270384v1", "chrUn_KI270385v1", "chrUn_KI270386v1", "chrUn_KI270387v1", "chrUn_KI270388v1", "chrUn_KI270389v1", "chrUn_KI270390v1", "chrUn_KI270391v1", "chrUn_KI270392v1", "chrUn_KI270393v1", "chrUn_KI270394v1", "chrUn_KI270395v1", "chrUn_KI270396v1", "chrUn_KI270411v1", "chrUn_KI270412v1", "chrUn_KI270414v1", "chrUn_KI270417v1", "chrUn_KI270418v1", "chrUn_KI270419v1", "chrUn_KI270420v1", "chrUn_KI270422v1", "chrUn_KI270423v1", "chrUn_KI270424v1", "chrUn_KI270425v1", "chrUn_KI270429v1", "chrUn_KI270435v1", "chrUn_KI270438v1", "chrUn_KI270442v1", "chrUn_KI270448v1", "chrUn_KI270465v1", "chrUn_KI270466v1", "chrUn_KI270467v1", "chrUn_KI270468v1", "chrUn_KI270507v1", "chrUn_KI270508v1", "chrUn_KI270509v1", "chrUn_KI270510v1", "chrUn_KI270511v1", "chrUn_KI270512v1", "chrUn_KI270515v1", "chrUn_KI270516v1", "chrUn_KI270517v1", "chrUn_KI270518v1", "chrUn_KI270519v1", "chrUn_KI270521v1", "chrUn_KI270522v1", "chrUn_KI270528v1", "chrUn_KI270529v1", "chrUn_KI270530v1", "chrUn_KI270538v1", "chrUn_KI270539v1", "chrUn_KI270544v1", "chrUn_KI270548v1", "chrUn_KI270579v1", "chrUn_KI270580v1", "chrUn_KI270581v1", "chrUn_KI270582v1", "chrUn_KI270583v1", "chrUn_KI270584v1", "chrUn_KI270587v1", "chrUn_KI270588v1", "chrUn_KI270589v1", "chrUn_KI270590v1", "chrUn_KI270591v1", "chrUn_KI270593v1", "chrUn_KI270741v1", "chrUn_KI270742v1", "chrUn_KI270743v1", "chrUn_KI270744v1", "chrUn_KI270745v1", "chrUn_KI270746v1", "chrUn_KI270747v1", "chrUn_KI270748v1", "chrUn_KI270749v1", "chrUn_KI270750v1", "chrUn_KI270751v1", "chrUn_KI270752v1", "chrUn_KI270753v1", "chrUn_KI270754v1", "chrUn_KI270755v1", "chrUn_KI270756v1", "chrUn_KI270757v1", "chrX", "chrY", "chrY_KI270740v1_random"};
-
-  // std::cerr << "equal?: " << int(lookChrom==lookChrom2) << "\t";
 
   #define REF(X) std::get<0>(*(X))
   #define POS(X) std::get<1>(*(X))
@@ -540,12 +505,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   double window_quality=0;
   std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
-  if(ABU(kmer_list.begin())>99){        // calculating the quality of the first k-mer hit
-    std::cerr << "I am not redundant!\n";
-    window_quality+=0.00032*ACT(kmer_list.begin());
-  }else{
-    window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
-  }
+
+  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
 
   for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
 
@@ -555,12 +516,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
     if (reference==REF(itrk) && (POS(itrk)-start_position) < max_window_size && (POS(itrk)-end_position) < max_gap_size) { //checking break criteria
       //append window by kmer_hit
-      if(ABU(itrk)>99){
-        std::cerr << "I am not redundant!\n";
-        window_quality+=0.00032*ACT(itrk);
-      }else{
-        window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
-      }
+      window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
       end_position=POS(itrk);
 
     }else if (REF(itrk)!=reference || (POS(itrk)-end_position) >= max_gap_size){  // if k_mer hit from next reference or gapsize to large: report current window or candiadate window and initialize new window
@@ -572,12 +528,7 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
         ReportWindow(best_windows,candidate);
       }
 
-      if(ABU(itrk)>99){ // initialize new window
-        std::cerr << "I am not redundant!\n";
-        window_quality=0.00032*ACT(itrk);
-      }else{
-        window_quality=lookQual[ABU(itrk)]*ACT(itrk);
-      }
+      window_quality=lookQual[ABU(itrk)]*ACT(itrk);
       itrstart=itrk;
       reference=REF(itrk);
       start_position=POS(itrk);
@@ -586,21 +537,12 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       if (window_quality > std::get<0>(candidate)) { // check if current window better than candidate: if yes: replace candidate
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
       }
-      if(ABU(itrk)>99){ //Append window by new kmer_hit
-        std::cerr << "I am not redundant!\n";
-        window_quality+=0.00032*ACT(itrk);
-      }else{
-        window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
-      }
+
+      window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
       end_position=POS(itrk);
 
       while (POS(itrk)-POS(itrstart)>max_window_size){ //shrinking window untill max_window_size criterion met
-        if(ABU(itrstart)>99){
-          std::cerr << "I am not redundant!\n";
-          window_quality-=0.00032*ACT(itrstart);
-        }else{
-          window_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
-        }
+        window_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
         itrstart++;
       }
       start_position=POS(itrstart);
