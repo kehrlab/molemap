@@ -106,35 +106,6 @@ int index(int argc, char const **argv){
   }
 
   std::cerr << "..done.\n";
-  std::cerr << "Loading ref.fai...";
-
-  FaiIndex faiIndex;
-  if (!open(faiIndex, toCString(options.reference_file))){
-    std::cerr << ".........failed.\nBuilding ref.fai..";
-    if (!build(faiIndex, toCString(options.reference_file))){
-        std::cerr << "\nERROR: FASTA index could not be loaded or built.\n";
-      return 1;
-    }
-    if (!save(faiIndex)) // Name is stored from when reading.
-      {
-        std::cerr << "\nWARNING: FASTA index could not be written to disk.\n";
-      }
-  }
-
-  if (mkdir(toCString(options.index_name), 0777) == -1){
-    // std::cerr << "Error for index target:  " << strerror(errno) << "\n";
-  }
-
-  std::fstream output;
-  std::string IndFai=options.index_name;
-  IndFai.append("/fai.txt");
-  output.open(toCString(IndFai),std::ios::out);
-  for (int id=0; id<numSeqs(faiIndex); id++){
-    output << sequenceName(faiIndex, id) << "\n";
-  }
-  output.close();
-
-  std::cerr << "...........done.\n";
   std::cerr << "Preparing index...";
 
   int64_t maxhash;
@@ -167,6 +138,7 @@ int index(int argc, char const **argv){
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
   uint32_t c;
+  uint_fast8_t CHROMG = 0;
 
   std::cerr << "...done.\nFilling index initially:";
   // iterating over the stringSet (Chromosomes)
@@ -178,7 +150,6 @@ int index(int argc, char const **argv){
   {
     #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
-
       TStringSetIterator seq=seqG+j;
       // counting k-mers
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
@@ -231,7 +202,7 @@ int index(int argc, char const **argv){
     #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
       TStringSetIterator seq=seqG+j;
-      uint_fast8_t Chromosome=j;
+      CHROM=j;
       // filling pos
 
       std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
@@ -239,7 +210,7 @@ int index(int argc, char const **argv){
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
         pos[dir[c+1]]=i;
-        ref[dir[c+1]]=Chromosome;
+        ref[dir[c+1]]=CHROM;
         dir[c+1]++;
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -251,11 +222,11 @@ int index(int argc, char const **argv){
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
       pos[dir[c+1]]=length(*seq)-k;
-      ref[dir[c+1]]=Chromosome;
+      ref[dir[c+1]]=CHROM;
       dir[c+1]++;
 
       std::cerr << ".";
-      if ((Chromosome-2)%29==0) {std::cerr << "\n";}
+      if ((CHROM-2)%29==0) {std::cerr << "\n";}
     }
   }
   std::cerr << "done. \n";
@@ -263,13 +234,13 @@ int index(int argc, char const **argv){
   //write index to file
 
   std::string IndPos=options.index_name;
-  IndPos.append("/pos.txt");
+  IndPos.append("_pos.txt");
   std::string IndRef=options.index_name;
-  IndRef.append("/ref.txt");
+  IndRef.append("_ref.txt");
   std::string IndDir=options.index_name;
-  IndDir.append("/dir.txt");
+  IndDir.append("_dir.txt");
   std::string IndC=options.index_name;
-  IndC.append("/C.txt");
+  IndC.append("_C.txt");
 
   std::cerr << "Writing index to file...";
 
