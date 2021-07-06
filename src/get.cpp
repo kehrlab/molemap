@@ -130,20 +130,18 @@ int get(int argc, char const ** argv){
   std::string BCI_2e;
   std::string BCI_bc;
   file_bci.open(options.bci_name /*, std::ios::binary*/);
-  std::cerr << "LINE: " << __LINE__ << "\n";
 
   while (!file_bci.eof()){
-    std::cerr << "LINE: " << __LINE__ << "\n";
     file_bci >> BCI_bc;
-    std::cerr << "LINE: " << __LINE__ << "\n";
     file_bci >> BCI_1s;
-    std::cerr << "LINE: " << __LINE__ << "\n";
     file_bci >> BCI_1e;
-    std::cerr << "LINE: " << __LINE__ << "\n";
     file_bci >> BCI_2s;
-    std::cerr << "LINE: " << __LINE__ << "\n";
     file_bci >> BCI_2e;
     std::cerr << "LINE: " << __LINE__ << "\n";
+    std::cerr << BCI_1s << " " << std::stoi(BCI_1s) << "\n";
+    std::cerr << BCI_1e << " " << std::stoi(BCI_1e) << "\n";
+    std::cerr << BCI_2s << " " << std::stoi(BCI_2s) << "\n";
+    std::cerr << BCI_2e << " " << std::stoi(BCI_2e) << "\n";
     BCI.push_back(std::make_tuple(std::stoi(BCI_1s), std::stoi(BCI_1e), std::stoi(BCI_2s), std::stoi(BCI_2e)));
     std::cerr << "LINE: " << __LINE__ << "\n";
     BCI_BC.push_back(BCI_bc);
