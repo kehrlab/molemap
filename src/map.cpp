@@ -366,9 +366,11 @@ int map(int argc, char const ** argv){
         // map barcode and clear k_mer list
         if (!kmer_list.empty()) {
           sort(kmer_list.begin(),kmer_list.end());
-          std::cerr << "\n\nkmer-List:\n";
-          for (int i=0; i<kmer_list.size(); i++){
-            std::cerr << (int)std::get<0>(kmer_list[i]) << "\t";
+          if(barcode=="AAAAAATTAGCCAGGC"){
+            std::cerr << "\n\nkmer-List:\n";
+            for (int i=0; i<kmer_list.size(); i++){
+              std::cerr << (int)std::get<0>(kmer_list[i]) << "\t";
+            }
           }
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
           kmer_list.clear();
