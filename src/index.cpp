@@ -112,7 +112,7 @@ int index(int argc, char const **argv){
 std::ofstream chr21file;
 chr21file.open("refChr21.fa");
 chr21file << seqs[36];
-chr21file.close()
+chr21file.close();
 
   std::cerr << " done! \n\nkill me!\n\n";
 
