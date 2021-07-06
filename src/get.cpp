@@ -149,8 +149,12 @@ int get(int argc, char const ** argv){
 
   // lookup barcodes
 
+  std::cerr << "LINE: " << __LINE__ << "\n";
+
   std::vector<std::string> results;
   results=returnReads(BCI_BC, BCI, barcodes, file1, file2);
+
+  std::cerr << "LINE: " << __LINE__ << "\n";
 
   std::cerr << "\nresults:\n";
   for (int i = 0; i < results.size(); i++){
