@@ -174,7 +174,7 @@ int index(int argc, char const **argv){
       CHROM++;
       std::cerr << "." ;
       if ((CHROM-5)%29==0) {std::cerr << "\n";}
-  //   }
+    }
   // }
 
   std::cerr << "done. \n";
@@ -227,7 +227,7 @@ int index(int argc, char const **argv){
 
       std::cerr << ".";
       if ((CHROM-2)%29==0) {std::cerr << "\n";}
-  //   }
+    }
   // }
   std::cerr << "done. \n";
 
