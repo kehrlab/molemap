@@ -106,6 +106,17 @@ int index(int argc, char const **argv){
   }
 
   std::cerr << "..done.\n";
+
+  std::cerr << "writing chr21 to file:..."
+
+std::ofstream chr21file;
+chr21file.open("refChr21.fa");
+chr21file << seqs[36];
+chr21file.close()
+
+  std::cerr << " done! \n\nkill me!\n\n"
+
+
   std::cerr << "Loading ref.fai...";
 
   FaiIndex faiIndex;
