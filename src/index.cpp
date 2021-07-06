@@ -168,7 +168,7 @@ int index(int argc, char const **argv){
 
   uint32_t c;
 
-  std::cerr << "...done.\nFilling index initially:";
+  std::cerr << "...done.\nFilling index initially...";
   // iterating over the stringSet (Chromosomes)
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs);
@@ -206,7 +206,7 @@ int index(int argc, char const **argv){
     }
   // }
 
-  std::cerr << "done. \n";
+  std::cerr << "...done. \n";
   std::cerr << "Calculating cumulated sum...";
 
   // cumulative sum
@@ -224,7 +224,7 @@ int index(int argc, char const **argv){
   std::cerr << ".done.\n";
 
   // iterating over the stringSet (Chromosomes)
-  std::cerr << "Writing positions to index:";
+  std::cerr << "Writing positions to index...";
   seqG = begin(seqs);
   // #pragma omp parallel
   // {
