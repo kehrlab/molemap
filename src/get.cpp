@@ -94,6 +94,7 @@ int get(int argc, char const ** argv){
   std::vector<std::string> barcodes;
   std::string barcode;
 
+  std::cerr << "LINE: " << __LINE__ << "\n";
 
   // get barcodes
   std::ifstream file_bc;
@@ -117,6 +118,7 @@ int get(int argc, char const ** argv){
   // for (int i = 0; i < barcodes.size(); i++){
   //   std::cerr << barcodes[i] << "\n";
   // }
+  std::cerr << "LINE: " << __LINE__ << "\n";
 
   // load in barcode index
   std::ifstream file_bci;
