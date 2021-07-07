@@ -323,11 +323,12 @@ int map(int argc, char const ** argv){
       file1.stream.file.seekg(startpos);
       barcode=skipToNextBarcode(file1, id1);
     } else {
+      file1.stream.file.seekg(0);
       try{
         readRecord(id1, read1, file1);
       }
       catch (Exception const & e){
-        std::cout << "ERROR: " << e.what() << std::endl;
+        std::cerr << "ERROR: " << e.what() << std::endl;
       }
       // readRecord(id1, read1, file1);
       barcode=get10xBarcode(toCString(id1));
