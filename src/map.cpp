@@ -329,7 +329,7 @@ int map(int argc, char const ** argv){
     } else {
       std::string trash;
       getline(file1.stream.file, id1);
-      getline(file1.stream.file, read1);
+      getline(file1.stream.file, trash);
       getline(file1.stream.file, trash);
       getline(file1.stream.file, trash);
       // std::cerr << firstline  << "\n";
