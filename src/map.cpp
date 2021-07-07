@@ -327,8 +327,9 @@ int map(int argc, char const ** argv){
       file1.stream.file.seekg(startpos);
       barcode=skipToNextBarcode(file1, id1);
     } else {
+      std::string temp;
       std::string trash;
-      getline(file1.stream.file, id1);
+      getline(file1.stream.file, temp);
       getline(file1.stream.file, trash);
       getline(file1.stream.file, trash);
       getline(file1.stream.file, trash);
@@ -336,7 +337,7 @@ int map(int argc, char const ** argv){
       std::cerr << __LINE__ << "\n";
       // readRecord(id1, read1, file1);
       std::cerr << __LINE__ << "\n";
-      barcode=get10xBarcode(toCString(id1));
+      barcode=get10xBarcode(toCString(temp));
       std::cerr << __LINE__ << "\n";
       file1.stream.file.seekg(0);
       std::cerr << __LINE__ << "\n";
