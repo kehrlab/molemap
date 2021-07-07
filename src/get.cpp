@@ -137,34 +137,16 @@ int get(int argc, char const ** argv){
     file_bci >> BCI_1e;
     file_bci >> BCI_2s;
     file_bci >> BCI_2e;
-    // std::cerr << "LINE: " << __LINE__ << "\n";
-    // std::cerr << BCI_1s << " " << std::stoi(BCI_1s) << "\n";
-    // std::cerr << BCI_1e << " " << std::stoi(BCI_1e) << "\n";
-    // std::cerr << BCI_2s << " " << std::stoi(BCI_2s) << "\n";
-    // std::cerr << BCI_2e << " " << std::stoi(BCI_2e) << "\n";
     BCI.push_back(std::make_tuple(std::stoll(BCI_1s), std::stoll(BCI_1e), std::stoll(BCI_2s), std::stoll(BCI_2e)));
-    // std::cerr << "LINE: " << __LINE__ << "\n";
     BCI_BC.push_back(BCI_bc);
-    // std::cerr << "LINE: " << __LINE__ << "\n";
   }
   file_bci.close();
 
-  // for (int i=0; i<BCI.size(); i++){
-  //   std::cerr  << std::get<0>(BCI[i]) << "\t"
-  //             << (int)std::get<1>(BCI[i]) << "\t"
-  //             << (int)std::get<2>(BCI[i]) << "\t"
-  //             << (int)std::get<3>(BCI[i]) << "\t"
-  //             << (int)std::get<4>(BCI[i]) << "\n";
-  // }
 
   // lookup barcodes
 
-  std::cerr << "LINE: " << __LINE__ << "\n";
-
   std::vector<std::string> results;
   results=returnReads(BCI_BC, BCI, barcodes, file1, file2);
-
-  std::cerr << "LINE: " << __LINE__ << "\n";
 
   std::cerr << "\nresults:\n";
   for (int i = 0; i < results.size(); i++){
@@ -180,6 +162,7 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
   std::vector<std::string> result;
   std::string read;
   CharString id;
+  CharString qual;
 
   for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
     std::vector<std::string>::iterator itrpos=std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
@@ -189,11 +172,20 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
       file2.stream.file.seekg(std::get<2>(BCI[pos]));
 
       while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
-        readRecord(id, read, file1);
+        readRecord(id, read, qual, file1);
+        result.push_back("\n");
+        result.push_back(id);
+        result.push_back("\n");
         result.push_back(read);
-        readRecord(id, read, file2);
+        result.push_back("\n+\n");
+        result.push_back(qual);
+        readRecord(id, read, qual, file2);
+        result.push_back("\n");
+        result.push_back(id);
+        result.push_back("\n");
         result.push_back(read);
-      }
+        result.push_back("\n+\n");
+        result.push_back(qual);      }
     }
   }
   return result;
