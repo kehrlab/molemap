@@ -290,6 +290,7 @@ int map(int argc, char const ** argv){
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
+    std::cerr << __LINE__ << "\n";
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
     StringSet<Dna5String> reads;
@@ -316,6 +317,8 @@ int map(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
+    std::cerr << __LINE__ << "\n";
+
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
     //move file 1 to start position
@@ -330,6 +333,7 @@ int map(int argc, char const ** argv){
 
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
+    std::cerr << __LINE__ << "\n";
 
     //align file2 with file1
     if(t!=0){
@@ -349,11 +353,14 @@ int map(int argc, char const ** argv){
     //proceed through readfile untill endpos
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     // std::cerr << "Thread: " << t << " starting while loop!\n";
+    std::cerr << __LINE__ << "\n";
 
     // if skiped beyond the boundaries of threads scope: end thread
     if (file1.stream.file.tellg()>endpos){
       continue;
     }
+
+    std::cerr << __LINE__ << "\n";
 
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
