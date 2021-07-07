@@ -290,7 +290,6 @@ int map(int argc, char const ** argv){
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
-    std::cerr << __LINE__ << "\n";
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
     StringSet<Dna5String> reads;
@@ -317,35 +316,20 @@ int map(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
-    std::cerr << __LINE__ << "\n";
-
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
     //move file 1 to start position
     if (t!=0){
-      std::cerr << __LINE__ << "\n";
       file1.stream.file.seekg(startpos);
       barcode=skipToNextBarcode(file1, id1);
     } else {
-      std::string temp;
-      std::string trash;
-      getline(file1.stream.file, temp);
-      getline(file1.stream.file, trash);
-      getline(file1.stream.file, trash);
-      getline(file1.stream.file, trash);
-      // std::cerr << firstline  << "\n";
-      std::cerr << __LINE__ << "\n";
-      // readRecord(id1, read1, file1);
-      std::cerr << __LINE__ << "\n";
-      barcode=get10xBarcode(toCString(temp));
-      std::cerr << __LINE__ << "\n";
+      readRecord(id1, read1, file1);
+      barcode=get10xBarcode(toCString(id1));
       file1.stream.file.seekg(0);
-      std::cerr << __LINE__ << "\n";
     }
 
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
 
-    std::cerr << __LINE__ << "\n";
 
     //align file2 with file1
     if(t!=0){
@@ -365,14 +349,11 @@ int map(int argc, char const ** argv){
     //proceed through readfile untill endpos
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     // std::cerr << "Thread: " << t << " starting while loop!\n";
-    std::cerr << __LINE__ << "\n";
 
     // if skiped beyond the boundaries of threads scope: end thread
     if (file1.stream.file.tellg()>endpos){
       continue;
     }
-
-    std::cerr << __LINE__ << "\n";
 
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
@@ -666,9 +647,7 @@ void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::str
     // std::cerr << __LINE__ << "\n";
     // std::cerr << "new_id: " << new_id << "\n";
     pos=file.stream.file.tellg();
-    std::cerr << __LINE__ << "\n";
     readRecord(new_id,read,file);
-    std::cerr << __LINE__ << "\n";
   }
   // std::cerr << __LINE__ << "\n";
   file.stream.file.seekg(pos);
