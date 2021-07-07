@@ -349,6 +349,12 @@ int map(int argc, char const ** argv){
     //proceed through readfile untill endpos
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
     // std::cerr << "Thread: " << t << " starting while loop!\n";
+
+    // if skiped beyond the boundaries of threads scope: end thread
+    if (file1.stream.file.tellg()>endpos){
+      continue;
+    }
+
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
