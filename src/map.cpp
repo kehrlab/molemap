@@ -332,7 +332,7 @@ int map(int argc, char const ** argv){
       getline(file1.stream.file, read1);
       getline(file1.stream.file, trash);
       getline(file1.stream.file, trash);
-      std::cerr << firstline  << "\n";
+      // std::cerr << firstline  << "\n";
       std::cerr << __LINE__ << "\n";
       // readRecord(id1, read1, file1);
       std::cerr << __LINE__ << "\n";
