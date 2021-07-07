@@ -328,7 +328,6 @@ int map(int argc, char const ** argv){
       }
       catch (Exception const & e){
         std::cout << "ERROR: " << e.what() << std::endl;
-        return 1;
       }
       // readRecord(id1, read1, file1);
       barcode=get10xBarcode(toCString(id1));
