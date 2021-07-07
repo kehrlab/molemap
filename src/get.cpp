@@ -94,8 +94,6 @@ int get(int argc, char const ** argv){
   std::vector<std::string> barcodes;
   std::string barcode;
 
-  std::cerr << "LINE: " << __LINE__ << "\n";
-
   // get barcodes
   std::ifstream file_bc;
   file_bc.open(options.barcodes /*, std::ios::binary*/);
@@ -114,11 +112,6 @@ int get(int argc, char const ** argv){
     }
     barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
   }
-  // std::cerr << "\nBarcodes:\n";
-  // for (int i = 0; i < barcodes.size(); i++){
-  //   std::cerr << barcodes[i] << "\n";
-  // }
-  std::cerr << "LINE: " << __LINE__ << "\n";
 
   // load in barcode index
   std::ifstream file_bci;
@@ -173,18 +166,18 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
 
       while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
         readRecord(id, read, qual, file1);
-        result.push_back("\n");
+        // result.push_back("\n");
         result.push_back(id);
-        result.push_back("\n");
+        // result.push_back("\n");
         result.push_back(read);
-        result.push_back("\n+\n");
+        result.push_back("+");
         result.push_back(qual);
         readRecord(id, read, qual, file2);
-        result.push_back("\n");
+        // result.push_back("\n");
         result.push_back(id);
-        result.push_back("\n");
+        // result.push_back("\n");
         result.push_back(read);
-        result.push_back("\n+\n");
+        result.push_back("+");
         result.push_back(qual);      }
     }
   }
