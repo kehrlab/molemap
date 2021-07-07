@@ -329,7 +329,9 @@ int map(int argc, char const ** argv){
     } else {
       std::cerr << __LINE__ << "\n";
       readRecord(id1, read1, file1);
+      std::cerr << __LINE__ << "\n";
       barcode=get10xBarcode(toCString(id1));
+      std::cerr << __LINE__ << "\n";
       file1.stream.file.seekg(0);
       std::cerr << __LINE__ << "\n";
     }
