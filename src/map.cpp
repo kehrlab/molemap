@@ -323,12 +323,15 @@ int map(int argc, char const ** argv){
 
     //move file 1 to start position
     if (t!=0){
+      std::cerr << __LINE__ << "\n";
       file1.stream.file.seekg(startpos);
       barcode=skipToNextBarcode(file1, id1);
     } else {
+      std::cerr << __LINE__ << "\n";
       readRecord(id1, read1, file1);
       barcode=get10xBarcode(toCString(id1));
       file1.stream.file.seekg(0);
+      std::cerr << __LINE__ << "\n";
     }
 
     // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
