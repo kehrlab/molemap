@@ -16,7 +16,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Barcodes are stored in BX:Z: flag of read Ids
 
 # Example 
-    ./bcmap index example/reference.fa example/Index
+    ./bcmap index example/reference.fa example/Index -b 45000000
     ./bcmap map example/readfile.1.fq examle/readfile.2.fq example/Index example/BarcodeIndex -o example/results.bed
     awk 'BEGIN {print($4)}' results.bed > FirstBarcode.txt
     ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex barcodes.txt -o readsOfFirstBarcode.fq
