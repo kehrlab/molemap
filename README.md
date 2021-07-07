@@ -21,7 +21,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
     ./bcmap index example/chr21.fa example/Index -b 45000000
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
-    ./bcmap map example/readfile.1.fq examle/readfile.2.fq example/Index example/BarcodeIndex -o example/results.bed
+    ./bcmap map example/readfile.1.fq example/readfile.2.fq example/Index example/BarcodeIndex -o example/results.bed
     
     # extracting the first barcode from the results
     awk 'BEGIN {print($4)}' results.bed > FirstBarcode.txt
