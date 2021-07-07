@@ -161,8 +161,8 @@ int get(int argc, char const ** argv){
 std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos,std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, SeqFileIn & file1, SeqFileIn & file2){
   std::vector<std::string> result;
   std::string read;
-  CharString id;
-  CharString qual;
+  std::string id;
+  std::string qual;
 
   for (std::vector<std::string>::iterator itrbc=barcodes.begin(); itrbc<barcodes.end(); itrbc++){
     std::vector<std::string>::iterator itrpos=std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
