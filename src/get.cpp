@@ -146,7 +146,8 @@ int get(int argc, char const ** argv){
   for (int i = 0; i < results.size(); i++){
     output << results[i] << "\n";
   }
-  output.close()
+  output.close();
+  
   // std::cerr << "\nresults:\n";
   // for (int i = 0; i < results.size(); i++){
   //   std::cerr << results[i] << "\n";
