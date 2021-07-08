@@ -147,7 +147,7 @@ int get(int argc, char const ** argv){
     output << results[i] << "\n";
   }
   output.close();
-  
+
   // std::cerr << "\nresults:\n";
   // for (int i = 0; i < results.size(); i++){
   //   std::cerr << results[i] << "\n";
@@ -174,7 +174,7 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
       while(file1.stream.file.tellg() < std::get<1>(BCI[pos])){
         readRecord(id, read, qual, file1);
         // result.push_back("\n");
-        result.push_back(id);
+        result.push_back("@"+id);
         // result.push_back("\n");
         result.push_back(read);
         result.push_back("+");
