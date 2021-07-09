@@ -16,7 +16,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Barcodes are stored in BX:Z: flag of read Ids
 
 # Commands
-For detailed information on Arguments and parameters use:
+For detailed information on Arguments and Options:
 
     ./bcmap [command] --help
 
