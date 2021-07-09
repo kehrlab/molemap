@@ -16,6 +16,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Barcodes are stored in BX:Z: flag of read Ids
 
 # Example 
+This small example demonstrates how to use bcmap.
 
     # building the index for chr21.fa using 45000000 buckets (based on the size of chromosome 21)
     ./bcmap index example/chr21.fa example/Index -b 45000000
@@ -39,7 +40,7 @@ For detailed information on Arguments and parameters use:
     ./bcmap [command] --help
 
 ## index
-Builds an open addressing k-mer index of the reference genome. The index is required to run "map".
+Builds an open addressing k-mer index of the reference genome. The index is required to run "map". The bucket number should be set to a value close to the size of the reference using the -b flag. The default bucket number is optimized for hg38.
 
     ./bcmap index reference.fa RefIndexName
 
