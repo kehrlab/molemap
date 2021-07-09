@@ -36,7 +36,7 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
     ./bcmap get readfile1.fastq readfile2.fastq BarcodeIndexName Barcodes
  
 # Example 
-This small example demonstrates how to use bcmap.
+This small example demonstrates how to use bcmap. And allows you to check if it is properly installed. Change do the bcmap folder and run the commands below. 
 
     # building the index for chr21.fa using 45000000 buckets (based on the size of chromosome 21)
     ./bcmap index example/chr21.fa example/Index -b 45000000
