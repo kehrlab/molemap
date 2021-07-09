@@ -10,7 +10,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - Update line 14 and 15 in the makefile to point to the SeqAn /lib and /include directory
 - run make
 
-## Data requirements
+# Data requirements
 - 10XGenomics paired-end Linked-reads
 - Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools) or [samtools](https://github.com/samtools/samtools))
 - Barcodes are stored in BX:Z: flag of read Ids
