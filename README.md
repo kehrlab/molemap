@@ -26,10 +26,10 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
     # extracting the first barcode from the results
     awk 'BEGIN {print($4)}' example/results.bed > example/FirstBarcode.txt
     
-    # extracting all reads belonging to this barcode
+    # extracting all reads belonging to the first barcode
     ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o readsOfFirstBarcode.fq
     
-    # extracting reads of a specific barcode
+    # extracting reads of barcode AACATCGCAAACAGTA
     ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o AACATCGCAAACAGTA.reads.fq
 
 
