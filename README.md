@@ -48,8 +48,8 @@ This small example demonstrates how to use bcmap and allows you to check if it i
     awk '{if(NR==1) print($4)}' example/results.bed > example/FirstBarcode.txt
     
     # extracting all reads belonging to the first barcode
-    ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o readsOfFirstBarcode.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o readsOfFirstBarcode.fq
     
     # extracting reads of barcode AACATCGCAAACAGTA
-    ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o readsOfAACATCGCAAACAGTA.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o readsOfAACATCGCAAACAGTA.fq
 
