@@ -11,8 +11,9 @@ CC = $(CXX)
 
 # Set this to include SeqAn libraries, either system wide
 # or download into current folder and set to .
-SEQAN_LIB = ../../miniconda/include -L ../../miniconda/lib/
-CXXFLAGS += -I $(SEQAN_LIB) -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
+SEQAN_LIB = ../../miniconda/lib/
+SEQAN_INC = ../../miniconda/include/
+CXXFLAGS += -I $(SEQAN_INC) -L $(SEQAN_LIB) -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
 # DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
