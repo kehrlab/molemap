@@ -45,7 +45,7 @@ This small example demonstrates how to use bcmap and allows you to check if it i
     ./bcmap map example/readfile.1.fq example/readfile.2.fq example/Index example/BarcodeIndex -o example/results.bed
     
     # extracting the first barcode from the results
-    awk 'BEGIN {print($4)}' example/results.bed > example/FirstBarcode.txt
+    awk '{if(NR==0) print($4)}' example/results.bed > example/FirstBarcode.txt
     
     # extracting all reads belonging to the first barcode
     ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o readsOfFirstBarcode.fq
