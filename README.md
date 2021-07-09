@@ -3,7 +3,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 
 # Installation
 - Install [SeqAn2](https://seqan.readthedocs.io/en/master/Infrastructure/Use/Install.html#infra-use-install)
-- Update line XX in the makefile to link and include the SeqAn directory
+- Update line 14 and 15 in the makefile to point to the SeqAn /lib and /include directory
 - run make
 
 ## Prerequisites
