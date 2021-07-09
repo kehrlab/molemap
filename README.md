@@ -40,7 +40,7 @@ For detailed information on Arguments and parameters use:
     ./bcmap [command] --help
 
 ## index
-Builds an open addressing k-mer index of the reference genome. The index is required to run "map". The bucket number should be set to a value close to the size of the reference using the -b flag. The default bucket number is optimized for hg38.
+Builds an open addressing k-mer index of the reference genome. The index is required to run "map". The bucket number should be set to a value close to the size of the reference using the -b option. The default bucket number is optimized for hg38.
 
     ./bcmap index reference.fa RefIndexName
 
