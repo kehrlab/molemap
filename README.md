@@ -30,7 +30,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
     ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o readsOfFirstBarcode.fq
     
     # extracting reads of barcode AACATCGCAAACAGTA
-    ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o AACATCGCAAACAGTA.reads.fq
+    ./bcmap get example/readfile.1.fq examle/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o readsOfAACATCGCAAACAGTA.fq
 
 
 # Commands
