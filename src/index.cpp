@@ -226,9 +226,9 @@ int index(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
   std::cerr << "Writing positions to index...";
   seqG = begin(seqs);
-  #pragma omp parallel
-  {
-    #pragma omp for schedule(dynamic)
+  // #pragma omp parallel
+  // {
+  //   #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
       TStringSetIterator seq=seqG+j;
       uint_fast8_t Chromosome=j;
@@ -257,7 +257,7 @@ int index(int argc, char const **argv){
       // std::cerr << ".";
       // if ((Chromosome-2)%29==0) {std::cerr << "\n";}
     }
-  }
+  // }
   std::cerr << "done. \n";
 
   //write index to file
