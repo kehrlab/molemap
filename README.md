@@ -2,13 +2,13 @@
 Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score.
 
 ## Prerequisites
-- SeqAn2
-- gcc version XXX
+- [SeqAn2](https://seqan.readthedocs.io/en/master/Infrastructure/Use/Install.html#infra-use-install)
+- gcc version 7.5.0
 
 # Installation
-- Install [SeqAn2](https://seqan.readthedocs.io/en/master/Infrastructure/Use/Install.html#infra-use-install)
-- Update line 14 and 15 in the makefile to point to the SeqAn /lib and /include directory
-- run make
+- Clone this git repository
+- Update line 14 and 15 in the makefile to point to your SeqAn /lib and /include directory
+- Run make
 
 # Data requirements
 - 10XGenomics paired-end Linked-reads
