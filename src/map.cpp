@@ -595,8 +595,8 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::string ref=lookChrom[std::get<1>(*itrbw)];
     std::string start=std::to_string(std::get<2>(*itrbw));
     std::string end=std::to_string(std::get<3>(*itrbw));
-    std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
-    results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual +"\t" + len + "\n");
+    // std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
+    results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual + "\n");
     // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
     // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
   }
