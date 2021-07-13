@@ -30,7 +30,7 @@ Maps the barcodes of the provided readfiles to the reference and creates a barco
 
     ./bcmap map readfile1.fastq readfile2.fastq RefIndexName BarcodeIndexName
 
-Content of output .bed file:
+Content of output .bed file: \n
 chromosome  startposition  endposition  barcode  mapping_score
 
 ## get
