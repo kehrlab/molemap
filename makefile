@@ -6,14 +6,10 @@ SRCS := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRCS:.cpp=.o))
 
 # Compiler
-CXX = ~/work/miniconda/bin/x86_64-conda_cos6-linux-gnu-g++
+CXX = g++ -std=c++14
 CC = $(CXX)
 
-# Set this to include SeqAn libraries, either system wide
-# or download into current folder and set to .
-SEQAN_LIB = ../../miniconda/lib/
-SEQAN_INC = ../../miniconda/include/
-CXXFLAGS += -I $(SEQAN_INC) -L $(SEQAN_LIB) -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
+CXXFLAGS += -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
 # DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
@@ -31,7 +27,6 @@ CXXFLAGS += -I $(SEQAN_INC) -L $(SEQAN_LIB) -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISA
 
 LDLIBS = -lrt -lpthread -fopenmp
 
-all: $(TARGET1) $(TARGET2) $(TARGET3)
 # $(TARGET): countKmers.cpp $(BUILD_DIR)/functions.o #$(SRC_DIR)/functions.h
 # 	$(CC) countKmers.cpp $(BUILD_DIR)/functions.o -o $@ $(LDLIBS)
 #
@@ -41,7 +36,8 @@ all: $(TARGET1) $(TARGET2) $(TARGET3)
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) bcmap.cpp $(OBJS) -o $@ $(LDLIBS)
+	#$(CC) bcmap.cpp $(OBJS) -o $@ $(LDLIBS)
+	$(CC) $(OBJS) -o $@ $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@ $(LDLIBS)
