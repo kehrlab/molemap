@@ -22,12 +22,12 @@ For detailed information on Arguments and Options:
 ## index
 Builds an open addressing k-mer index of the reference genome. The index is required to run "map". The bucket count should be set to a value close to the size of the reference using the -b option. The default bucket count is optimized for hg38 and k=31.
 
-    ./bcmap index reference.fa
+    ./bcmap index reference.fa [options]
 
 ## map
 Maps the barcodes of the provided readfiles to the reference and creates a barcode index of the readfiles to quickly retrieve all reads of a given barcode.
 
-    ./bcmap map readfile1.fastq readfile2.fastq
+    ./bcmap map readfile1.fastq readfile2.fastq [options]
 
 Content of output bed-file:
 * *chromosome  startposition  endposition  barcode  mapping_score*
@@ -35,7 +35,7 @@ Content of output bed-file:
 ## get
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
-    ./bcmap get readfile1.fastq readfile2.fastq Barcodes
+    ./bcmap get readfile1.fastq readfile2.fastq Barcodes [options]
  
 # Example 
 This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below. 
