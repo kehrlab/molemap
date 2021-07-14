@@ -40,7 +40,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
         seqan::ArgParseArgument::STRING, "Index_name[IN]"));
     setDefaultValue(parser, "b", "BarcodeIndex");
 
-    seqan::addUsageLine(parser,"./bcmap get readfile.1.fq readfile.2.fq [OPTIONS]");
+    seqan::addUsageLine(parser, "readfile.1.fq readfile.2.fq [OPTIONS]");
     setShortDescription(parser, "Retreive all reads of a list of barcodes.");
     setVersion(parser, VERSION);
     setDate(parser, DATE);

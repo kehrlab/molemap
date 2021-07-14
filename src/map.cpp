@@ -79,7 +79,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
 
-    seqan::addUsageLine(parser,"./bcmap map readfile.1.fq readfile.2.fq [OPTIONS]");
+    seqan::addUsageLine(parser,"readfile.1.fq readfile.2.fq [OPTIONS]");
     setShortDescription(parser, "Map barcodes to reference.");
     setVersion(parser, VERSION);
     setDate(parser, DATE);
