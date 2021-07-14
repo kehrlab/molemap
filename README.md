@@ -6,9 +6,9 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 - gcc version 7.5.0
 
 # Installation
-- Clone this git repository
+    git clone https://github.com/kehrlab/bcmap.git
+    make
 - Update line 14 and 15 in the makefile to point to your SeqAn /lib and /include directory
-- Run make
 
 # Data requirements
 - 10XGenomics paired-end Linked-reads
