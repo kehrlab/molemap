@@ -48,6 +48,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
         seqan::ArgParseArgument::INT64, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
 
+    seqan::addUsageLine(parser,"./bcmap map reference.fq [OPTIONS]");
     setShortDescription(parser, "Build an index of a reference genome.");
     setVersion(parser, VERSION);
     setDate(parser, DATE);
