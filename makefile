@@ -12,9 +12,9 @@ CC = $(CXX)
 CXXFLAGS += -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
-# DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
-# VERSION := 0.0.1-alpha-$(shell git log --pretty=format:"%h" --date=iso | head -n 1)
-# CXXFLAGS += -DDATE=\""$(DATE)"\" -DVERSION=\""$(VERSION)"\"
+DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
+VERSION := 0.0.1-alpha-$(shell git log --pretty=format:"%h" --date=iso | head -n 1)
+CXXFLAGS += -DDATE=\""$(DATE)"\" -DVERSION=\""$(VERSION)"\"
 
 # Enable warnings
 # CXXFLAGS += -W -Wall -Wno-long-long -pedantic -Wno-variadic-macros -Wno-unused-result
@@ -26,12 +26,6 @@ CXXFLAGS += -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 # CXXFLAGS += -O3 -DSEQAN_ENABLE_TESTING=0 -DSEQAN_ENABLE_DEBUG=0
 
 LDLIBS = -lrt -lpthread -fopenmp
-
-# $(TARGET): countKmers.cpp $(BUILD_DIR)/functions.o #$(SRC_DIR)/functions.h
-# 	$(CC) countKmers.cpp $(BUILD_DIR)/functions.o -o $@ $(LDLIBS)
-#
-# $(BUILD_DIR)/%.o: $rm (SRC_DIR)/%.cpp $(SRC_DIR)/%.h
-# 	$(CC) -c $< -o $@
 
 all: $(TARGET)
 
