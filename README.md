@@ -2,14 +2,12 @@
 Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score representing the trustworthines of the mapping. A barcode index is constructed alongside the mapping and can be used to quickly retrieve all reads belonging to a barcode.
 
 ## Prerequisites
-- [SeqAn2](https://seqan.readthedocs.io/en/master/Infrastructure/Use/Install.html#infra-use-install)
-- gcc version 7.5.0
+- gcc version 7.2.0
 
 # Installation
     git clone https://github.com/kehrlab/bcmap.git
     cd bcmap
     make
-- Update line 14 and 15 in the makefile to point to your SeqAn /lib and /include directory
 
 # Data requirements
 - 10XGenomics paired-end Linked-reads
