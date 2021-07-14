@@ -40,13 +40,18 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     // Define arguments.
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1.fastq"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2.fastq"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[IN]"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
+    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
 
     // Define Options
-    // addOption(parser, seqan::ArgParseOption(
-    //     "w", "whitelist", "Whitelisted barcodes within readfiles. Only necessary if no Whitelist.txt in readfile directory.",
-    //     seqan::ArgParseArgument::INPUT_FILE, "Path to Whitelist.txt"));
+    addOption(parser, seqan::ArgParseOption(
+        "i", "index_name", "Name of the folder in which the index is stored.",
+        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+    setDefaultValue(parser, "i", "Index");
+    addOption(parser, seqan::ArgParseOption(
+        "b", "Barcode_index_name", "Name of the BarcodeIndex.",
+        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+    setDefaultValue(parser, "b", "BarcodeIndex");
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -93,21 +98,17 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     // Extract argument and option values.
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
-    getArgumentValue(options.index_name, parser, 2);
-    getArgumentValue(options.bci_name, parser, 3);
+    // getArgumentValue(options.index_name, parser, 2);
+    // getArgumentValue(options.bci_name, parser, 3);
 
+    getOptionValue(options.index_name, parser, "i");
+    getOptionValue(options.bci_name, parser, "b");
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.output_file, parser, "o");
     getOptionValue(options.q, parser, "q");
     getOptionValue(options.l, parser, "l");
     getOptionValue(options.threads, parser, "t");
-
-    // std::string inf_whitelist=options.readfile1.substr(0,options.readfile1.find_last_of("/"));
-    // inf_whitelist+="/Whitelist.txt";
-    // setDefaultValue(parser, "w", inf_whitelist);
-    // getOptionValue(options.whitelist, parser, "w");
-
 
     return seqan::ArgumentParser::PARSE_OK;
 }
@@ -136,24 +137,13 @@ int map(int argc, char const ** argv){
 
   uint_fast8_t mini_window_size = options.mini_window_size;
 
-  /*
-  defining Parameters
-  */
+  // defining Parameters
 
   uint_fast32_t max_window_size=300000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
   uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
   uint_fast8_t window_count=100;   // amount of saved candidate windows
 
-  // checking if whitelist exists
-  // std::ifstream whitelistFile (options.whitelist, std::ios::ate);
-  // if (!whitelistFile.is_open()) {
-  //   std::cerr << "\nERROR: Barcode whitelist not found. Please provide the whitelist using -w or place it as Whitelist.txt in the directory of readfile1.\n\n";
-  //   return 0;
-  // }
-  /*
-  reading the Index
-  */
-
+  // reading the Index
   std::cerr << "Reading in the k-mer index";
 
   String<uint32_t> dir;
@@ -240,18 +230,10 @@ int map(int argc, char const ** argv){
   }
 
   uint_fast32_t bucket_number=length(C);
-  // std::cerr << "bucket_number: " << bucket_number << "\n";
-
 
   std::cerr <<"..done.\n";
 
-  /*
-  loading in the reads
-  */
-
   // loading reads from fastq/fasta files:
-
-
   try {         // opening read-files
     SeqFileIn file1(toCString(options.readfile1));
     SeqFileIn file2(toCString(options.readfile2));
@@ -281,10 +263,6 @@ int map(int argc, char const ** argv){
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   omp_lock_t lock;
   omp_init_lock(&lock);
-
-  // preparing barcode Index
-  // std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
-  // BCI_positions.resize(whitelist.size(),std::make_pair(0,0));
 
   std::cerr << "Processing read file...";
 
@@ -316,8 +294,6 @@ int map(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
-
     //move file 1 to start position
     if (t!=0){
       file1.stream.file.seekg(startpos);
@@ -335,14 +311,9 @@ int map(int argc, char const ** argv){
       file1.stream.file.seekg(0);
     }
 
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
-
-
     //align file2 with file1
     if(t!=0){
-      // startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4*3);
       startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4);
-
     }
     SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
 
@@ -353,15 +324,13 @@ int map(int argc, char const ** argv){
 
     BCI_1s=file1.stream.file.tellg();
     BCI_2s=file2.stream.file.tellg();
-    //proceed through readfile untill endpos
-    // std::cerr << "Thread " << t << " alive at line " << __LINE__ << ".\n";
-    // std::cerr << "Thread: " << t << " starting while loop!\n";
 
     // if skiped beyond the boundaries of threads scope: end thread
     if (file1.stream.file.tellg()>endpos){
       continue;
     }
 
+    //proceed through readfile untill endpos
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
@@ -392,21 +361,14 @@ int map(int argc, char const ** argv){
         if (file1.stream.file.tellg()>endpos){
           break;
         }
-        // if new_barcode not in Whitelist: skip to next barcode
-        // itrwhitelist++;
         while (new_barcode[0]=='*' && !atEnd(file1)) {
           readRecord(id2, read2, file2);
           skipToNextBarcode2(file1,file2,new_barcode);
           BCI_1s=file1.stream.file.tellg();
           readRecord(id1, read1, file1);
         }
-        // BCI_1s=file1.stream.file.tellg();
         BCI_2s=file2.stream.file.tellg();
-        // std::cerr << "barcode: "  << new_barcode << " whitelist: " << *itrwhitelist << " GOOD!" << "\n";
       }
-
-      // Barcodes processed:  1281285
-      // Barcodes skiped:    21574673
 
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
@@ -442,7 +404,6 @@ int map(int argc, char const ** argv){
       }
     }
     if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
-      // processedBC++;
       // BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
       sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
@@ -451,6 +412,7 @@ int map(int argc, char const ** argv){
     close(file1);
     close(file2);
 
+    // writing Barcode index to file
     #pragma omp ordered
     {
       std::ofstream file_bci;
@@ -463,10 +425,6 @@ int map(int argc, char const ** argv){
                   << std::get<4>(BCI_local[i]) << "\n";
       }
       file_bci.close();
-      // #pragma omp critical
-      // {
-      // BCI.insert(BCI.end(), BCI_local.begin(), BCI_local.end());
-      // }
     }
 
     omp_set_lock(&lock);
@@ -479,11 +437,6 @@ int map(int argc, char const ** argv){
 
   }
 
-  // std::cerr << "\n\nBarcodes processed: " << processedBarcodes << "\n";
-  // std::cerr <<     "Barcodes skiped:    " << skipedBarcodes << "\n";
-
-  // std::cerr << "\nbarcode processed in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s";
-  // tbegin = std::chrono::high_resolution_clock::now();
   std::cerr << ".........done.\n";
 
   std::cerr << "Barcodes mapped sucessfully!\n";
@@ -498,10 +451,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
 
-
-
-  // std::vector<std::string> lookChrom2={"chr1", "chr10", "chr11", "chr11_KI270721v1_random", "chr12", "chr13", "chr14", "chr14_GL000009v2_random", "chr14_GL000194v1_random", "chr14_GL000225v1_random", "chr14_KI270722v1_random", "chr14_KI270723v1_random", "chr14_KI270724v1_random", "chr14_KI270725v1_random", "chr14_KI270726v1_random", "chr15", "chr15_KI270727v1_random", "chr16", "chr16_KI270728v1_random", "chr17", "chr17_GL000205v2_random", "chr17_KI270729v1_random", "chr17_KI270730v1_random", "chr18", "chr19", "chr1_KI270706v1_random", "chr1_KI270707v1_random", "chr1_KI270708v1_random", "chr1_KI270709v1_random", "chr1_KI270710v1_random", "chr1_KI270711v1_random", "chr1_KI270712v1_random", "chr1_KI270713v1_random", "chr1_KI270714v1_random", "chr2", "chr20", "chr21", "chr22", "chr22_KI270731v1_random", "chr22_KI270732v1_random", "chr22_KI270733v1_random", "chr22_KI270734v1_random", "chr22_KI270735v1_random", "chr22_KI270736v1_random", "chr22_KI270737v1_random", "chr22_KI270738v1_random", "chr22_KI270739v1_random", "chr2_KI270715v1_random", "chr2_KI270716v1_random", "chr3", "chr3_GL000221v1_random", "chr4", "chr4_GL000008v2_random", "chr5", "chr5_GL000208v1_random", "chr6", "chr7", "chr8", "chr9", "chr9_KI270717v1_random", "chr9_KI270718v1_random", "chr9_KI270719v1_random", "chr9_KI270720v1_random", "chrM", "chrUn_GL000195v1", "chrUn_GL000213v1", "chrUn_GL000214v1", "chrUn_GL000216v2", "chrUn_GL000218v1", "chrUn_GL000219v1", "chrUn_GL000220v1", "chrUn_GL000224v1", "chrUn_GL000226v1", "chrUn_KI270302v1", "chrUn_KI270303v1", "chrUn_KI270304v1", "chrUn_KI270305v1", "chrUn_KI270310v1", "chrUn_KI270311v1", "chrUn_KI270312v1", "chrUn_KI270315v1", "chrUn_KI270316v1", "chrUn_KI270317v1", "chrUn_KI270320v1", "chrUn_KI270322v1", "chrUn_KI270329v1", "chrUn_KI270330v1", "chrUn_KI270333v1", "chrUn_KI270334v1", "chrUn_KI270335v1", "chrUn_KI270336v1", "chrUn_KI270337v1", "chrUn_KI270338v1", "chrUn_KI270340v1", "chrUn_KI270362v1", "chrUn_KI270363v1", "chrUn_KI270364v1", "chrUn_KI270366v1", "chrUn_KI270371v1", "chrUn_KI270372v1", "chrUn_KI270373v1", "chrUn_KI270374v1", "chrUn_KI270375v1", "chrUn_KI270376v1", "chrUn_KI270378v1", "chrUn_KI270379v1", "chrUn_KI270381v1", "chrUn_KI270382v1", "chrUn_KI270383v1", "chrUn_KI270384v1", "chrUn_KI270385v1", "chrUn_KI270386v1", "chrUn_KI270387v1", "chrUn_KI270388v1", "chrUn_KI270389v1", "chrUn_KI270390v1", "chrUn_KI270391v1", "chrUn_KI270392v1", "chrUn_KI270393v1", "chrUn_KI270394v1", "chrUn_KI270395v1", "chrUn_KI270396v1", "chrUn_KI270411v1", "chrUn_KI270412v1", "chrUn_KI270414v1", "chrUn_KI270417v1", "chrUn_KI270418v1", "chrUn_KI270419v1", "chrUn_KI270420v1", "chrUn_KI270422v1", "chrUn_KI270423v1", "chrUn_KI270424v1", "chrUn_KI270425v1", "chrUn_KI270429v1", "chrUn_KI270435v1", "chrUn_KI270438v1", "chrUn_KI270442v1", "chrUn_KI270448v1", "chrUn_KI270465v1", "chrUn_KI270466v1", "chrUn_KI270467v1", "chrUn_KI270468v1", "chrUn_KI270507v1", "chrUn_KI270508v1", "chrUn_KI270509v1", "chrUn_KI270510v1", "chrUn_KI270511v1", "chrUn_KI270512v1", "chrUn_KI270515v1", "chrUn_KI270516v1", "chrUn_KI270517v1", "chrUn_KI270518v1", "chrUn_KI270519v1", "chrUn_KI270521v1", "chrUn_KI270522v1", "chrUn_KI270528v1", "chrUn_KI270529v1", "chrUn_KI270530v1", "chrUn_KI270538v1", "chrUn_KI270539v1", "chrUn_KI270544v1", "chrUn_KI270548v1", "chrUn_KI270579v1", "chrUn_KI270580v1", "chrUn_KI270581v1", "chrUn_KI270582v1", "chrUn_KI270583v1", "chrUn_KI270584v1", "chrUn_KI270587v1", "chrUn_KI270588v1", "chrUn_KI270589v1", "chrUn_KI270590v1", "chrUn_KI270591v1", "chrUn_KI270593v1", "chrUn_KI270741v1", "chrUn_KI270742v1", "chrUn_KI270743v1", "chrUn_KI270744v1", "chrUn_KI270745v1", "chrUn_KI270746v1", "chrUn_KI270747v1", "chrUn_KI270748v1", "chrUn_KI270749v1", "chrUn_KI270750v1", "chrUn_KI270751v1", "chrUn_KI270752v1", "chrUn_KI270753v1", "chrUn_KI270754v1", "chrUn_KI270755v1", "chrUn_KI270756v1", "chrUn_KI270757v1", "chrX", "chrY", "chrY_KI270740v1_random"};
-
   #define REF(X) std::get<0>(*(X))
   #define POS(X) std::get<1>(*(X))
   #define ABU(X) std::get<2>(*(X))
@@ -509,7 +458,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
   std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
-  // std::cerr<<"iteration prepared. \n";
 
   uint_fast8_t reference=REF(kmer_list.begin());
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
@@ -585,22 +533,15 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     best_windows.erase(best_windows.begin()+toshort[i]);
   }
 
-  // Output
-  // std::fstream results;
-  // results.open(file,std::ios::out | std::ios::app);
-
   for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
 
     std::string qual=std::to_string((int)std::get<0>(*itrbw));
     std::string ref=lookChrom[std::get<1>(*itrbw)];
     std::string start=std::to_string(std::get<2>(*itrbw));
     std::string end=std::to_string(std::get<3>(*itrbw));
-    // std::string len=std::to_string(std::get<3>(*itrbw)-std::get<2>(*itrbw));
     results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual + "\n");
-    // results<< ref << "\t"<< start << "\t" << end <<"\t" << barcode <<"\t" << qual <<"\t" << len << "\n";
-    // results<< "ref: " << ref << "\tstart: "<< start << "\tend: " << end <<"\tbarcode: " << barcode <<"\tquality: " << qual <<"\tlength: " << len << "\n";
   }
-  // results.close();
+
   return;
 } //MapKmerList
 
@@ -643,20 +584,14 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
 
 // searches for id in readfile and returns read and sets fileposition accordingly
 void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
-  // std::cerr << "id: " << id << "\n";
-  // std::cerr << __LINE__ << "\n";
   CharString new_id;
   Dna5String read;
   std::streampos pos;
   file.stream.file.seekg(startpos);
-  // std::cerr << __LINE__ << "\n";
   while(new_id!=id){
-    // std::cerr << __LINE__ << "\n";
-    // std::cerr << "new_id: " << new_id << "\n";
     pos=file.stream.file.tellg();
     readRecord(new_id,read,file);
   }
-  // std::cerr << __LINE__ << "\n";
   file.stream.file.seekg(pos);
   return;
 }

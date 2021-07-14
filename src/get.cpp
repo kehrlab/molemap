@@ -28,13 +28,17 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     // Define arguments.
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1.fastq"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2.fastq"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index"));
+    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index"));
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcodes"));
 
     addOption(parser, seqan::ArgParseOption(
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "bcmapGetOut.fastq");
+    addOption(parser, seqan::ArgParseOption(
+        "b", "Barcode_index_name", "Name of the BarcodeIndex.",
+        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+    setDefaultValue(parser, "b", "BarcodeIndex");
 
     setShortDescription(parser, "Retreive all reads of a list of barcodes");
     setVersion(parser, "1.0");
@@ -53,9 +57,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     // Extract argument and option values.
     getArgumentValue(options.readfile1, parser, 0);
     getArgumentValue(options.readfile2, parser, 1);
-    getArgumentValue(options.bci_name, parser, 2);
+    // getArgumentValue(options.bci_name, parser, 2);
     getArgumentValue(options.barcodes, parser, 3);
 
+    getArgumentValue(options.bci_name, parser, "b");
     getOptionValue(options.output_file, parser, "o");
 
     return seqan::ArgumentParser::PARSE_OK;

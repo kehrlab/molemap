@@ -30,9 +30,13 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     seqan::ArgumentParser parser("bcmap index");
 
     addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "reference(.fastq/.fasta)"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
+    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
 
     // Define Options
+    addOption(parser, seqan::ArgParseOption(
+        "o", "index_name", "Name of the folder in which the index is stored.",
+        seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
+    setDefaultValue(parser, "o", "Index");
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -59,9 +63,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     // Extract option values.
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.bucket_count, parser, "b");
+    getOptionValue(options.index_name, parser, "o");
 
     getArgumentValue(options.reference_file, parser, 0);
-    getArgumentValue(options.index_name, parser, 1);
 
     return seqan::ArgumentParser::PARSE_OK;
 }
