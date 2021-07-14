@@ -41,8 +41,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     setDefaultValue(parser, "b", "BarcodeIndex");
 
     setShortDescription(parser, "Retreive all reads of a list of barcodes");
-    setVersion(parser, "1.0");
-    setDate(parser, "May 25 2021");
+    // setVersion(parser, "1.0");
+    // setDate(parser, "May 25 2021");
     addDescription(parser,
                "Retreives all reads belonging to the given set of barcodes. "
                "The reads are quickly extracted from the readfiles using a barcode index. "

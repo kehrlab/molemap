@@ -80,8 +80,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     setDefaultValue(parser, "t", "16");
 
     setShortDescription(parser, "Map barcodes to reference.");
-    setVersion(parser, "1.0");
-    setDate(parser, "March 24 2021");
+    // setVersion(parser, "1.0");
+    // setDate(parser, "March 24 2021");
     addDescription(parser,
                "Barcodes will be mapped to reference genome. "
                "Returns genomic windows from which barcoded reads most likely originate. "

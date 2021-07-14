@@ -49,8 +49,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     setDefaultValue(parser, "b", "3221225472");
 
     setShortDescription(parser, "Build an index of a reference genome.");
-    setVersion(parser, "1.0");
-    setDate(parser, "March 24 2021");
+    // setVersion(parser, "1.0");
+    // setDate(parser, "March 24 2021");
     addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
 
     // Parse command line.
