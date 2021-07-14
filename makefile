@@ -36,7 +36,6 @@ LDLIBS = -lrt -lpthread -fopenmp
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	#$(CC) bcmap.cpp $(OBJS) -o $@ $(LDLIBS)
 	$(CC) $(OBJS) -o $@ $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp $(SRC_DIR)/%.h $(BUILD_DIR)
