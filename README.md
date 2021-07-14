@@ -42,17 +42,17 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
 This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below. 
 
     # building the index for chr21.fa using 45000000 buckets (based on the size of chromosome 21)
-    ./bcmap index example/chr21.fa example/Index -b 45000000
+    ./bcmap index example/chr21.fa -o example/Index -b 45000000
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
-    ./bcmap map example/readfile.1.fq example/readfile.2.fq example/Index example/BarcodeIndex -o example/results.bed
+    ./bcmap map example/readfile.1.fq example/readfile.2.fq -i example/Index -b example/BarcodeIndex -o example/results.bed
     
     # extracting the first barcode from the results
     awk '{if(NR==1) print($4)}' example/results.bed > example/FirstBarcode.txt
     
     # extracting all reads belonging to the first barcode
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/BarcodeIndex example/FirstBarcode.txt -o example/readsOfFirstBarcode.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/FirstBarcode.txt -b example/BarcodeIndex -o example/readsOfFirstBarcode.fq
     
     # extracting reads of barcode AACATCGCAAACAGTA
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/BarcodeIndex AACATCGCAAACAGTA -o example/readsOfAACATCGCAAACAGTA.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -b example/BarcodeIndex -o example/readsOfAACATCGCAAACAGTA.fq
 
