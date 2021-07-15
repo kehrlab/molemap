@@ -14,6 +14,7 @@ std::string get10xBarcode(std::string id1){
     id1=id1.substr(id1.find(" "),10000);
     new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
   }else{
+    std::cerr << "hithere";
     new_barcode="BAD_BARCODE_____";
   }
   return new_barcode;
