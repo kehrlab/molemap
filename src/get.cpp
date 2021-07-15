@@ -16,8 +16,9 @@ struct getReadsOptions{
   std::string bci_name;
   std::string barcodes;
   std::string output_file;
+  
   getReadsOptions() :
-  output_file("bcmapGetOut.fastq")
+  output_file("bcmapGetOut.fastq"), bci_name("BarcodeIndex")
   {}
 };
 
