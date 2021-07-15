@@ -8,12 +8,14 @@ using namespace seqan;
 
 //retreive the barcode from 10x linked reads
 std::string get10xBarcode(std::string id1){
-  std::cerr << id1 << "\n";
-  std::cerr << id1.find(" ");
-  std::cerr << __LINE__ << "\n";
-  id1=id1.substr(id1.find(" "),10000);
-  std::cerr << __LINE__ << "\n";
-  std::string new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
+  unsigned pos=id1.find(" ");
+  std::string new_barcode
+  if(pos<1000){
+    id1=id1.substr(id1.find(" "),10000);
+    new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
+  }else{
+    new_barcode="BAD_BARCODE_____";
+  }
   return new_barcode;
 }
 
