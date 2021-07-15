@@ -12,8 +12,8 @@ std::string get10xBarcode(std::string id1){
   return new_barcode;
 }
 
-CharString get10xID(std::string id){
-  id=id.substr(0, id.find(" BX:Z:"));
+CharString getID(std::string id){
+  id=id.substr(0, id.find(" "));
   return id;
 }
 // Loads BarcodeIndex from file into string

@@ -316,7 +316,7 @@ int map(int argc, char const ** argv){
     if(t!=0){
       startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4);
     }
-    SearchID(file2, get10xID(toCString(id1)), startpos, readfile2_size);
+    SearchID(file2, getID(toCString(id1)), startpos, readfile2_size);
 
     // skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
@@ -592,6 +592,8 @@ void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::str
   while(new_id!=id){
     pos=file.stream.file.tellg();
     readRecord(new_id,read,file);
+    new_id=getID(new_id);
+    std::cerr << "new_id: " << new_id << " id: " << id << "\n";
   }
   file.stream.file.seekg(pos);
   return;
