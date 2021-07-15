@@ -10,11 +10,12 @@ using namespace seqan;
 std::string get10xBarcode(std::string id1){
   std::size_t pos=id1.find(" ");
   std::string new_barcode;
+  std::cerr << "ID1: " << id1 << "\t";
   if(pos<1000){
     id1=id1.substr(id1.find(" "),10000);
     new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
   }else{
-    std::cerr << "hithere";
+    std::cerr << "hithere\n";
     new_barcode="BAD_BARCODE_____";
   }
   return new_barcode;
