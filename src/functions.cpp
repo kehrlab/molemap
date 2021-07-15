@@ -11,11 +11,14 @@ std::string get10xBarcode(std::string id1){
   std::size_t pos=id1.find(" ");
   std::string new_barcode;
   if(pos<1000){
+    std::cerr << "id1: " << id1 << "\n";
     id1=id1.substr(id1.find(" "),10000);
     new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
+    std::cerr << "id1: " << id1 << "\n";
+    std::cerr << "new_barcode" << new_barcode << "\n";
   }else{
-    std::cerr << "ID1: " << id1 << "\t";
-    std::cerr << "hithere\n";
+    // std::cerr << "ID1: " << id1 << "\t";
+    // std::cerr << "hithere\n";
     new_barcode="BAD_BARCODE_____";
   }
   return new_barcode;
