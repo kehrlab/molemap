@@ -592,7 +592,7 @@ void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::str
   while(new_id!=id){
     pos=file.stream.file.tellg();
     readRecord(new_id,read,file);
-    new_id=getID(new_id);
+    new_id=getID(toCString(new_id));
     std::cerr << "new_id: " << new_id << " id: " << id << "\n";
   }
   file.stream.file.seekg(pos);
