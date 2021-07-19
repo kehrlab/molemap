@@ -94,6 +94,7 @@ bcmap_res=open(rfile,'r')
 lr_res=open('/fast/users/luepkenr_c/scratch/longranger/lariat_bc_sorted_valid.sam','r')
 readfile=open('/fast/users/luepkenr_c/scratch/longranger/longranger.1.fq','r')
 lr_line=lr_res.readline()
+lr_line=lr_res.readline()
 print(lr_line)
 while lr_line[0]=='@':
     lr_line=lr_res.readline()
