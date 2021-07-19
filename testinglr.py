@@ -1,7 +1,7 @@
 import sys
 
 def getbarcode(line):
-    barcode=line.split('\t')[3]
+    barcode=line.split('\t')[22][5:21]
     # print("barcode: ",barcode)
     return barcode
 
@@ -92,10 +92,13 @@ rfile="/fast/users/luepkenr_c/work/P03/Barcode_assignment/reslongrangersorted.be
 bcmap_res=open(rfile,'r')
 # lr_res=open('/fast/users/luepkenr_c/scratch/BIH_TRASH/2021-06-18/resallbwa.sam','r')
 lr_res=open('/fast/users/luepkenr_c/scratch/longranger/lariat_bc_sorted_valid.sam','r')
-readfile=open('/fast/users/luepkenr_c/scratch/longranger/longranger.1.fq','r')
+# readfile=open('/fast/users/luepkenr_c/scratch/longranger/longranger.1.fq','r')
 lr_line=lr_res.readline()
 lr_line=lr_res.readline()
 print(lr_line)
+print(getbarcode(lr_line))
+
+
 while lr_line[0]=='@':
     lr_line=lr_res.readline()
 readfileline=readfile.readline()
