@@ -1,6 +1,11 @@
 import sys
 
 def getbarcode(line):
+    barcode=line.split('\t')[3]
+    # print("barcode: ",barcode)
+    return barcode
+
+def getlrbarcode(line):
     barcode=line.split('\t')[22][5:21]
     # print("barcode: ",barcode)
     return barcode
@@ -94,33 +99,25 @@ bcmap_res=open(rfile,'r')
 lr_res=open('/fast/users/luepkenr_c/scratch/longranger/lariat_bc_sorted_valid.sam','r')
 # readfile=open('/fast/users/luepkenr_c/scratch/longranger/longranger.1.fq','r')
 lr_line=lr_res.readline()
-lr_line=lr_res.readline()
-print(lr_line)
-print(getbarcode(lr_line))
-
 
 while lr_line[0]=='@':
     lr_line=lr_res.readline()
-readfileline=readfile.readline()
-tenXbc=get10xbarcode(readfileline)
-tenXid=get10xID(readfileline)
-readfile.readline()
-readfile.readline()
-readfile.readline()
+# readfileline=readfile.readline()
+lr_bc=getlrbarcode(lr_line)
 # while getbwaID(lr_line)==tenXid:
 #     lr_line=lr_res.readline()
 
-while tenXbc=='*':
-    while getbwaID(lr_line)==tenXid:
-        lr_line=lr_res.readline()
-    readfileline=readfile.readline()
-    tenXbc=get10xbarcode(readfileline)
-    tenXid=get10xID(readfileline)
-    readfile.readline()
-    readfile.readline()
-    readfile.readline()
+# while lr_bc=='*':
+#     while getbwaID(lr_line)==tenXid:
+#         lr_line=lr_res.readline()
+#     readfileline=readfile.readline()
+#     lr_bc=get10xbarcode(readfileline)
+#     tenXid=get10xID(readfileline)
+#     readfile.readline()
+#     readfile.readline()
+#     readfile.readline()
 
-# print("tenXbc: ", tenXbc)
+# print("lr_bc: ", lr_bc)
 # print("readfile: ", readfileline)
 # print("lr_res: ", lr_line)
 # print(readfile.readline())
@@ -145,41 +142,31 @@ for line in bcmap_res:
         #evaluate
         correct=0
         reads=0
-        # tenXbc=get10xbarcode(readfile.readline())
+        # lr_bc=get10xbarcode(readfile.readline())
         # readfile.readline()
         # readfile.readline()
         # readfile.readline()
-        # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode)
-        while tenXbc<old_barcode:# or tenXbc=='*':      # skipping till barcodes match
-            while getbwaID(lr_line)==tenXid:
-                lr_line=lr_res.readline()
-            readfileline=readfile.readline()
-            tenXbc=get10xbarcode(readfileline)
-            tenXid=get10xID(readfileline)
-            readfile.readline()
-            readfile.readline()
-            readfile.readline()
-            # print("tenXbc: ", tenXbc, " old_barcode: ", old_barcode, " comparison: " , tenXbc<old_barcode, "\n")
+        # print("lr_bc: ", lr_bc, " old_barcode: ", old_barcode, " comparison: " , lr_bc<old_barcode)
+        while lr_bc<old_barcode:# or lr_bc=='*':      # skipping till barcodes match
+            lr_line=lr_res.readline()
+            lr_bc=getlrbarcode(lr_line)
+
+            # print("lr_bc: ", lr_bc, " old_barcode: ", old_barcode, " comparison: " , lr_bc<old_barcode, "\n")
             # lr_res.readline()
             # lr_res.readline()
         #evaluate lr_line
-        while tenXbc==old_barcode:
+        while lr_bc==old_barcode:
             # lr_line=lr_res.readline()
-            while getbwaID(lr_line)==tenXid:
-                res=evaluate(lr_line, mappings)
-                if res!=-1:
-                    mappinglist[res]+=1
-                else:
-                    unmapped+=[lr_line.split('\t')[2:5]];
-                reads+=1
+            res=evaluate(lr_line, mappings)
+            if res!=-1:
+                mappinglist[res]+=1
+            else:
+                unmapped+=[lr_line.split('\t')[2:5]];
+            reads+=1
+
+            if lr_line!="":
                 lr_line=lr_res.readline()
-            readfileline=readfile.readline()
-            if readfileline!="":
-                tenXbc=get10xbarcode(readfileline)
-                tenXid=get10xID(readfileline)
-                readfile.readline()
-                readfile.readline()
-                readfile.readline()
+                lr_bc=getlrbarcode(lr_line)
             else:
                 break;
 
