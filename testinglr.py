@@ -6,7 +6,7 @@ def getbarcode(line):
     return barcode
 
 def getlrbarcode(line):
-    barcode=line.split('\t')[22][5:21]
+    barcode=line.split("BX:Z:")[1][0:16]
     # print("barcode: ",barcode)
     return barcode
 
