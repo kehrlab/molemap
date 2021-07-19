@@ -25,9 +25,9 @@ std::string get10xBarcode(std::string id1){
 }
 
 CharString getID(std::string id){
-  std::cerr << "id: " << id << "\n";
+  // std::cerr << "id: " << id << "\n";
   id=id.substr(0, id.find(" "));
-  std::cerr << "id: " << id << "\n\n";
+  // std::cerr << "id: " << id << "\n\n";
   return id;
 }
 // Loads BarcodeIndex from file into string
