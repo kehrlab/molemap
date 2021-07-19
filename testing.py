@@ -6,9 +6,13 @@ def getbarcode(line):
     return barcode
 
 def get10xbarcode(line):
-    print("line: ",line,"\n")
-    barcode=line.split(' ')[1][5:21]
-    print(barcode, " ")
+    # print("line: ",line,"\n")
+    barcode=line.split(' ')
+    if len(barcode)>1:
+        barcode=barcode[1][5:21]
+    else:
+        barcode="BAD_BARCODE_____"
+    # print(barcode, " ")
     return barcode
 
 def get10xID(line):
