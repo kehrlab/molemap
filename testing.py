@@ -85,8 +85,8 @@ rfile="/fast/users/luepkenr_c/work/P03/Barcode_assignment/reslongrangersorted.be
 #files:
 bcmap_res=open(rfile,'r')
 # bwa_res=open('/fast/users/luepkenr_c/scratch/BIH_TRASH/2021-06-18/resallbwa.sam','r')
-bwa_res=open('~/scratch/longranger/lariat_bc_sorted_valid.sam','r')
-readfile=open('./testdata/new_and_corrected.1.fastq','r')
+bwa_res=open('/fast/users/luepkenr_c/scratch/longranger/scratch/longranger/lariat_bc_sorted_valid.sam','r')
+readfile=open('/fast/users/luepkenr_c/scratch/longranger/longranger.1.fq','r')
 bwa_line=bwa_res.readline()
 while bwa_line[0]=='@':
     bwa_line=bwa_res.readline()
