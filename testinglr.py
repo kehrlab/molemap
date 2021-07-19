@@ -155,6 +155,11 @@ for line in bcmap_res:
             # lr_res.readline()
             # lr_res.readline()
         #evaluate lr_line
+
+        print("mappings: ", mappings)
+        print("old_barcode: ", old_barcode)
+        print("lr_bc:       ", lr_bc)
+        print("lr_line: " ,lr_line)
         while lr_bc==old_barcode:
             # lr_line=lr_res.readline()
             res=evaluate(lr_line, mappings)
