@@ -2,7 +2,7 @@ import sys
 
 def getbarcode(line):
     barcode=line.split('\t')[3]
-    print("barcode: ",barcode)
+    # print("barcode: ",barcode)
     return barcode
 
 def get10xbarcode(line):
@@ -17,11 +17,12 @@ def get10xbarcode(line):
 
 def get10xID(line):
     id=line.split(' ')[0][1:]
+    print("10xid: " , id)
     return id
 
 def getbwaID(line):
     id=line.split('\t')[0]
-    print("id: " , id)
+    print("id:    " , id)
     return id
 
 def getmapping(line):
