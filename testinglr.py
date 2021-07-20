@@ -91,7 +91,7 @@ def cluster(unmapped):
 
 # parameters:
 tp_per=0.5 #fraction of reads that have to be bwa_mapped to an bcmap_identified position to count BC as TP
-rfile="/fast/users/luepkenr_c/work/P03/Barcode_assignment/reslongranger" + str(sys.argv[1]) + "sorted.bed"
+rfile="/fast/users/luepkenr_c/work/P03/Barcode_assignment/reslongrangersorted" + str(sys.argv[1]) + ".bed"
 # rfile="/fast/users/luepkenr_c/work/P03/Barcode_assignment/reslongrangersorted.bed"
 #files:
 bcmap_res=open(rfile,'r')
