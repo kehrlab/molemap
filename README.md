@@ -11,7 +11,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 
 # Data requirements
 - 10XGenomics paired-end Linked-reads
-- Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools) or ??? [samtools](https://github.com/samtools/samtools)???)
+- Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools) or [samtools](https://github.com/samtools/samtools))
 
     ./script/run_bcctools -f fastq first.fq.gz second.fq.gz
 
