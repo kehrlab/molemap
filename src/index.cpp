@@ -179,9 +179,9 @@ int index(int argc, char const **argv){
   TStringSetIterator seqG = begin(seqs);
   // uint_fast8_t CHROM=0;
   // int laenge=length(seqs);
-  // #pragma omp parallel
-  // {
-  //   #pragma omp for schedule(dynamic)
+  #pragma omp parallel
+  {
+    #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
 
       TStringSetIterator seq=seqG+j;
@@ -209,7 +209,7 @@ int index(int argc, char const **argv){
       // std::cerr << "." ;
       // if ((CHROM-5)%29==0) {std::cerr << "\n";}
     }
-  // }
+  }
 
   std::cerr << "...done. \n";
   std::cerr << "Calculating cumulated sum...";
@@ -231,9 +231,9 @@ int index(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
   std::cerr << "Writing positions to index...";
   seqG = begin(seqs);
-  // #pragma omp parallel
-  // {
-  //   #pragma omp for schedule(dynamic)
+  #pragma omp parallel
+  {
+    #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
       TStringSetIterator seq=seqG+j;
       uint_fast8_t Chromosome=j;
@@ -243,9 +243,12 @@ int index(int argc, char const **argv){
 
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
-        pos[dir[c+1]]=i;
-        ref[dir[c+1]]=Chromosome;
-        dir[c+1]++;
+        #pragma omp critical(directoryUpdate)
+        {
+          pos[dir[c+1]]=i;
+          ref[dir[c+1]]=Chromosome;
+          dir[c+1]++;
+        }
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
         }
@@ -255,14 +258,16 @@ int index(int argc, char const **argv){
         }
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
-      pos[dir[c+1]]=length(*seq)-k;
-      ref[dir[c+1]]=Chromosome;
-      dir[c+1]++;
-
+      #pragma omp critical(directoryUpdate)
+      {
+        pos[dir[c+1]]=length(*seq)-k;
+        ref[dir[c+1]]=Chromosome;
+        dir[c+1]++;
+      }
       // std::cerr << ".";
       // if ((Chromosome-2)%29==0) {std::cerr << "\n";}
     }
-  // }
+  }
   std::cerr << "done. \n";
 
   //write index to file
