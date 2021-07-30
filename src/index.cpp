@@ -267,7 +267,7 @@ int index(int argc, char const **argv){
 
       #pragma omp critical(dirupdate)
       {
-        pos[dir[c+1]]=i;
+        pos[dir[c+1]]=length(*seq)-k;
         ref[dir[c+1]]=Chromosome;
         dir[c+1]++;
       }
