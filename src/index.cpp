@@ -190,8 +190,10 @@ int index(int argc, char const **argv){
 
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
-        // #pragma omp atomic
+
+        #pragma omp atomic
         dir[c+1]+=1;
+
         if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
         }
@@ -202,8 +204,10 @@ int index(int argc, char const **argv){
       }
 
       c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
-      // #pragma omp atomic
+
+      #pragma omp atomic
       dir[c+1]+=1;
+
       // #pragma omp atomic
       // CHROM++;
       // std::cerr << "." ;
@@ -244,8 +248,11 @@ int index(int argc, char const **argv){
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
 
-        #pragma omp atomic
-        pos[dir[c+1]]=i; ref[dir[c+1]]=Chromosome; dir[c+1]++;
+        #pragma omp critical(dirupdate){
+          pos[dir[c+1]]=i;
+          ref[dir[c+1]]=Chromosome;
+          dir[c+1]++;
+        }
 
         if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
           rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
@@ -257,9 +264,12 @@ int index(int argc, char const **argv){
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
 
-      #pragma omp atomic
-      pos[dir[c+1]]=i; ref[dir[c+1]]=Chromosome; dir[c+1]++;
-      
+      #pragma omp critical(dirupdate){
+        pos[dir[c+1]]=i;
+        ref[dir[c+1]]=Chromosome;
+        dir[c+1]++;
+      }
+
       // std::cerr << ".";
       // if ((Chromosome-2)%29==0) {std::cerr << "\n";}
     }
