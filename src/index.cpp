@@ -248,7 +248,8 @@ int index(int argc, char const **argv){
       for (uint64_t i = 0;i<length(*seq)-k;++i){
         c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
 
-        #pragma omp critical(dirupdate){
+        #pragma omp critical(dirupdate)
+        {
           pos[dir[c+1]]=i;
           ref[dir[c+1]]=Chromosome;
           dir[c+1]++;
@@ -264,7 +265,8 @@ int index(int argc, char const **argv){
       }
       c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
 
-      #pragma omp critical(dirupdate){
+      #pragma omp critical(dirupdate)
+      {
         pos[dir[c+1]]=i;
         ref[dir[c+1]]=Chromosome;
         dir[c+1]++;
