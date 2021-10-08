@@ -12,10 +12,12 @@ using namespace seqan;
 g++ BarcodeMapper.cpp -o bcmap
 */
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom);
+// void binSearchBarcode(std::string & barcode, SeqFileIn & file2);
+// void reverseBarcode(std::string & barcode, SeqFileIn & file2);
+bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
 void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode);
-
-void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
+void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate, std::vector<float> & lookQual);
 
 struct bcmapOptions{
   std::string readfile1;
@@ -24,12 +26,14 @@ struct bcmapOptions{
   std::string bci_name;
   unsigned k;
   unsigned mini_window_size;
+  unsigned max_window_size;
+  unsigned max_gap_size;
   std::string output_file;
   unsigned q;
   unsigned l;
   unsigned threads;
   bcmapOptions() :
-  k(31), mini_window_size(61), output_file("barcode_windows.bed"),l(1000) , q(20000), threads(16)
+  k(31), mini_window_size(61), max_window_size(200000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , q(10000), threads(16)
   {}
   };
 
@@ -63,17 +67,26 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "m", "61");
     addOption(parser, seqan::ArgParseOption(
+        "w", "max_window_size", "Maximum length of genomic windows.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "w", "200000");
+    addOption(parser, seqan::ArgParseOption(
+        "g", "max_gap_size", "Maximum gap between minimizer hits of same genomic window.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "g", "20000");
+    addOption(parser, seqan::ArgParseOption(
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "barcode_windows.bed");
     addOption(parser, seqan::ArgParseOption(
         "q", "quality", "Quality threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "q", "20000");
+    setDefaultValue(parser, "q", "10000");
     addOption(parser, seqan::ArgParseOption(
         "l", "length", "Length threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "l", "1000");
+    setDefaultValue(parser, "l", "10000");
+    setMinValue(parser, "l", "5000");
     addOption(parser, seqan::ArgParseOption(
         "t", "threads", "Number of threads available.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -106,6 +119,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.bci_name, parser, "b");
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
+    getOptionValue(options.max_window_size, parser, "w");
+    getOptionValue(options.max_gap_size, parser, "g");
     getOptionValue(options.output_file, parser, "o");
     getOptionValue(options.q, parser, "q");
     getOptionValue(options.l, parser, "l");
@@ -129,6 +144,8 @@ int map(int argc, char const ** argv){
             << "threads          \t" << options.threads << '\n'
             << "k                \t" << options.k << '\n'
             << "minimizer window \t" << options.mini_window_size << '\n'
+            << "max window size  \t" << options.max_window_size << '\n'
+            << "max gap size     \t" << options.max_gap_size << '\n'
             << "output file      \t" << options.output_file << '\n'
             << "quality threshold\t" << options.q << '\n'
             << "length threshold \t" << options.l << "\n\n";
@@ -140,9 +157,9 @@ int map(int argc, char const ** argv){
 
   // defining Parameters
 
-  uint_fast32_t max_window_size=300000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
-  uint_fast32_t max_gap_size=20000;     // maximum gap size between two adjacent k_mer hits
-  uint_fast8_t window_count=100;   // amount of saved candidate windows
+  uint_fast32_t max_window_size=options.max_window_size; //200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
+  uint_fast32_t max_gap_size=options.max_gap_size; //20000;     // maximum gap size between two adjacent k_mer hits
+  uint_fast8_t window_count=50;   // amount of saved candidate windows
 
   // reading the Index
   std::cerr << "Reading in the k-mer index";
@@ -313,10 +330,34 @@ int map(int argc, char const ** argv){
     }
 
     //align file2 with file1
-    if(t!=0){
-      startpos=(readfile2_size/options.threads*t)-(readfile2_size/options.threads/4);
+    if (t!=0){
+      std::streampos startpos2=readfile2_size*t/options.threads;
+      std::streampos endpos1=startpos2;
+      std::streampos startpos1=startpos2;
+      std::streampos endpos2=startpos2;
+      if(startpos2>100000){
+        startpos1-=100000;
+      }else{
+        startpos1=0;
+      }
+      if(readfile2_size-startpos2>100000){
+        endpos2+=100000;
+      }else{
+        endpos2=readfile2_size;
+      }
+      while(true){
+        if(SearchID(file2, getID(toCString(id1)),startpos1, endpos1)){
+          break;
+        }
+        if(SearchID(file2, getID(toCString(id1)),startpos2, endpos2)){
+          break;
+        }
+        endpos1=startpos1;
+        if(startpos1>100000){startpos1-=100000;}else{startpos1=0;}
+        startpos2=endpos2;
+        if(readfile2_size-endpos2>100000){endpos2+=100000;}else{endpos2=readfile2_size;}
+      }
     }
-    SearchID(file2, getID(toCString(id1)), startpos, readfile2_size);
 
     // skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
@@ -345,8 +386,10 @@ int map(int argc, char const ** argv){
 
         // map barcode and clear k_mer list
         if (!kmer_list.empty()) {
-          sort(kmer_list.begin(),kmer_list.end());
+          std::sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
+          // std::cerr << "thread: " << t << "line:  "<<  __LINE__ << "\n";
+
           kmer_list.clear();
           if (results.size()>100000) {
             if (omp_test_lock(&lock)){
@@ -359,10 +402,11 @@ int map(int argc, char const ** argv){
             }
           }
         }
-        if (file1.stream.file.tellg()>endpos){
+
+        if (file1.stream.file.tellg()>endpos){ // break if range for this thread exceeded
           break;
         }
-        while (new_barcode[0]=='*' && !atEnd(file1)) {
+        while (new_barcode[0]=='*' && !atEnd(file1)) { // proceed until valid barcode
           readRecord(id2, read2, file2);
           skipToNextBarcode2(file1,file2,new_barcode);
           BCI_1s=file1.stream.file.tellg();
@@ -371,42 +415,26 @@ int map(int argc, char const ** argv){
         BCI_2s=file2.stream.file.tellg();
       }
 
+      //process next read
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
       assignValue(reads,1,read2);
       barcode=new_barcode;
-
-      for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){                                            // Iterating over the reads
-        std::pair <int64_t, int64_t> hash = hashkMer(infix(*it,0,k),k);                                // calculation of the hash value for the first k-mer
-        int64_t minimizer_position=0;
-        int64_t minimizer = InitMini(infix(*it,0,mini_window_size), k, hash, maxhash, random_seed, minimizer_position);          // calculating the minimizer of the first window
-        uint_fast8_t minimizer_active_bases=1;
-        if (length(*it)>mini_window_size){
-          for (uint_fast32_t t=0;t<(length(*it)-1-mini_window_size);t++){               // iterating over all kmers
-            if (t!=minimizer_position){                 // if old minimizer in current window
-              rollinghashkMer(hash.first,hash.second,(*it)[t+mini_window_size],k,maxhash); // inline?!
-              if (minimizer > ReturnSmaller(hash.first,hash.second,random_seed)){ // if new value replaces current minimizer
-                AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number,minimizer_active_bases,k_2);
-                minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
-                minimizer_position=t+1+mini_window_size-k;
-                minimizer_active_bases=0;
-              }
-              minimizer_active_bases++;
-            }else{
-              AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);
-              minimizer_position=t+1;
-              hash=hashkMer(infix(*it,t+1,t+1+k),k);
-              minimizer=InitMini(infix(*it,t+1,t+1+mini_window_size), k, hash, maxhash, random_seed, minimizer_position); // find minimizer in current window by reinitialization
-              minimizer_active_bases=1;
-            }
-          }
-          AppendPos(kmer_list, minimizer, C, dir, ref, pos, bucket_number, minimizer_active_bases,k_2);   // append last minimizer                                                                                               // if old minimizer no longer in window
+      for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){  // Iterating over the two reads of the read pair
+        // initialize minimizer class
+        minimizer mini;
+        minimizedSequence miniSeq(*it,k,mini_window_size,random_seed,maxhash);
+        // return and save all minimizers to kmer_list
+        while(!miniSeq.at_end){
+          mini=miniSeq.pop();
+          AppendPos(kmer_list, mini.value^random_seed, C, dir, ref, pos, bucket_number, mini.active_bases, k_2);
         }
       }
+
     }
     if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
       // BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
-      sort(kmer_list.begin(),kmer_list.end());
+      std::sort(kmer_list.begin(),kmer_list.end());
       MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
     }
 
@@ -447,10 +475,10 @@ int map(int argc, char const ** argv){
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
 void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom){
-
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
-  float lookQual[100]= {0,1024,6.24989, 0.624853, 0.195309, 0.0926038, 0.0541504, 0.0358415, 0.0257197, 0.0195267, 0.0154498, 0.0126139, 0.0105548, 0.00900754, 0.00781189, 0.0068662, 0.00610341, 0.00547777, 0.00495714, 0.00451843, 0.00414462, 0.003823, 0.00354385, 0.00329967, 0.00308456, 0.00289387, 0.00272383, 0.00257141, 0.00243412, 0.0023099, 0.00219705, 0.00209414, 0.00199997, 0.0019135, 0.00183386, 0.00176031, 0.0016922, 0.00162897, 0.00157012, 0.00151524, 0.00146395, 0.00141593, 0.00137087, 0.00132852, 0.00128865, 0.00125106, 0.00121556, 0.00118199, 0.00115019, 0.00112005, 0.00109142, 0.00106421, 0.00103832, 0.00101365, 0.000990122, 0.00096766, 0.000946195, 0.000925665, 0.00090601, 0.000887177, 0.000869117, 0.000851784, 0.000835136, 0.000819134, 0.000803742, 0.000788926, 0.000774656, 0.000760902, 0.000747638, 0.000734837, 0.000722477, 0.000710537, 0.000698994, 0.00068783, 0.000677027, 0.000666568, 0.000656437, 0.000646619, 0.0006371, 0.000627866, 0.000618906, 0.000610208, 0.00060176, 0.000593551, 0.000585573, 0.000577815, 0.000570269, 0.000562926, 0.000555778, 0.000548817, 0.000542037, 0.000535431, 0.000528992, 0.000522713, 0.000516589, 0.000510615, 0.000504785, 0.000499093, 0.000493536, 0.000488108};
+  // std::vector<float> lookQual={0,20,3.0, 0.75, 0.38, 0.24, 0.17, 0.14, 0.11, 0.09, 0.08};
+  std::vector<float> lookQual={0,5,1.44, 0.91, 0.72, 0.62, 0.56, 0.51, 0.48, 0.46, 0.43, 0.42, 0.4, 0.39, 0.38, 0.37, 0.36, 0.35, 0.35, 0.34, 0.33}; // log(1/abundance)
 
   #define REF(X) std::get<0>(*(X))
   #define POS(X) std::get<1>(*(X))
@@ -459,21 +487,21 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
   std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> best_windows(window_count,std::make_tuple(0,0,0,0)); //(maping_quality, reference, start position in referende, end position)
   std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
-
   uint_fast8_t reference=REF(kmer_list.begin());
-  std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
   uint_fast32_t start_position=POS(kmer_list.begin());
   uint_fast32_t end_position=POS(kmer_list.begin());
+  std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart=kmer_list.begin();
   double window_quality=0;
   std::tuple<double,uint_fast8_t,uint32_t,uint32_t> candidate=std::make_tuple(0,0,0,4294967295); //(maping_quality, reference, start position in referende, end position)
 
-
-  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^5))*minimizer_active_bases
-
+  window_quality+=lookQual[ABU(kmer_list.begin())]*ACT(kmer_list.begin()); // lookQual = (1/(log(abund)^3))*minimizer_active_bases
   for(itrk=kmer_list.begin()+1;itrk!=kmer_list.end();itrk++){ //iterating over kmer listed
 
     if (/*end position*/std::get<3>(candidate) < start_position) { // if current window no longer overlaps the qualifiing window
-      ReportWindow(best_windows,candidate);
+      if (std::get<0>(candidate)>qualityThreshold){
+        trimmWindow(kmer_list, itrstart, itrk, candidate, lookQual);
+        ReportWindow(best_windows,candidate);
+      }
     }
 
     if (reference==REF(itrk) && (POS(itrk)-start_position) < max_window_size && (POS(itrk)-end_position) < max_gap_size) { //checking break criteria
@@ -485,37 +513,51 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 
       if(window_quality > std::get<0>(candidate)){ // report current window or candidate
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
-        ReportWindow(best_windows,candidate);
+        if (std::get<0>(candidate)>qualityThreshold){
+          trimmWindow(kmer_list, itrstart, itrk, candidate, lookQual);
+          ReportWindow(best_windows,candidate);
+        }
       }else{
-        ReportWindow(best_windows,candidate);
+        if (std::get<0>(candidate)>qualityThreshold){
+          trimmWindow(kmer_list, itrstart, itrk, candidate, lookQual);
+          ReportWindow(best_windows,candidate);
+        }
       }
-
       window_quality=lookQual[ABU(itrk)]*ACT(itrk);
       itrstart=itrk;
       reference=REF(itrk);
       start_position=POS(itrk);
       end_position=POS(itrk);
+
     }else if ((POS(itrk)-start_position) >= max_window_size){ // maximum window size criterion hurt: shrink window from start and save better one as candidate
       if (window_quality > std::get<0>(candidate)) { // check if current window better than candidate: if yes: replace candidate
         candidate=std::make_tuple(window_quality,reference,start_position,end_position);
       }
-
       window_quality+=lookQual[ABU(itrk)]*ACT(itrk);
       end_position=POS(itrk);
-
       while (POS(itrk)-POS(itrstart)>max_window_size){ //shrinking window untill max_window_size criterion met
         window_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
         itrstart++;
       }
       start_position=POS(itrstart);
+
     }else{
       std::cerr << "\nREF(itrk): " << REF(itrk) << " reference: " << reference << "\nPOS(itrk): " << POS(itrk) << " start_position: " << start_position << " end_position: " << end_position << "\n";
       std::cerr << "POS(itrstart): " << POS(itrstart) << " REF(itrstart): " << REF(itrstart) << "\n";
     }
   }
-  candidate=std::make_tuple(window_quality,REF(itrk),POS(itrstart),POS(itrk));
-  ReportWindow(best_windows,candidate); //reporting last window
-
+  if(window_quality > std::get<0>(candidate)){ // report last window or last candidate
+    candidate=std::make_tuple(window_quality,reference,start_position,end_position);
+    if (std::get<0>(candidate)>qualityThreshold){
+      trimmWindow(kmer_list, itrstart, itrk, candidate, lookQual);
+      ReportWindow(best_windows,candidate);
+    }
+  }else{
+    if (std::get<0>(candidate)>qualityThreshold){
+      trimmWindow(kmer_list, itrstart, itrk, candidate, lookQual);
+      ReportWindow(best_windows,candidate);
+    }
+  }
   //filter low quality windows
   if (std::get<0>(*(best_windows.end()-1))!=0) {
     while(std::get<0>(*best_windows.begin())<qualityThreshold && !best_windows.empty()){
@@ -542,7 +584,6 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     std::string end=std::to_string(std::get<3>(*itrbw));
     results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual + "\n");
   }
-
   return;
 } //MapKmerList
 
@@ -584,16 +625,65 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
 }
 
 // searches for id in readfile and returns read and sets fileposition accordingly
-void SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
+bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
   CharString new_id;
   Dna5String read;
   std::streampos pos;
   file.stream.file.seekg(startpos);
   while(new_id!=id){
+    if(pos>endpos){
+      return false;
+    }
     pos=file.stream.file.tellg();
     readRecord(new_id,read,file);
     new_id=getID(toCString(new_id));
   }
   file.stream.file.seekg(pos);
+  return true;
+}
+
+// trimm edges of windows if low score per base | usage: trimmWindow(kmer_list, itrstart, itrk, candidate)
+void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate, std::vector<float> & lookQual){
+  double edge_quality=0;
+  double min_edge_qual=100; //200
+  uint32_t edge_len=2000; //2000
+  uint32_t counter=0;
+  double window_quality=std::get<0>(candidate);
+  itrk--;
+
+  //trimm start
+  while(edge_quality<min_edge_qual){
+    if(itrstart+counter>=itrk){
+      candidate=std::make_tuple(0,0,0,4294967295);
+      return;
+    }
+    edge_quality+=lookQual[ABU(itrstart+counter)]*ACT(itrstart+counter);
+    while(POS(itrstart+counter)-POS(itrstart)>edge_len){ //shrinking window until edge_len criterion met
+      edge_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
+      window_quality-=lookQual[ABU(itrstart)]*ACT(itrstart);
+      itrstart++;
+      counter--;
+    }
+    counter++;
+  }
+  edge_quality=0;
+  counter=0;
+
+  //trimm end
+  while(edge_quality<min_edge_qual){
+    if(itrk-counter<=itrstart){ //no area in candidate has the required minimum score/base
+      candidate=std::make_tuple(0,0,0,4294967295);
+      return;
+    }
+    edge_quality+=lookQual[ABU(itrk-counter)]*ACT(itrk-counter);
+    while(POS(itrk)-POS(itrk-counter)>edge_len){ //shrinking window until edge_len criterion met
+      edge_quality-=lookQual[ABU(itrk)]*ACT(itrk);
+      window_quality-=lookQual[ABU(itrk)]*ACT(itrk);
+      itrk--;
+      counter--;
+    }
+    counter++;
+  }
+  candidate=std::make_tuple(window_quality,REF(itrstart),POS(itrstart),POS(itrk));
   return;
 }

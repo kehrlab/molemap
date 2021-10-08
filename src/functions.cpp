@@ -105,23 +105,32 @@ void ReportWindow(std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>
 // randomizes the hashvalues order
 int64_t ReturnSmaller(const int64_t hash1,const int64_t hash2,const int64_t random_seed){
   if ((hash1^random_seed) < (hash2^random_seed)){
-    return hash1^random_seed;
+    return hash1;
   } else {
-    return hash2^random_seed;
+    return hash2;
+  }
+}
+
+bool IsSmaller(const int64_t hash1,const int64_t hash2,const int64_t random_seed){
+  if ((hash1^random_seed) < (hash2^random_seed)){
+    return true;
+  } else {
+    return false;
   }
 }
 
 // initializes the minimizer
 int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
+  hash=hashkMer(infix(string,0,k),k);
   int64_t minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
   int64_t minimizer_pos=0;
   for (uint_fast32_t i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
-      if (minimizer > (hash.first^random_seed)){
+      if (IsSmaller(hash.first,minimizer,random_seed)){
         minimizer=hash.first;
         minimizer_pos=i;
       }
-      if (minimizer > (hash.second^random_seed)){
+      if (IsSmaller(hash.second,minimizer,random_seed)){
         minimizer=hash.second;
         minimizer_pos=i;
       }
@@ -132,13 +141,11 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 
 //Insert k-mer positions into vector in sorted order
 void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2/*,pthread_mutex_t *lock*/){
-      uint_fast32_t c=GetBkt(hash,C,bucket_number,k_2);
-      uint_fast32_t abundance=dir[c+1]-dir[c];
-      if (abundance<=10){
-        // #pragma omp atomic
+      uint32_t c=GetBkt(hash,C,bucket_number,k_2);
+      uint32_t abundance=dir[c+1]-dir[c];
+      if (abundance<=20){
         kmer_list.reserve(kmer_list.size()+abundance);
-        for (uint_fast32_t i = dir[c];i!=dir[c+1];i++){
-          // #pragma omp atomic
+        for (uint32_t i = dir[c];i!=dir[c+1];i++){
           kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
         }
       }
@@ -169,14 +176,14 @@ uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast3
   uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
   for(int d=0; d<1000; d++){
     #pragma omp atomic
-    C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found and occupied bucket*/;
+    C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found --> occupies bucket*/;
     if(C[i]==(hash>>k_2)){
       return i;
     } //return if correct bucket found
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
   }
-  std::cerr << "ERROR: no free bucket fount after 1000 tries\n";
+  std::cerr << "ERROR: no free bucket found after 1000 tries. Pls increase bucket_number.\n";
   return i;
 }
 
@@ -197,6 +204,16 @@ DnaString hash2kmer(const int64_t & hash,const uint_fast8_t k){
     }
   }
   return kmer;
+}
+
+bool NInKmer(Dna5String kmer, int64_t & position){
+  for (uint_fast8_t i=0;i<length(kmer);i++){
+    if (kmer[i]=='N'){
+      position+=i+1;
+      return true;
+    }
+  }
+  return false;
 }
 
 //  Hashfunction for k-mer
