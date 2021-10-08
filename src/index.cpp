@@ -18,12 +18,12 @@ struct countKOptions{
   std::string reference_file;
   std::string index_name;
   unsigned k;
-  int64_t bucket_count;
+  unsigned m;//int64_t bucket_count;
 
   countKOptions():
-  k(31), bucket_count(3221225472)
+  k(31), m(61)// bucket_count(3221225472)
   {}
-  };
+};
 
 seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
@@ -44,6 +44,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     setMinValue(parser, "k", "8");
     setMaxValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
+        "m", "minimizer_window", "Length of window a minimizer is chosen from.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "m", "61");
+    addOption(parser, seqan::ArgParseOption(
         "b", "bucket_count", "Number of buckets in index.",
         seqan::ArgParseArgument::INT64, "unsigned"));
     setDefaultValue(parser, "b", "3221225472");
@@ -63,7 +67,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
 
     // Extract option values.
     getOptionValue(options.k, parser, "k");
-    getOptionValue(options.bucket_count, parser, "b");
+    getOptionValue(options.m, parser, "m");
+    // getOptionValue(options.bucket_count, parser, "b");
     getOptionValue(options.index_name, parser, "o");
 
     getArgumentValue(options.reference_file, parser, 0);
@@ -80,14 +85,16 @@ int index(int argc, char const **argv){
   if (res != seqan::ArgumentParser::PARSE_OK)
       return res == seqan::ArgumentParser::PARSE_ERROR;
   std::cout <<'\n'
-            << "reference   \t" << options.reference_file << '\n'
-            << "index_name  \t" << options.index_name << '\n'
-            << "k           \t" << options.k << '\n'
-            << "bucket_count\t" << options.bucket_count << "\n\n";
+            << "reference        \t" << options.reference_file << '\n'
+            << "index_name       \t" << options.index_name << '\n'
+            << "k                \t" << options.k << '\n'
+            << "minimizer_window \t" << options.m << "\n\n";
+            // << "bucket_count     \t" << options.bucket_count << "\n\n";
 
   uint_fast8_t k = options.k;
   int k_2 = k+1;
-  uint_fast32_t bucket_number=options.bucket_count; // should depend on k and the length of the indexed sequence
+  uint_fast8_t m = options.m;
+  // options.bucket_count; // should depend on k and the length of the indexed sequence
 
   // auto begin = std::chrono::high_resolution_clock::now();
 
@@ -111,6 +118,10 @@ int index(int argc, char const **argv){
   }
 
   std::cerr << "..done.\n";
+
+  uint_fast32_t bucket_number=length(concat(seqs))/((m-k+1)/2);
+  // std::cerr << "Bucket number set to: " << bucket_number << "\n";
+
   std::cerr << "Loading ref.fai...";
 
   FaiIndex faiIndex;
@@ -160,18 +171,16 @@ int index(int argc, char const **argv){
   String<uint_fast8_t> ref;
   String<int32_t> C;
   resize(dir,bucket_number+1,0);
-  std::cerr << "..";
-  resize(pos,length(concat(seqs)));
-  std::cerr << "..";
-  resize(ref,length(concat(seqs)));
-  std::cerr << "..";
+  std::cerr << "....";
+  // resize(pos,length(concat(seqs)));
+  // resize(ref,length(concat(seqs)));
   resize(C,bucket_number,-1);
-  std::cerr << "..";
+  std::cerr << "....";
 
 
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
-  uint32_t c;
+  // uint32_t c;
 
   std::cerr << "...done.\nFilling index initially...";
   // iterating over the stringSet (Chromosomes)
@@ -179,50 +188,43 @@ int index(int argc, char const **argv){
   TStringSetIterator seqG = begin(seqs);
   // uint_fast8_t CHROM=0;
   // int laenge=length(seqs);
-  // #pragma omp parallel
-  // {
-  //   #pragma omp for schedule(dynamic)
-    for (int j=0; j<(int)length(seqs); j++){
-
+  uint64_t sum=0;
+  #pragma omp parallel
+  {
+    #pragma omp for schedule(dynamic)
+    for (int j=0; j<(int)length(seqs); j++){ // iterating over chromosomes/contigs
+      uint32_t c;
+      uint64_t local_sum=0;
       TStringSetIterator seq=seqG+j;
       // counting k-mers
-      std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);    // calculation of the hash value for the first k-mer
+      minimizer mini;
+      minimizedSequence miniSeq(*seq,k,m,random_seed,maxhash);
 
-      for (uint64_t i = 0;i<length(*seq)-k;++i){
-        c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // indexing the hashed k-mers
-        // #pragma omp atomic
-        dir[c+1]+=1;
-        if ((*seq)[i+k]!='N'){                                             // calculation of the hash value for the next k-mer
-          rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
-        }
-        else {                                                          // reinitialization of the hashvalue after encountering an "N"
-          i+=k+1;
-          hash=hashkMer(infix(*seq,i,i+k),k);
-        }
+      while(!miniSeq.at_end){ // iterating through the sequence
+        mini=miniSeq.pop();
+          c=ReqBkt(mini.value^random_seed,C,bucket_number,k_2);     // indexing the hashed k-mers
+          #pragma omp atomic
+          dir[c+1]+=1;
+          local_sum++;
       }
-
-      c=ReqBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);       // indexing of the last element
-      // #pragma omp atomic
-      dir[c+1]+=1;
-      // #pragma omp atomic
-      // CHROM++;
-      // std::cerr << "." ;
-      // if ((CHROM-5)%29==0) {std::cerr << "\n";}
+      #pragma omp atomic
+      sum+=local_sum;
     }
-  // }
+  }
 
   std::cerr << "...done. \n";
   std::cerr << "Calculating cumulated sum...";
 
   // cumulative sum
 
-  uint64_t sum=length(concat(seqs))-k+1;
+  resize(pos,sum);
+  resize(ref,sum);
+  // uint64_t sum=length(concat(seqs))-k+1;
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
       sum-=(uint64_t)*itrs;
     }
-    // abundance.push_back(*itrs);} //tracking k-mer abundances
     *itrs=sum;
   }
 
@@ -233,34 +235,25 @@ int index(int argc, char const **argv){
   seqG = begin(seqs);
   // #pragma omp parallel
   // {
-  //   #pragma omp for schedule(dynamic)
+    // #pragma omp for schedule(dynamic)
     for (int j=0; j<(int)length(seqs); j++){
+      uint32_t c;
       TStringSetIterator seq=seqG+j;
       uint_fast8_t Chromosome=j;
       // filling pos
+      minimizer mini;
+      minimizedSequence miniSeq(*seq,k,m,random_seed,maxhash);
+      while(!miniSeq.at_end){
+        mini=miniSeq.pop();
+        c=GetBkt(mini.value^random_seed,C,bucket_number,k_2);     // indexing the hashed k-mers
 
-      std::pair<int64_t, int64_t> hash=hashkMer(infix(*seq,0,k),k);                                // calculation of the hash value for the first k-mer
-
-      for (uint64_t i = 0;i<length(*seq)-k;++i){
-        c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);   // filling of the position table
-        pos[dir[c+1]]=i;
+        // #pragma omp critical
+        // {
+        pos[dir[c+1]]=mini.position;
         ref[dir[c+1]]=Chromosome;
         dir[c+1]++;
-        if ((*seq)[i+k]!='N'){                                           // calculation of the hash value for the next k-mer
-          rollinghashkMer(hash.first,hash.second,(*seq)[i+k],k,maxhash);
-        }
-        else {                                                        // reinitialization of the hashvalue after encountering an "N"
-          i+=k+1;
-          hash=hashkMer(infix(*seq,i,i+k),k);
-        }
+        // }
       }
-      c=GetBkt(ReturnSmaller(hash.first,hash.second,random_seed),C,bucket_number,k_2);     // filling the position table for the last element
-      pos[dir[c+1]]=length(*seq)-k;
-      ref[dir[c+1]]=Chromosome;
-      dir[c+1]++;
-
-      // std::cerr << ".";
-      // if ((Chromosome-2)%29==0) {std::cerr << "\n";}
     }
   // }
   std::cerr << "done. \n";
