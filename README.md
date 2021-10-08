@@ -43,8 +43,8 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
 # Example 
 This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below. 
 
-    # building the index for chr21.fa using 45000000 buckets (based on the size of chromosome 21)
-    ./bcmap index example/chr21.fa -o example/Index -b 45000000
+    # building the index for chr21.fa
+    ./bcmap index example/chr21.fa -o example/Index
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
     ./bcmap map example/readfile.1.fq example/readfile.2.fq -i example/Index -b example/BarcodeIndex -o example/results.bed
