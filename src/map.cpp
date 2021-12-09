@@ -146,7 +146,7 @@ int map(int argc, char const ** argv){
             << "max window size  \t" << options.max_window_size << '\n'
             << "max gap size     \t" << options.max_gap_size << '\n'
             << "output file      \t" << options.output_file << '\n'
-            << "quality threshold\t" << options.s << '\n'
+            << "score threshold  \t" << options.s << '\n'
             << "length threshold \t" << options.l << '\n';
 
   uint_fast8_t k = options.k;
