@@ -35,6 +35,8 @@ Maps the barcodes of the provided readfiles to the reference and creates a barco
 Content of output bed-file:
 * *chromosome  startposition  endposition  barcode  mapping_score*
 
+![plot](./example/Example_score_hist.png)
+
 ## get
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
