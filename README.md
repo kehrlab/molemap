@@ -35,7 +35,7 @@ Maps the barcodes of the provided readfiles to the reference and creates a barco
 Content of output bed-file:
 * *chromosome  startposition  endposition  barcode  mapping_score*
 
-![plot](./example/Example_score_hist.png)
+![plot](./example/Example_score_hist.)
 
 Bcmap returns a _output.hist_ file that can be ploted using _plot_score_histogram.py_ resulting in a plot like the one above. To create a set of mappings with very high precision (at the cost of some recall), the local minimum inbetween the two peaks should be set as the score threshold. A lower theshold yields better recall at the cost of precision, a higher threshold is not recomended.
 
