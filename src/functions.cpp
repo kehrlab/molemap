@@ -7,13 +7,13 @@
 using namespace seqan;
 
 //retreive the barcode from 10x linked reads
-std::string get10xBarcode(std::string id1){
+std::string getBarcode(std::string id1, uint_fast8_t barcode_length){
   std::size_t pos=id1.find(" ");
   std::string new_barcode;
   if(pos<1000){
     // std::cerr << "id1: " << id1 << "\n";
     id1=id1.substr(id1.find(" "),10000);
-    new_barcode=id1.substr(id1.find("BX:Z:")+5,16);
+    new_barcode=id1.substr(id1.find("BX:Z:")+5,barcode_length);
     // std::cerr << "id1: " << id1 << "\n";
     // std::cerr << "new_barcode" << new_barcode << "\n";
   }else{
@@ -140,7 +140,7 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
 }
 
 //Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2/*,pthread_mutex_t *lock*/){
+void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2){
       uint32_t c=GetBkt(hash,C,bucket_number,k_2);
       uint32_t abundance=dir[c+1]-dir[c];
       if (abundance<=20){

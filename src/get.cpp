@@ -16,7 +16,7 @@ struct getReadsOptions{
   std::string bci_name;
   std::string barcodes;
   std::string output_file;
-  
+
   getReadsOptions() :
   output_file("bcmapGetOut.fastq"), bci_name("BarcodeIndex")
   {}
@@ -188,7 +188,7 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
         result.push_back(qual);
         readRecord(id, read, qual, file2);
         // result.push_back("\n");
-        result.push_back(id);
+        result.push_back("@"+id);
         // result.push_back("\n");
         result.push_back(read);
         result.push_back("+");

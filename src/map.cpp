@@ -11,12 +11,11 @@ using namespace seqan;
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom);
-// void binSearchBarcode(std::string & barcode, SeqFileIn & file2);
-// void reverseBarcode(std::string & barcode, SeqFileIn & file2);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram);
+uint_fast8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_size);
 bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
-std::string skipToNextBarcode(SeqFileIn & file, CharString & id1);
-void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode);
+std::string skipToNextBarcode(SeqFileIn & file, CharString & id1, uint_fast8_t barcode_length);
+void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode, uint_fast8_t barcode_length);
 void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate, std::vector<float> & lookQual);
 
 struct bcmapOptions{
@@ -29,11 +28,11 @@ struct bcmapOptions{
   unsigned max_window_size;
   unsigned max_gap_size;
   std::string output_file;
-  unsigned q;
+  unsigned s;
   unsigned l;
   unsigned threads;
   bcmapOptions() :
-  k(31), mini_window_size(61), max_window_size(200000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , q(10000), threads(16)
+  k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16)
   {}
   };
 
@@ -69,7 +68,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addOption(parser, seqan::ArgParseOption(
         "w", "max_window_size", "Maximum length of genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "w", "200000");
+    setDefaultValue(parser, "w", "300000");
     addOption(parser, seqan::ArgParseOption(
         "g", "max_gap_size", "Maximum gap between minimizer hits of same genomic window.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -79,9 +78,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "barcode_windows.bed");
     addOption(parser, seqan::ArgParseOption(
-        "q", "quality", "Quality threshold for genomic windows.",
+        "s", "score_threshold", "Minimum score threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "q", "10000");
+    setDefaultValue(parser, "s", "0");
     addOption(parser, seqan::ArgParseOption(
         "l", "length", "Length threshold for genomic windows.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -122,7 +121,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     getOptionValue(options.max_window_size, parser, "w");
     getOptionValue(options.max_gap_size, parser, "g");
     getOptionValue(options.output_file, parser, "o");
-    getOptionValue(options.q, parser, "q");
+    getOptionValue(options.s, parser, "s");
     getOptionValue(options.l, parser, "l");
     getOptionValue(options.threads, parser, "t");
 
@@ -147,8 +146,8 @@ int map(int argc, char const ** argv){
             << "max window size  \t" << options.max_window_size << '\n'
             << "max gap size     \t" << options.max_gap_size << '\n'
             << "output file      \t" << options.output_file << '\n'
-            << "quality threshold\t" << options.q << '\n'
-            << "length threshold \t" << options.l << "\n\n";
+            << "quality threshold\t" << options.s << '\n'
+            << "length threshold \t" << options.l << '\n';
 
   uint_fast8_t k = options.k;
   int k_2 = k+1;
@@ -160,6 +159,17 @@ int map(int argc, char const ** argv){
   uint_fast32_t max_window_size=options.max_window_size; //200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
   uint_fast32_t max_gap_size=options.max_gap_size; //20000;     // maximum gap size between two adjacent k_mer hits
   uint_fast8_t window_count=50;   // amount of saved candidate windows
+
+  //checking file size and barcode size
+  SeqFileIn file1(toCString(options.readfile1));
+  SeqFileIn file2(toCString(options.readfile2));
+  file1.stream.file.seekg(0, std::ios::end);
+  file2.stream.file.seekg(0, std::ios::end);
+  std::streampos readfile1_size=file1.stream.file.tellg();
+  std::streampos readfile2_size=file2.stream.file.tellg();
+  close(file1);
+  close(file2);
+  uint_fast8_t barcode_length=getBarcodeLength(options.readfile1, readfile1_size);
 
   // reading the Index
   std::cerr << "Reading in the k-mer index";
@@ -265,14 +275,6 @@ int map(int argc, char const ** argv){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
-  SeqFileIn file1(toCString(options.readfile1));
-  SeqFileIn file2(toCString(options.readfile2));
-  file1.stream.file.seekg(0, std::ios::end);
-  file2.stream.file.seekg(0, std::ios::end);
-  std::streampos readfile1_size=file1.stream.file.tellg();
-  std::streampos readfile2_size=file2.stream.file.tellg();
-  close(file1);
-  close(file2);
 
   /*
   Searching for all kmers of reads with the same Barcode
@@ -283,6 +285,8 @@ int map(int argc, char const ** argv){
   omp_init_lock(&lock);
 
   std::cerr << "Processing read file...";
+
+  std::vector<uint32_t> histogram(200,0);
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
@@ -303,7 +307,7 @@ int map(int argc, char const ** argv){
     std::streampos BCI_2s;
     std::streampos BCI_2e;
     std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
-
+    std::vector<uint32_t> histogram_local(200,0);
     //open readfiles
     SeqFileIn file1(toCString(options.readfile1));
     SeqFileIn file2(toCString(options.readfile2));
@@ -314,8 +318,13 @@ int map(int argc, char const ** argv){
 
     //move file 1 to start position
     if (t!=0){
+      std::string line;
       file1.stream.file.seekg(startpos);
-      barcode=skipToNextBarcode(file1, id1);
+      while(line!="+"){
+        getline(file1.stream.file,line);
+      }
+      file1.stream.file.ignore(10000,'\n');
+      barcode=skipToNextBarcode(file1, id1, barcode_length);
     } else {
       file1.stream.file.seekg(0);
       try{
@@ -325,7 +334,7 @@ int map(int argc, char const ** argv){
         std::cerr << "ERROR: " << e.what() << std::endl;
       }
       // readRecord(id1, read1, file1);
-      barcode=get10xBarcode(toCString(id1));
+      barcode=getBarcode(toCString(id1),barcode_length);
       file1.stream.file.seekg(0);
     }
 
@@ -361,7 +370,7 @@ int map(int argc, char const ** argv){
 
     // skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
-      skipToNextBarcode2(file1,file2,barcode);
+      skipToNextBarcode2(file1,file2,barcode,barcode_length);
     }
 
     BCI_1s=file1.stream.file.tellg();
@@ -376,7 +385,7 @@ int map(int argc, char const ** argv){
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
-      new_barcode=get10xBarcode(toCString(id1));
+      new_barcode=getBarcode(toCString(id1),barcode_length);
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
         //append Barcode Index
         BCI_1e=pos_temp;
@@ -387,7 +396,7 @@ int map(int argc, char const ** argv){
         // map barcode and clear k_mer list
         if (!kmer_list.empty()) {
           std::sort(kmer_list.begin(),kmer_list.end());
-          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
+          MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.s, options.l, results, lookChrom, histogram_local);
           // std::cerr << "thread: " << t << "line:  "<<  __LINE__ << "\n";
 
           kmer_list.clear();
@@ -408,7 +417,7 @@ int map(int argc, char const ** argv){
         }
         while (new_barcode[0]=='*' && !atEnd(file1)) { // proceed until valid barcode
           readRecord(id2, read2, file2);
-          skipToNextBarcode2(file1,file2,new_barcode);
+          skipToNextBarcode2(file1,file2,new_barcode,barcode_length);
           BCI_1s=file1.stream.file.tellg();
           readRecord(id1, read1, file1);
         }
@@ -435,13 +444,13 @@ int map(int argc, char const ** argv){
     if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
       // BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
       std::sort(kmer_list.begin(),kmer_list.end());
-      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.q, options.l, results, lookChrom);
+      MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.s, options.l, results, lookChrom, histogram_local);
     }
 
     close(file1);
     close(file2);
 
-    // writing Barcode index to file
+    // writing Barcode index to file and summing up local histograms
     #pragma omp ordered
     {
       std::ofstream file_bci;
@@ -454,6 +463,10 @@ int map(int argc, char const ** argv){
                   << std::get<4>(BCI_local[i]) << "\n";
       }
       file_bci.close();
+
+      for (int i=0; i<histogram.size(); i++){
+        histogram[i]+=histogram_local[i];
+      }
     }
 
     omp_set_lock(&lock);
@@ -466,15 +479,24 @@ int map(int argc, char const ** argv){
 
   }
 
+  // write histigram to file
+  std::ofstream file_histogram;
+  file_histogram.open(options.output_file+".hist");
+  for (int i=0; i<histogram.size(); i++){
+    file_histogram << std::to_string(histogram[i]) << "\n";
+  }
+  file_histogram.close();
+
   std::cerr << ".........done.\n";
 
-  std::cerr << "Barcodes mapped sucessfully!\n";
+  std::cerr << "Barcodes mapped sucessfully!\n\n";
 
   return 0;
 } //map(argc,argv)
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned qualityThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram){
+  unsigned qualityThreshold=50;
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
   // std::vector<float> lookQual={0,20,3.0, 0.75, 0.38, 0.24, 0.17, 0.14, 0.11, 0.09, 0.08};
@@ -577,28 +599,62 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
   }
 
   for(itrbw=best_windows.begin();itrbw!=best_windows.end(); itrbw++){
-
-    std::string qual=std::to_string((int)std::get<0>(*itrbw));
-    std::string ref=lookChrom[std::get<1>(*itrbw)];
-    std::string start=std::to_string(std::get<2>(*itrbw));
-    std::string end=std::to_string(std::get<3>(*itrbw));
-    results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + qual + "\n");
+    float qual=roundf((float)(std::get<0>(*itrbw)/(std::get<3>(*itrbw)-std::get<2>(*itrbw)))*100); // quality/length_of_mapping--> QualityPerBase
+    if(qual>200){
+      histogram[200]++;
+    }else{
+      histogram[qual]++;
+    }
+    if(qual>=scoreThreshold){
+      std::string ref=lookChrom[std::get<1>(*itrbw)];
+      std::string start=std::to_string(std::get<2>(*itrbw));
+      std::string end=std::to_string(std::get<3>(*itrbw));
+      results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + std::to_string((int)qual) + "\n");
+    }
   }
   return;
 } //MapKmerList
 
+uint_fast8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_size){
+  SeqFileIn file1(toCString(readfile1));
+  Dna5String read1;
+  CharString id;
+  readRecord(id,read1,file1);
+  std::string id1;
+  std::string line="X";
+  uint_fast8_t barcode_length;
+  std::string barcode;
+  for (uint64_t i=round((long long unsigned)readfile1_size/20); i<(uint64_t)readfile1_size;i+=round((uint64_t)readfile1_size/10)){ // check multiple positions throughout the readfile
+    file1.stream.file.seekg(i);
+    while(line!="+"){
+      getline(file1.stream.file,line);
+    }
+    file1.stream.file.ignore(10000,'\n');
+    readRecord(id, read1, file1);
+    id1=toCString(id);
+    barcode=id1.substr(id1.find("BX:Z:")+5,id1.find(' ',id1.find("BX:Z:")+5)-id1.find("BX:Z:")-5);              // determine BX:Z: entry
+    if (barcode[0]=='A' || barcode[0]=='C' || barcode[0]=='T' || barcode[0]=='G'){
+      close(file1);
+      std::cerr << "barcode length   \t" << barcode.size() << "\n\n";
+      return barcode.size();
+    }
+  }
+  std::cerr << "\nERROR: Incorrect BX:Z: tag in readfile. Barcodes can not be determined. Please check your input file formating.\n";
+  return 0;
+}
+
 //skips file1 to start of next barcode and returns the barcode
-std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
+std::string skipToNextBarcode(SeqFileIn & file, CharString & id1, uint_fast8_t barcode_length){
   CharString id;
   Dna5String read;
   readRecord(id,read,file);
-  std::string barcode=get10xBarcode(toCString(id));
+  std::string barcode=getBarcode(toCString(id),barcode_length);
   std::string new_barcode=barcode;
   std::streampos pos;
   while(barcode==new_barcode){
     pos=file.stream.file.tellg();
     readRecord(id,read,file);
-    new_barcode=get10xBarcode(toCString(id));
+    new_barcode=getBarcode(toCString(id),barcode_length);
   }
   file.stream.file.seekg(pos);
   id1=id;
@@ -606,17 +662,17 @@ std::string skipToNextBarcode(SeqFileIn & file, CharString & id1){
 }
 
 //skips both files till next barcode
-void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode){
+void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode, uint_fast8_t barcode_length){
   CharString id;
   Dna5String read;
   std::streampos pos;
   pos=file1.stream.file.tellg();
   readRecord(id,read,file1);
-  std::string new_barcode=get10xBarcode(toCString(id));
+  std::string new_barcode=getBarcode(toCString(id),barcode_length);
   while(new_barcode[0]=='*' && !atEnd(file1)){
     pos=file1.stream.file.tellg();
     readRecord(id,read,file1);
-    new_barcode=get10xBarcode(toCString(id));
+    new_barcode=getBarcode(toCString(id),barcode_length);
     readRecord(id,read,file2);
   }
   file1.stream.file.seekg(pos);
@@ -628,8 +684,13 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
 bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
   CharString new_id;
   Dna5String read;
+  std::string line;
   std::streampos pos;
   file.stream.file.seekg(startpos);
+  while(line!="+"){
+    getline(file.stream.file,line);
+  }
+  file.stream.file.ignore(10000,'\n');
   while(new_id!=id){
     if(pos>endpos){
       return false;

@@ -47,11 +47,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
         "m", "minimizer_window", "Length of window a minimizer is chosen from.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "m", "61");
-    addOption(parser, seqan::ArgParseOption(
-        "b", "bucket_count", "Number of buckets in index.",
-        seqan::ArgParseArgument::INT64, "unsigned"));
-    setDefaultValue(parser, "b", "3221225472");
-
+    // addOption(parser, seqan::ArgParseOption(
+    //     "b", "bucket_count", "Number of buckets in index.",
+    //     seqan::ArgParseArgument::INT64, "unsigned"));
+    // setDefaultValue(parser, "b", "3221225472");
     seqan::addUsageLine(parser,"reference.fq [OPTIONS]");
     setShortDescription(parser, "Build an index of a reference genome.");
     setVersion(parser, VERSION);
@@ -119,8 +118,12 @@ int index(int argc, char const **argv){
 
   std::cerr << "..done.\n";
 
-  uint_fast32_t bucket_number=length(concat(seqs))/((m-k+1)/2);
-  // std::cerr << "Bucket number set to: " << bucket_number << "\n";
+  uint_fast32_t bucket_number=round((double)length(concat(seqs))/((double)(m-k+1)/2));
+  if (bucket_number>3221225472){
+    bucket_number=3221225472;
+  }
+
+  std::cerr << "Bucket number set to: " << bucket_number << "\n";
 
   std::cerr << "Loading ref.fai...";
 
