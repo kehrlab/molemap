@@ -45,7 +45,7 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
     ./bcmap get readfile1.fastq readfile2.fastq Barcodes [options]
  
 # Example 
-This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below. 
+This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below.  
 
     # building the index for chr21.fa
     ./bcmap index example/chr21.fa -o example/Index
