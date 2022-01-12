@@ -5,11 +5,13 @@ SRC_DIR = ./src
 SRCS := $(shell find $(SRC_DIR) -type f -name "*.cpp")
 OBJS := $(patsubst $(SRC_DIR)/%,$(BUILD_DIR)/%,$(SRCS:.cpp=.o))
 
+SEQAN_LIB =.
+
 # Compiler
 CXX = g++ -std=c++14
 CC = $(CXX)
 
-CXXFLAGS += -O3 #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
+CXXFLAGS += -O3 -I $(SEQAN_LIB) #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
 DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
