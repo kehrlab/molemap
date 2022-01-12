@@ -11,7 +11,7 @@ Output: [Index_GRCh38] folder containing the bcmap kmer index
 Task: Map barcodes of NA12878 \
 Input: [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38] \
 Output: [NA12878_mapped.bed] barcode index produced by bcmap \
-        [NA12878_read_index] read index for NA12878 read files
+&emsp;[NA12878_read_index] read index for NA12878 read files
   
     ./bcmap map NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq -i Index_GRCh38 -o NA12878_mapped.bed -b NA12878_read_index
 
@@ -29,24 +29,24 @@ Output: [NA12878_50K_region.fq]
 
 ## Linked-read assembly
 
-Task: Assembly of PE linked-reads.
-Input: [NA12878_50K_region.fq] An input file of interleaved pairs of linked-reads.
+Task: Assembly of PE linked-reads. \
+Input: [NA12878_50K_region.fq] An input file of interleaved pairs of linked-reads. \
 Output: [assembly_k121.unitigs.fa] A set of unitig from the assemblers final iteration.
 
-  gatb --12 NA12878_50K_region.fa --no-scaffolding --nb-cores 8 > logs/assembly.log 2>&1
+     gatb --12 NA12878_50K_region.fa --no-scaffolding --nb-cores 8 > logs/assembly.log 2>&1
 
 
-Task: Simplifying the set of unitigs in their de Bruijn Graph representation, i.e. removing tips and singletons.
-Input: [assembly_k121.unitigs.fa] The set of unitigs from the previous step.
+Task: Simplifying the set of unitigs in their de Bruijn Graph representation, i.e. removing tips and singletons. \
+Input: [assembly_k121.unitigs.fa] The set of unitigs from the previous step. \
 Output: [assembly_k121.unitigs.fa.gfa] A simplified de Bruijn Graph in GFA format.
 
-  Bifrost build -r assembly_k121.unitigs.fa -t 8 -k 121 -m 81 --clip-tips --del-isolated -o assembly_k121.unitigs.fa
+     Bifrost build -r assembly_k121.unitigs.fa -t 8 -k 121 -m 81 --clip-tips --del-isolated -o assembly_k121.unitigs.fa
 
-Task: Extract unitigs from simplified de Bruijn Graph.
-Input: [assembly_k121.unitigs.fa.gfa] The simplified de Bruijn Graph from the previous step.
+Task: Extract unitigs from simplified de Bruijn Graph. \
+Input: [assembly_k121.unitigs.fa.gfa] The simplified de Bruijn Graph from the previous step. \
 Output: [assembly_k121.unitigs.bifrost.fa] The unitigs of the simplified de Bruijn Graph in FASTA format.
 
-  awk '$0 ~ /^S/ {print ">"$2"\n"$3}' assembly_k121.unitigs.fa.gfa > assembly_k121.unitigs.bifrost.fa
+    awk '$0 ~ /^S/ {print ">"$2"\n"$3}' assembly_k121.unitigs.fa.gfa > assembly_k121.unitigs.bifrost.fa
 
 ## Assembly validation.
 
