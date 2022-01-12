@@ -37,9 +37,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "bcmapGetOut.fastq");
     addOption(parser, seqan::ArgParseOption(
-        "r", "read_index_name", "Name of the BarcodeIndex.",
+        "r", "read_index_name", "Name of the ReadIndex.",
         seqan::ArgParseArgument::STRING, "read_index_name[IN]"));
-    setDefaultValue(parser, "r", "BarcodeIndex");
+    setDefaultValue(parser, "r", "ReadIndex");
 
     seqan::addUsageLine(parser, "readfile.1.fq readfile.2.fq [OPTIONS]");
     setShortDescription(parser, "Retreive all reads of a list of barcodes.");
