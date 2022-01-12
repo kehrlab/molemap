@@ -140,7 +140,7 @@ int map(int argc, char const ** argv){
             << "readfile2        \t" << options.readfile2 << '\n'
             << "kmer_index_name  \t" << options.kmer_index_name << '\n'
             << "output file      \t" << options.output_file << '\n'
-            << "read_index_name  \t" << options.read_inde_name << '\n'
+            << "read_index_name  \t" << options.read_index_name << '\n'
             << "threads          \t" << options.threads << '\n'
             << "score threshold  \t" << options.s << '\n'
             << "k                \t" << options.k << '\n'
