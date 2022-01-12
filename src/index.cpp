@@ -1,6 +1,6 @@
-# include "../seqan/seq_io.h"
-# include "../seqan/sequence.h"
-# include "../seqan/arg_parse.h"
+# include <seqan/seq_io.h>
+# include <seqan/sequence.h>
+# include <seqan/arg_parse.h>
 # include <map>
 # include <iostream>
 # include <time.h>

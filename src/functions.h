@@ -1,8 +1,8 @@
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-# include "../seqan/seq_io.h"
-# include "../seqan/sequence.h"
+# include <seqan/seq_io.h>
+# include <seqan/sequence.h>
 # include <iostream>
 using namespace seqan;
 

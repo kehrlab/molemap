@@ -1,12 +1,12 @@
-# include "../seqan/seq_io.h"
-# include "../seqan/sequence.h"
-# include "../seqan/arg_parse.h"
+# include <seqan/seq_io.h>
+# include <seqan/sequence.h>
+# include <seqan/arg_parse.h>
 # include <iostream>
 # include <fstream>
-# include ".functions.h"
-# include ".index.h"
-# include ".get.h"
-# include ".map.h"
+# include "functions.h"
+# include "index.h"
+# include "get.h"
+# include "map.h"
 # include <time.h>
 using namespace seqan;
 
