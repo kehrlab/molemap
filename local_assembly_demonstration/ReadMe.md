@@ -2,18 +2,14 @@
 
 ## Linked-read extraction
 
-Task: Construct kmer index of GRCh38
-
-Input: [GRCh38.fq] human reference genome
-
+Task: Construct kmer index of GRCh38 \
+Input: [GRCh38.fq] human reference genome \
 Output: [Index_GRCh38] folder containing the bcmap kmer index
 
   ./bcmap index GRCh38.fq -o Index_GRCh38
 
-Task: Map barcodes of NA12878
-
-Input: [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38]
-
+Task: Map barcodes of NA12878 \
+Input: [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38] \
 Output: [NA12878_mapped.bed] barcode index produced by bcmap
 
         [NA12878_read_index] read index for NA12878 read files
