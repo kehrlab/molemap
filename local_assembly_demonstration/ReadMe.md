@@ -6,30 +6,26 @@ Task: Construct kmer index of GRCh38 \
 Input: [GRCh38.fq] human reference genome \
 Output: [Index_GRCh38] folder containing the bcmap kmer index
 
-  ./bcmap index GRCh38.fq -o Index_GRCh38
+    ./bcmap index GRCh38.fq -o Index_GRCh38
 
 Task: Map barcodes of NA12878 \
 Input: [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38] \
-Output: [NA12878_mapped.bed] barcode index produced by bcmap
-
+Output: [NA12878_mapped.bed] barcode index produced by bcmap \
         [NA12878_read_index] read index for NA12878 read files
   
-  ./bcmap map NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq -i Index_GRCh38 -o NA12878_mapped.bed -b NA12878_read_index
+    ./bcmap map NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq -i Index_GRCh38 -o NA12878_mapped.bed -b NA12878_read_index
 
-Task: Extract Barcodes of interest from barcode index
-
-Input: [NA12878_mapped.bed]
-
+Task: Extract Barcodes of interest from barcode index \
+Input: [NA12878_mapped.bed] \
 Output: [Barcodes_NA12878_50K_region.txt] barcodes mapping to region of interest
 
-  awk '{if($1=="chr17" && (int($2)<=17831079+25000 && int($3)>=17831079-25000)) print($0)}' NA12878_mapped.bed | awk '{if(int($5)>8) print($4)}' > Barcodes_NA12878_50K_region.txt
+    awk '{if($1=="chr17" && (int($2)<=17831079+25000 && int($3)>=17831079-25000)) print($0)}' NA12878_mapped.bed | awk '{if(int($5)>8) print($4)}' > Barcodes_NA12878_50K_region.txt
 
-
-Task: Extract reads from read index
-Input:  [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Barcodes_NA12878_50K_region.txt], [NA12878_read_index]
+Task: Extract reads from read index \
+Input:  [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Barcodes_NA12878_50K_region.txt], [NA12878_read_index] \
 Output: [NA12878_50K_region.fq]
 
-  ./bcmap get NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq Barcodes_NA12878_50K_region.txt -b NA12878_read_index -o NA12878_50K_region.fq 
+    ./bcmap get NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq Barcodes_NA12878_50K_region.txt -b NA12878_read_index -o NA12878_50K_region.fq 
 
 ## Linked-read assembly
 
