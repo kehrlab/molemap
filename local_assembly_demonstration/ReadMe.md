@@ -3,26 +3,26 @@
 ## Linked-read extraction
 
 Task: Construct kmer index of GRCh38 \
-Input: &nbsp;[GRCh38.fq] human reference genome \
+Input: &ensp;[GRCh38.fq] human reference genome \
 Output: [Index_GRCh38] folder containing the bcmap kmer index
 
     ./bcmap index GRCh38.fq -o Index_GRCh38
 
 Task: Map barcodes of NA12878 \
-Input: &nbsp;[NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38] \
+Input: &ensp;[NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Index_GRCh38] \
 Output: [NA12878_mapped.bed] barcode index produced by bcmap \
-&emsp;&emsp;[NA12878_read_index] read index for NA12878 read files
+&emsp;&emsp;&emsp;&emsp;[NA12878_read_index] read index for NA12878 read files
   
     ./bcmap map NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq -i Index_GRCh38 -o NA12878_mapped.bed -b NA12878_read_index
 
 Task: Extract Barcodes of interest from barcode index \
-Input: &nbsp;[NA12878_mapped.bed] \
+Input: &ensp;[NA12878_mapped.bed] \
 Output: [Barcodes_NA12878_50K_region.txt] barcodes mapping to region of interest
 
     awk '{if($1=="chr17" && (int($2)<=17831079+25000 && int($3)>=17831079-25000)) print($0)}' NA12878_mapped.bed | awk '{if(int($5)>8) print($4)}' > Barcodes_NA12878_50K_region.txt
 
 Task: Extract reads from read index \
-Input:&nbsp; [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Barcodes_NA12878_50K_region.txt], [NA12878_read_index] \
+Input:&ensp; [NA12878_linked_reads_1.fq, NA12878_linked_reads_2.fq], [Barcodes_NA12878_50K_region.txt], [NA12878_read_index] \
 Output: [NA12878_50K_region.fq]
 
     ./bcmap get NA12878_linked_reads_1.fq NA12878_linked_reads_2.fq Barcodes_NA12878_50K_region.txt -b NA12878_read_index -o NA12878_50K_region.fq 
@@ -30,20 +30,20 @@ Output: [NA12878_50K_region.fq]
 ## Linked-read assembly
 
 Task: Assembly of PE linked-reads. \
-Input: &nbsp;[NA12878_50K_region.fq] An input file of interleaved pairs of linked-reads. \
+Input: &ensp;[NA12878_50K_region.fq] An input file of interleaved pairs of linked-reads. \
 Output: [assembly_k121.unitigs.fa] A set of unitig from the assemblers final iteration.
 
      gatb --12 NA12878_50K_region.fa --no-scaffolding --nb-cores 8 > logs/assembly.log 2>&1
 
 
 Task: Simplifying the set of unitigs in their de Bruijn Graph representation, i.e. removing tips and singletons. \
-Input: &nbsp;[assembly_k121.unitigs.fa] The set of unitigs from the previous step. \
+Input: &ensp;[assembly_k121.unitigs.fa] The set of unitigs from the previous step. \
 Output: [assembly_k121.unitigs.fa.gfa] A simplified de Bruijn Graph in GFA format.
 
      Bifrost build -r assembly_k121.unitigs.fa -t 8 -k 121 -m 81 --clip-tips --del-isolated -o assembly_k121.unitigs.fa
 
 Task: Extract unitigs from simplified de Bruijn Graph. \
-Input: &nbsp;[assembly_k121.unitigs.fa.gfa] The simplified de Bruijn Graph from the previous step. \
+Input: &ensp;[assembly_k121.unitigs.fa.gfa] The simplified de Bruijn Graph from the previous step. \
 Output: [assembly_k121.unitigs.bifrost.fa] The unitigs of the simplified de Bruijn Graph in FASTA format.
 
     awk '$0 ~ /^S/ {print ">"$2"\n"$3}' assembly_k121.unitigs.fa.gfa > assembly_k121.unitigs.bifrost.fa
