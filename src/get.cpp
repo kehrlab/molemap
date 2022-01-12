@@ -13,12 +13,12 @@ std::vector<std::string> returnReads(  std::vector<std::string> & BCI_BC, std::v
 struct getReadsOptions{
   std::string readfile1;
   std::string readfile2;
-  std::string bci_name;
+  std::string read_index_name;
   std::string barcodes;
   std::string output_file;
 
   getReadsOptions() :
-  output_file("bcmapGetOut.fastq"), bci_name("BarcodeIndex")
+  output_file("bcmapGetOut.fastq"), read_index_name("BarcodeIndex")
   {}
 };
 
@@ -37,9 +37,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
     setDefaultValue(parser, "o", "bcmapGetOut.fastq");
     addOption(parser, seqan::ArgParseOption(
-        "b", "Barcode_index_name", "Name of the BarcodeIndex.",
-        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
-    setDefaultValue(parser, "b", "BarcodeIndex");
+        "r", "read_index_name", "Name of the BarcodeIndex.",
+        seqan::ArgParseArgument::STRING, "read_index_name[IN]"));
+    setDefaultValue(parser, "r", "BarcodeIndex");
 
     seqan::addUsageLine(parser, "readfile.1.fq readfile.2.fq [OPTIONS]");
     setShortDescription(parser, "Retreive all reads of a list of barcodes.");
@@ -62,7 +62,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     // getArgumentValue(options.bci_name, parser, 2);
     getArgumentValue(options.barcodes, parser, 2);
 
-    getOptionValue(options.bci_name, parser, "b");
+    getOptionValue(options.read_index_name, parser, "b");
     getOptionValue(options.output_file, parser, "o");
 
     return seqan::ArgumentParser::PARSE_OK;
@@ -78,7 +78,7 @@ int get(int argc, char const ** argv){
   std::cout <<'\n'
             << "readfile1        \t" << options.readfile1 << '\n'
             << "readfile2        \t" << options.readfile2 << '\n'
-            << "barcodeindex_name\t" << options.bci_name << '\n'
+            << "barcodeindex_name\t" << options.read_index_name << '\n'
             << "barcodes         \t" << options.barcodes << '\n'
             << "output file      \t" << options.output_file << "\n\n";
 
@@ -129,7 +129,7 @@ int get(int argc, char const ** argv){
   std::string BCI_2s;
   std::string BCI_2e;
   std::string BCI_bc;
-  file_bci.open(options.bci_name /*, std::ios::binary*/);
+  file_bci.open(options.read_index_name /*, std::ios::binary*/);
 
   while (!file_bci.eof()){
     file_bci >> BCI_bc;

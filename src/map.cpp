@@ -21,8 +21,8 @@ void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
 struct bcmapOptions{
   std::string readfile1;
   std::string readfile2;
-  std::string index_name;
-  std::string bci_name;
+  std::string kmer_index_name;
+  std::string read_index_name;
   unsigned k;
   unsigned mini_window_size;
   unsigned max_window_size;
@@ -32,7 +32,7 @@ struct bcmapOptions{
   unsigned l;
   unsigned threads;
   bcmapOptions() :
-  k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16)
+  kmer_index_name("Index"), read_index_name("ReadIndex"), k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16)
   {}
   };
 
@@ -48,13 +48,13 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
-        "i", "index_name", "Name of the folder in which the index is stored.",
-        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
+        "i", "kmer_index_name", "Name of the folder in which the kmer index is stored.",
+        seqan::ArgParseArgument::STRING, "kmer_index_name[IN]"));
     setDefaultValue(parser, "i", "Index");
     addOption(parser, seqan::ArgParseOption(
-        "b", "Barcode_index_name", "Name of the BarcodeIndex.",
+        "r", "Read_index_name", "Name of the ReadIndex.",
         seqan::ArgParseArgument::STRING, "Index_name[IN]"));
-    setDefaultValue(parser, "b", "BarcodeIndex");
+    setDefaultValue(parser, "r", "ReadIndex");
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
@@ -114,8 +114,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     // getArgumentValue(options.index_name, parser, 2);
     // getArgumentValue(options.bci_name, parser, 3);
 
-    getOptionValue(options.index_name, parser, "i");
-    getOptionValue(options.bci_name, parser, "b");
+    getOptionValue(options.kmer_index_name, parser, "i");
+    getOptionValue(options.read_index_name, parser, "b");
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.max_window_size, parser, "w");
@@ -138,15 +138,15 @@ int map(int argc, char const ** argv){
   std::cout <<'\n'
             << "readfile1        \t" << options.readfile1 << '\n'
             << "readfile2        \t" << options.readfile2 << '\n'
-            << "index_name       \t" << options.index_name << '\n'
-            << "barcodeindex_name\t" << options.bci_name << '\n'
+            << "kmer_index_name  \t" << options.kmer_index_name << '\n'
+            << "output file      \t" << options.output_file << '\n'
+            << "read_index_name  \t" << options.read_inde_name << '\n'
             << "threads          \t" << options.threads << '\n'
+            << "score threshold  \t" << options.s << '\n'
             << "k                \t" << options.k << '\n'
             << "minimizer window \t" << options.mini_window_size << '\n'
             << "max window size  \t" << options.max_window_size << '\n'
             << "max gap size     \t" << options.max_gap_size << '\n'
-            << "output file      \t" << options.output_file << '\n'
-            << "score threshold  \t" << options.s << '\n'
             << "length threshold \t" << options.l << '\n';
 
   uint_fast8_t k = options.k;
@@ -179,15 +179,15 @@ int map(int argc, char const ** argv){
   String<uint_fast8_t> ref;
   String<int32_t> C;
 
-  std::string IndPos=options.index_name;
+  std::string IndPos=options.kmer_index_name;
   IndPos.append("/pos.txt");
-  std::string IndRef=options.index_name;
+  std::string IndRef=options.kmer_index_name;
   IndRef.append("/ref.txt");
-  std::string IndDir=options.index_name;
+  std::string IndDir=options.kmer_index_name;
   IndDir.append("/dir.txt");
-  std::string IndC=options.index_name;
+  std::string IndC=options.kmer_index_name;
   IndC.append("/C.txt");
-  std::string IndFai=options.index_name;
+  std::string IndFai=options.kmer_index_name;
   IndFai.append("/fai.txt");
   std::vector<std::string> lookChrom;
 
@@ -454,7 +454,7 @@ int map(int argc, char const ** argv){
     #pragma omp ordered
     {
       std::ofstream file_bci;
-      file_bci.open(options.bci_name , std::ios::app/*, std::ios::binary*/);
+      file_bci.open(options.read_index_name , std::ios::app/*, std::ios::binary*/);
       for (int i=0; i<BCI_local.size(); i++){
         file_bci  << std::get<0>(BCI_local[i]) << "\t"
                   << std::get<1>(BCI_local[i]) << "\t"

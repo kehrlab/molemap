@@ -16,7 +16,7 @@ g++ countKmers.cpp -o countK
 
 struct countKOptions{
   std::string reference_file;
-  std::string index_name;
+  std::string kmer_index_name;
   unsigned k;
   unsigned m;//int64_t bucket_count;
 
@@ -34,8 +34,8 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
 
     // Define Options
     addOption(parser, seqan::ArgParseOption(
-        "o", "index_name", "Name of the folder in which the index is stored.",
-        seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
+        "o", "kmer_index_name", "Name of the folder in which the kmer index is stored.",
+        seqan::ArgParseArgument::STRING, "kmer_index_name[OUT]"));
     setDefaultValue(parser, "o", "Index");
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
@@ -68,7 +68,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.m, parser, "m");
     // getOptionValue(options.bucket_count, parser, "b");
-    getOptionValue(options.index_name, parser, "o");
+    getOptionValue(options.kmer_index_name, parser, "o");
 
     getArgumentValue(options.reference_file, parser, 0);
 
@@ -85,7 +85,7 @@ int index(int argc, char const **argv){
       return res == seqan::ArgumentParser::PARSE_ERROR;
   std::cout <<'\n'
             << "reference        \t" << options.reference_file << '\n'
-            << "index_name       \t" << options.index_name << '\n'
+            << "kmer_index_name  \t" << options.kmer_index_name << '\n'
             << "k                \t" << options.k << '\n'
             << "minimizer_window \t" << options.m << "\n\n";
             // << "bucket_count     \t" << options.bucket_count << "\n\n";
@@ -140,12 +140,12 @@ int index(int argc, char const **argv){
       }
   }
 
-  if (mkdir(toCString(options.index_name), 0777) == -1){
+  if (mkdir(toCString(options.kmer_index_name), 0777) == -1){
     // std::cerr << "Error for index target:  " << strerror(errno) << "\n";
   }
 
   std::fstream output;
-  std::string IndFai=options.index_name;
+  std::string IndFai=options.kmer_index_name;
   IndFai.append("/fai.txt");
   output.open(toCString(IndFai),std::ios::out);
   for (int id=0; id<numSeqs(faiIndex); id++){
@@ -263,13 +263,13 @@ int index(int argc, char const **argv){
 
   //write index to file
 
-  std::string IndPos=options.index_name;
+  std::string IndPos=options.kmer_index_name;
   IndPos.append("/pos.txt");
-  std::string IndRef=options.index_name;
+  std::string IndRef=options.kmer_index_name;
   IndRef.append("/ref.txt");
-  std::string IndDir=options.index_name;
+  std::string IndDir=options.kmer_index_name;
   IndDir.append("/dir.txt");
-  std::string IndC=options.index_name;
+  std::string IndC=options.kmer_index_name;
   IndC.append("/C.txt");
 
   std::cerr << "Writing index to file...";
