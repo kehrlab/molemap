@@ -52,14 +52,14 @@ This small example demonstrates how to use bcmap and allows you to check if it i
     ./bcmap index example/chr21.fa -o example/Index
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
-    ./bcmap map example/readfile.1.fq example/readfile.2.fq -i example/Index -b example/BarcodeIndex -o example/results.bed
+    ./bcmap map example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
     
     # extracting the first barcode from the results
     awk '{if(NR==1) print($4)}' example/results.bed > example/FirstBarcode.txt
     
     # extracting all reads belonging to the first barcode
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/FirstBarcode.txt -b example/BarcodeIndex -o example/readsOfFirstBarcode.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/FirstBarcode.txt -r example/ReadIndex -o example/readsOfFirstBarcode.fq
     
     # extracting reads of barcode AACATCGCAAACAGTA
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -b example/BarcodeIndex -o example/readsOfAACATCGCAAACAGTA.fq
+    ./bcmap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -r example/ReadIndex -o example/readsOfAACATCGCAAACAGTA.fq
 
