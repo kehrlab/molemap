@@ -2,7 +2,7 @@
 
 ## Linked-read extraction
 
-Task: Construct kmer index of GRCh38 \
+Task:  Construct kmer index of GRCh38 \
 Input: &ensp;&nbsp;[GRCh38.fq] human reference genome \
 Output: [Index_GRCh38] folder containing the bcmap kmer index
 
