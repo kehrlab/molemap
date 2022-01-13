@@ -93,6 +93,3 @@ The alignment was computed using the EMBOSS Water web application \thomas{https:
     # 
     #
     #=======================================
-
-## References
-[Kent, 2002]Kent,W.J.(2002)BLAT—The BLAST-Like Alignment Tool.Genome Research,12(4), 656–664. Company: Cold Spring Harbor Laboratory Press Distributor: Cold SpringHarbor Laboratory Press Institution: Cold Spring Harbor Laboratory Press Label: ColdSpring Harbor Laboratory Press Publisher: Cold Spring Harbor Lab.
