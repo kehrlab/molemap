@@ -115,7 +115,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     // getArgumentValue(options.bci_name, parser, 3);
 
     getOptionValue(options.kmer_index_name, parser, "i");
-    getOptionValue(options.read_index_name, parser, "b");
+    getOptionValue(options.read_index_name, parser, "r");
     getOptionValue(options.k, parser, "k");
     getOptionValue(options.mini_window_size, parser, "m");
     getOptionValue(options.max_window_size, parser, "w");
@@ -150,7 +150,14 @@ int map(int argc, char const ** argv){
             << "length threshold \t" << options.l << '\n';
 
   uint_fast8_t k = options.k;
-  int k_2 = k+1;
+
+  int k_2;
+  if (k>16){
+    k_2=(k-15)*2;
+  }else{
+    k_2=0;
+  }
+  // int k_2 = k+1;
 
   uint_fast8_t mini_window_size = options.mini_window_size;
 
