@@ -62,7 +62,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(getReadsOptions & options, i
     // getArgumentValue(options.bci_name, parser, 2);
     getArgumentValue(options.barcodes, parser, 2);
 
-    getOptionValue(options.read_index_name, parser, "b");
+    getOptionValue(options.read_index_name, parser, "r");
     getOptionValue(options.output_file, parser, "o");
 
     return seqan::ArgumentParser::PARSE_OK;
