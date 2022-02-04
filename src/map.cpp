@@ -177,6 +177,10 @@ int map(int argc, char const ** argv){
   close(file1);
   close(file2);
   uint_fast8_t barcode_length=getBarcodeLength(options.readfile1, readfile1_size);
+  if(barcode_length == 0){
+    return 0;
+  }
+
 
   // reading the Index
   std::cerr << "Reading in the k-mer index";
@@ -332,7 +336,7 @@ int map(int argc, char const ** argv){
       }
       file1.stream.file.ignore(10000,'\n');
       barcode=skipToNextBarcode(file1, id1, barcode_length);
-    } else {
+      } else {
       file1.stream.file.seekg(0);
       try{
         readRecord(id1, read1, file1);
