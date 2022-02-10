@@ -34,4 +34,5 @@ int main(int argc, char const ** argv){
     std::cerr << "\nInvalid command! " << arg1 << "\nCommands are: index, map, get.\nUse './bcmap [command] --help' for more information.\n";
   }
 
+  return 0;
 }
