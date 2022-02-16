@@ -78,7 +78,7 @@ int get(int argc, char const ** argv){
   std::cout <<'\n'
             << "readfile1        \t" << options.readfile1 << '\n'
             << "readfile2        \t" << options.readfile2 << '\n'
-            << "barcodeindex_name\t" << options.read_index_name << '\n'
+            << "readindex        \t" << options.read_index_name << '\n'
             << "barcodes         \t" << options.barcodes << '\n'
             << "output file      \t" << options.output_file << "\n\n";
 
