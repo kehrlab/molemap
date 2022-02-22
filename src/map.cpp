@@ -314,10 +314,8 @@ int map(int argc, char const ** argv){
     std::string results;
     std::streampos pos_temp;
     std::streampos BCI_1s;
-    std::streampos BCI_1e;
     std::streampos BCI_2s;
-    std::streampos BCI_2e;
-    std::vector<std::tuple<std::string,std::streampos,std::streampos,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
+    std::vector<std::tuple<std::string,std::streampos,std::streampos>> BCI_local; // (barcode, BCI_1s, BCI_2s, count)     #Deprecated:(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e)
     std::vector<uint32_t> histogram_local(200,0);
     //open readfiles
     SeqFileIn file1(toCString(options.readfile1));
@@ -399,9 +397,9 @@ int map(int argc, char const ** argv){
       new_barcode=getBarcode(toCString(id1),barcode_length);
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
         //append Barcode Index
-        BCI_1e=pos_temp;
-        BCI_2e=file2.stream.file.tellg();
-        BCI_local.push_back(std::make_tuple(barcode, BCI_1s, BCI_1e, BCI_2s, BCI_2e));
+        // BCI_1e=pos_temp;
+        // BCI_2e=file2.stream.file.tellg();
+        BCI_local.push_back(std::make_tuple(barcode, BCI_1s, BCI_2s));
         BCI_1s=pos_temp;
 
         // map barcode and clear k_mer list
@@ -469,9 +467,7 @@ int map(int argc, char const ** argv){
       for (int i=0; i<BCI_local.size(); i++){
         file_bci  << std::get<0>(BCI_local[i]) << "\t"
                   << std::get<1>(BCI_local[i]) << "\t"
-                  << std::get<2>(BCI_local[i]) << "\t"
-                  << std::get<3>(BCI_local[i]) << "\t"
-                  << std::get<4>(BCI_local[i]) << "\n";
+                  << std::get<2>(BCI_local[i]) << "\n";
       }
       file_bci.close();
 
@@ -479,6 +475,8 @@ int map(int argc, char const ** argv){
         histogram[i]+=histogram_local[i];
       }
     }
+
+
 
     omp_set_lock(&lock);
     std::fstream output;
@@ -489,6 +487,11 @@ int map(int argc, char const ** argv){
     omp_unset_lock(&lock);
 
   }
+  // write last entry of Barcode index
+  std::ofstream file_bci;
+  file_bci.open(options.read_index_name , std::ios::app/*, std::ios::binary*/);
+  file_bci << "ZZZZZZZZZZZZZZZZ\t" << readfile1_size << "\t" << readfile2_size;
+  file_bci.close();
 
   // write histigram to file
   std::ofstream file_histogram;
