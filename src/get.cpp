@@ -189,7 +189,7 @@ int get(int argc, char const ** argv){
 
 void returnReads(std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos>> & BCI, std::set<std::string> & barcodes, std::ifstream & file1, std::ifstream & file2, std::string & results1, std::string & results2){
 
-  for (std::set<std::string>::iterator itrbc = barcodes.begin(); itrbc<barcodes.end(); itrbc++){
+  for (std::set<std::string>::iterator itrbc = barcodes.begin(); itrbc!=barcodes.end(); itrbc++){
     // std::cerr << *itrbc << "\n";
     std::vector<std::string>::iterator itrpos = std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
     if (itrpos!=BCI_BC.end()){
