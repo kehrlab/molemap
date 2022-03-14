@@ -27,7 +27,7 @@ CXXFLAGS += -DDATE=\""$(DATE)"\" -DVERSION=\""$(VERSION)"\"
 # RELEASE build
 # CXXFLAGS += -O3 -DSEQAN_ENABLE_TESTING=0 -DSEQAN_ENABLE_DEBUG=0
 
-LDLIBS = -lrt -lpthread -fopenmp
+LDLIBS = -lrt -lpthread -fopenmp -fPIE
 
 all: $(TARGET)
 
