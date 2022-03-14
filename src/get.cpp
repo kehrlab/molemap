@@ -89,7 +89,7 @@ int get(int argc, char const ** argv){
   std::ifstream file2;
   file2.open(options.readfile2);
 
-  std::vector<std::string> barcodes;
+  std::set<std::string> barcodes;
   std::string barcode;
 
 
@@ -103,7 +103,7 @@ int get(int argc, char const ** argv){
   if(file_bc.is_open()){      // if barcodes provided as file: read bacodes from file
     while(getline(file_bc, barcode)){
       if (barcode!=""){
-        barcodes.push_back(barcode);
+        barcodes.insert(barcode);
       }
     }
     file_bc.close();
@@ -111,11 +111,11 @@ int get(int argc, char const ** argv){
     std::size_t pos_s = 0;
     std::size_t pos = options.barcodes.find(",");
     while (pos!=std::string::npos/*<options.barcodes.end()*/){
-      barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
+      barcodes.insert(options.barcodes.substr(pos_s,pos-pos_s));
       pos_s=pos+1;
       pos=options.barcodes.find(",",pos_s);
     }
-    barcodes.push_back(options.barcodes.substr(pos_s,pos-pos_s));
+    barcodes.insert(options.barcodes.substr(pos_s,pos-pos_s));
   }
 
   double end = omp_get_wtime();
@@ -189,7 +189,7 @@ int get(int argc, char const ** argv){
 
 void returnReads(std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos>> & BCI, std::vector<std::string> & barcodes, std::ifstream & file1, std::ifstream & file2, std::string & results1, std::string & results2){
 
-  for (std::vector<std::string>::iterator itrbc = barcodes.begin(); itrbc<barcodes.end(); itrbc++){
+  for (std::set<std::string>::iterator itrbc = barcodes.begin(); itrbc<barcodes.end(); itrbc++){
     // std::cerr << *itrbc << "\n";
     std::vector<std::string>::iterator itrpos = std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
     if (itrpos!=BCI_BC.end()){
