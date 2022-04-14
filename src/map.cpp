@@ -3,130 +3,22 @@
 # include <seqan/arg_parse.h>
 # include <iostream>
 # include <fstream>
-# include "functions.h"
-# include "map.h"
 # include <time.h>
+# include "map.h"
+# include "parser.h"
+# include "functions.h"
+# include "coverage_analysis.h"
 using namespace seqan;
 
 /*
 g++ BarcodeMapper.cpp -o bcmap
 */
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram);
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::vector<result_t> & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram);
 uint_fast8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_size);
-bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos);
+bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos, CharString (*getIdFunction)(std::string));
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1, uint_fast8_t barcode_length);
 void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode, uint_fast8_t barcode_length);
 void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate, std::vector<float> & lookQual);
-
-struct bcmapOptions{
-  std::string readfile1;
-  std::string readfile2;
-  std::string kmer_index_name;
-  std::string read_index_name;
-  unsigned k;
-  unsigned mini_window_size;
-  unsigned max_window_size;
-  unsigned max_gap_size;
-  std::string output_file;
-  unsigned s;
-  unsigned l;
-  unsigned threads;
-  bcmapOptions() :
-  kmer_index_name("Index"), read_index_name("ReadIndex"), k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16)
-  {}
-  };
-
-seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
-    // Setup ArgumentParser.
-    seqan::ArgumentParser parser("bcmap map");
-
-    // Define arguments.
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1.fastq"));
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2.fastq"));
-    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[IN]"));
-    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index_name[OUT]"));
-
-    // Define Options
-    addOption(parser, seqan::ArgParseOption(
-        "i", "kmer_index_name", "Name of the folder in which the kmer index is stored.",
-        seqan::ArgParseArgument::STRING, "kmer_index_name[IN]"));
-    setDefaultValue(parser, "i", "Index");
-    addOption(parser, seqan::ArgParseOption(
-        "r", "Read_index_name", "Name of the ReadIndex.",
-        seqan::ArgParseArgument::STRING, "Index_name[IN]"));
-    setDefaultValue(parser, "r", "ReadIndex");
-    addOption(parser, seqan::ArgParseOption(
-        "k", "kmer_length", "Length of kmers in index.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "k", "31");
-    setMinValue(parser, "k", "8");
-    setMaxValue(parser, "k", "31");
-    addOption(parser, seqan::ArgParseOption(
-        "m", "mini_window_size", "Length of minimizing window.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "m", "61");
-    addOption(parser, seqan::ArgParseOption(
-        "w", "max_window_size", "Maximum length of genomic windows.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "w", "300000");
-    addOption(parser, seqan::ArgParseOption(
-        "g", "max_gap_size", "Maximum gap between minimizer hits of same genomic window.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "g", "20000");
-    addOption(parser, seqan::ArgParseOption(
-        "o", "output", "Path to the output file.",
-        seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
-    setDefaultValue(parser, "o", "barcode_windows.bed");
-    addOption(parser, seqan::ArgParseOption(
-        "s", "score_threshold", "Minimum score threshold for genomic windows.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "s", "0");
-    addOption(parser, seqan::ArgParseOption(
-        "l", "length", "Length threshold for genomic windows.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "l", "10000");
-    setMinValue(parser, "l", "5000");
-    addOption(parser, seqan::ArgParseOption(
-        "t", "threads", "Number of threads available.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "t", "16");
-
-    seqan::addUsageLine(parser,"readfile.1.fq readfile.2.fq [OPTIONS]");
-    setShortDescription(parser, "Map barcodes to reference.");
-    setVersion(parser, VERSION);
-    setDate(parser, DATE);
-    addDescription(parser,
-               "Barcodes will be mapped to reference genome. "
-               "Returns genomic windows from which barcoded reads most likely originate. "
-               "Each window is rated by a quality score. "
-               "Requires readfiles to be sorted by barcode (use bcctools). "
-               "Requires reference to be indexed using the 'map' command. ");
-    // Parse command line.
-    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
-
-    // Only extract  options if the program will continue after parseCommandLine()
-    if (res != seqan::ArgumentParser::PARSE_OK){
-        return res;}
-
-    // Extract argument and option values.
-    getArgumentValue(options.readfile1, parser, 0);
-    getArgumentValue(options.readfile2, parser, 1);
-    // getArgumentValue(options.index_name, parser, 2);
-    // getArgumentValue(options.bci_name, parser, 3);
-
-    getOptionValue(options.kmer_index_name, parser, "i");
-    getOptionValue(options.read_index_name, parser, "r");
-    getOptionValue(options.k, parser, "k");
-    getOptionValue(options.mini_window_size, parser, "m");
-    getOptionValue(options.max_window_size, parser, "w");
-    getOptionValue(options.max_gap_size, parser, "g");
-    getOptionValue(options.output_file, parser, "o");
-    getOptionValue(options.s, parser, "s");
-    getOptionValue(options.l, parser, "l");
-    getOptionValue(options.threads, parser, "t");
-
-    return seqan::ArgumentParser::PARSE_OK;
-}
 
 int map(int argc, char const ** argv){
 
@@ -134,42 +26,39 @@ int map(int argc, char const ** argv){
   bcmapOptions options;
   seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
   if (res != seqan::ArgumentParser::PARSE_OK)
-      return res == seqan::ArgumentParser::PARSE_ERROR;
-  std::cout <<'\n'
-            << "readfile1        \t" << options.readfile1 << '\n'
-            << "readfile2        \t" << options.readfile2 << '\n'
-            << "kmer_index_name  \t" << options.kmer_index_name << '\n'
-            << "output file      \t" << options.output_file << '\n'
-            << "read_index_name  \t" << options.read_index_name << '\n'
-            << "threads          \t" << options.threads << '\n'
-            << "score threshold  \t" << options.s << '\n'
-            << "k                \t" << options.k << '\n'
-            << "minimizer window \t" << options.mini_window_size << '\n'
-            << "max window size  \t" << options.max_window_size << '\n'
-            << "max gap size     \t" << options.max_gap_size << '\n'
-            << "length threshold \t" << options.l << '\n';
+      return res;
+  printParseResults(options);
 
+  // define k
   uint_fast8_t k = options.k;
-
   int k_2;
   if (k>16){
     k_2=(k-15)*2;
   }else{
     k_2=0;
   }
-  // int k_2 = k+1;
-
-  uint_fast8_t mini_window_size = options.mini_window_size;
 
   // defining Parameters
 
+  uint_fast8_t mini_window_size = options.mini_window_size;
   uint_fast32_t max_window_size=options.max_window_size; //200000;  //5000;   // maximum size of the genomic windows to wich the reads are matched
   uint_fast32_t max_gap_size=options.max_gap_size; //20000;     // maximum gap size between two adjacent k_mer hits
   uint_fast8_t window_count=50;   // amount of saved candidate windows
 
-  //checking file size and barcode size
+  //checking file size, barcode size and readInPairSyntax (is there /1 and /2 present)
   SeqFileIn file1(toCString(options.readfile1));
   SeqFileIn file2(toCString(options.readfile2));
+
+  CharString (*getIdFunction)(std::string); // function pointer
+  {
+    std::string line;
+    getline(file1.stream.file, line, ' ');
+    if (line.substr(line.size()-2,line.size()) == "/1" || line.substr(line.size()-2,line.size()) == "/2"){
+      getIdFunction = &getPairedID;
+    }else{
+      getIdFunction = &getID;
+    }
+  }
   file1.stream.file.seekg(0, std::ios::end);
   file2.stream.file.seekg(0, std::ios::end);
   std::streampos readfile1_size=file1.stream.file.tellg();
@@ -293,11 +182,14 @@ int map(int argc, char const ** argv){
 
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   omp_lock_t lock;
+  omp_lock_t reslock;
   omp_init_lock(&lock);
+  omp_init_lock(&reslock);
 
   std::cerr << "Processing read file...";
 
   std::vector<uint32_t> histogram(200,0);
+  std::vector<result_t> globalresults;
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
@@ -311,7 +203,8 @@ int map(int argc, char const ** argv){
     CharString id2;
     std::string barcode;
     std::string new_barcode;
-    std::string results;
+    std::vector<result_t> results;
+    // std::string results;
     std::streampos pos_temp;
     std::streampos BCI_1s;
     std::streampos BCI_2s;
@@ -364,10 +257,10 @@ int map(int argc, char const ** argv){
         endpos2=readfile2_size;
       }
       while(true){
-        if(SearchID(file2, getID(toCString(id1)),startpos1, endpos1)){
+        if(SearchID(file2, getIdFunction(toCString(id1)),startpos1, endpos1, getIdFunction)){
           break;
         }
-        if(SearchID(file2, getID(toCString(id1)),startpos2, endpos2)){
+        if(SearchID(file2, getIdFunction(toCString(id1)),startpos2, endpos2, getIdFunction)){
           break;
         }
         endpos1=startpos1;
@@ -406,15 +299,15 @@ int map(int argc, char const ** argv){
         if (!kmer_list.empty()) {
           std::sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.s, options.l, results, lookChrom, histogram_local);
-          // std::cerr << "thread: " << t << "line:  "<<  __LINE__ << "\n";
-
           kmer_list.clear();
-          if (results.size()>100000) {
+          if (options.Sort==0 && results.size()>1000) {
             if (omp_test_lock(&lock)){
               std::fstream output;
               output.open(options.output_file,std::ios::out | std::ios::app);
-              output << results;
-              results="";
+              for (std::vector<result_t>::iterator itr_res=results.begin(); itr_res < results.end(); itr_res++){
+                output << (*itr_res).string();
+              }
+              results.clear();
               output.close();
               omp_unset_lock(&lock);
             }
@@ -476,17 +369,45 @@ int map(int argc, char const ** argv){
       }
     }
 
+    std::fstream output;
 
+    if (options.Sort==0){ // write final output to file
+      omp_set_lock(&lock);
+      output.open(options.output_file,std::ios::out | std::ios::app);
+      for (std::vector<result_t>::iterator itr_res=results.begin(); itr_res < results.end(); itr_res++){
+        output << (*itr_res).string();
+      }
+      output.close();
+      omp_unset_lock(&lock);
 
+    }else{ // sort output and then merge into global output
+      sortResults(results);
+      omp_set_lock(&reslock);
+      uint64_t middle = globalresults.size();
+      globalresults.insert(globalresults.end(),results.begin(),results.end());
+      std::inplace_merge(globalresults.begin(), globalresults.begin()+middle, globalresults.end(), compFunctionResult);
+      omp_unset_lock(&reslock);
+    }
+    results.clear();
+
+  } // parallel loop
+
+  if(options.CoverageAnalysis==1){ // perform coverage analysis
+    coverageAnalysis(globalresults, histogram, options);
+    // std::cerr << "TODOT!!!\n";
+  }
+
+  if(options.Sort==1){ // write global results to file
     omp_set_lock(&lock);
     std::fstream output;
     output.open(options.output_file,std::ios::out | std::ios::app);
-    output << results;
-    results="";
+    for (std::vector<result_t>::iterator itr_res=globalresults.begin(); itr_res < globalresults.end(); itr_res++){
+      output << (*itr_res).string();
+    }
     output.close();
     omp_unset_lock(&lock);
-
   }
+
   // write last entry of Barcode index
   std::ofstream file_bci;
   file_bci.open(options.read_index_name , std::ios::app/*, std::ios::binary*/);
@@ -509,7 +430,7 @@ int map(int argc, char const ** argv){
 } //map(argc,argv)
 
 // maps k-mer list to reference genome and returns best fitting genomic windows
-void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::string & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram){
+void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, uint_fast32_t & max_window_size, uint_fast32_t & max_gap_size, uint_fast8_t & window_count, const char* file, std::string barcode, unsigned scoreThreshold, unsigned lengthThreshold, std::vector<result_t> & results, std::vector<std::string> & lookChrom, std::vector<uint32_t> & histogram){
   unsigned qualityThreshold=50;
   std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk;
 
@@ -620,10 +541,13 @@ void MapKmerList(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
       histogram[qual]++;
     }
     if(qual>=scoreThreshold){
-      std::string ref=lookChrom[std::get<1>(*itrbw)];
-      std::string start=std::to_string(std::get<2>(*itrbw));
-      std::string end=std::to_string(std::get<3>(*itrbw));
-      results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + std::to_string((int)qual) + "\n");
+      // result_t result(lookChrom[std::get<1>(*itrbw)], std::get<2>(*itrbw), std::get<3>(*itrbw), barcode ,qual);
+      results.push_back({lookChrom[std::get<1>(*itrbw)], std::get<2>(*itrbw), std::get<3>(*itrbw), barcode ,(uint16_t)qual});
+      // results.push_back(result);
+      // std::string ref=lookChrom[std::get<1>(*itrbw)];
+      // std::string start=std::to_string(std::get<2>(*itrbw));
+      // std::string end=std::to_string(std::get<3>(*itrbw));
+      // results+=(ref + "\t"+ start + "\t" + end + "\t" + barcode + "\t" + std::to_string((int)qual) + "\n");
     }
   }
   return;
@@ -695,7 +619,7 @@ void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barc
 }
 
 // searches for id in readfile and returns read and sets fileposition accordingly
-bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos){
+bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::streampos endpos, CharString (*getIdFunction)(std::string)){
   CharString new_id;
   Dna5String read;
   std::string line;
@@ -711,7 +635,7 @@ bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::str
     }
     pos=file.stream.file.tellg();
     readRecord(new_id,read,file);
-    new_id=getID(toCString(new_id));
+    new_id=getIdFunction(toCString(new_id));
   }
   file.stream.file.seekg(pos);
   return true;

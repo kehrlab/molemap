@@ -6,30 +6,45 @@
 
 using namespace seqan;
 
+bool compFunctionResult(result_t left, result_t right){
+  if(left.chrom < right.chrom){return 1;}
+  if(left.chrom > right.chrom){return 0;}
+  if(left.start < right.start){return 1;}
+  if(left.start > right.start){return 0;}
+  if(left.end < right.end){return 1;}
+  return 0;
+}
+
+void sortResults(std::vector<result_t> & results){
+  std::sort(results.begin(), results.end(), compFunctionResult);
+  return;
+}
+
+
 //retreive the barcode from 10x linked reads
 std::string getBarcode(std::string id1, uint_fast8_t barcode_length){
   std::size_t pos=id1.find(" ");
   std::string new_barcode;
   if(pos<1000){
-    // std::cerr << "id1: " << id1 << "\n";
     id1=id1.substr(id1.find(" "),10000);
     new_barcode=id1.substr(id1.find("BX:Z:")+5,barcode_length);
-    // std::cerr << "id1: " << id1 << "\n";
-    // std::cerr << "new_barcode" << new_barcode << "\n";
   }else{
-    // std::cerr << "ID1: " << id1 << "\t";
-    // std::cerr << "hithere\n";
     new_barcode="BAD_BARCODE_____";
   }
   return new_barcode;
 }
 
-CharString getID(std::string id){
-  // std::cerr << "id: " << id << "\n";
-  id=id.substr(0, id.find(" "));
-  // std::cerr << "id: " << id << "\n\n";
+CharString getPairedID(std::string id){
+  id=id.substr(0, id.find_first_of(" \t\n"));
+  id=id.substr(0, id.size()-2);
   return id;
 }
+
+CharString getID(std::string id){
+  id=id.substr(0, id.find(" "));
+  return id;
+}
+
 // Loads BarcodeIndex from file into string
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions){
   //construct file names
@@ -183,7 +198,7 @@ uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast3
     i=(i^(hash>>((d*16)%31)));
     i=(i+2*d+1)%(int64_t)bucket_number;
   }
-  std::cerr << "ERROR: no free bucket found after 1000 tries. Pls increase bucket_number.\n";
+  std::cerr << "ERROR: no free bucket found after 1000 tries. Please increase bucket_number.\n";
   return i;
 }
 

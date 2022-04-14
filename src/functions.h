@@ -6,7 +6,31 @@
 # include <iostream>
 using namespace seqan;
 
+struct result_t{
+  std::string chrom;
+  uint32_t start;
+  uint32_t end;
+  std::string barcode;
+  uint16_t quality;
+
+  // result_t(std::string chromi, uint32_t starti, uint32_t endi, std::string barcodei, float qualityi){
+  //   chrom=chromi;
+  //   start=starti;
+  //   end=endi;
+  //   barcode=barcodei;
+  //   quality=qualityi;
+  // }
+
+  std::string string(){
+    return chrom+"\t"+std::to_string(start)+"\t"+std::to_string(end)+"\t"+barcode+"\t"+std::to_string(quality)+"\n";
+  }
+};
+
+bool compFunctionResult(result_t left, result_t right);
+void sortResults(std::vector<result_t> & results);
+
 std::string getBarcode(std::string id1, uint_fast8_t barcode_length);
+CharString getPairedID(std::string id);
 CharString getID(std::string id);
 std::vector<Dna5String> GetReads(std::pair<std::streampos,std::streampos> & BCI_positions, std::streampos endpos, const char* readfile1, const char* readfile2);
 void LoadBarcodeIndex(std::string & Index_name, std::vector<std::string> & BCI_barcodes, std::vector<std::pair<std::streampos,std::streampos>> & BCI_positions);
