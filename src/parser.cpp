@@ -64,7 +64,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     addOption(parser, seqan::ArgParseOption(
         "S", "sort", "Sort barcode mappings by position"));
     addOption(parser, seqan::ArgParseOption(
-        "C", "coverage_analysis", "Perform coverage analysis to filter output. (Acitvates sorting by position)"));
+        "C", "coverage_analysis", "Perform coverage analysis to filter output. Only recommended for WGS data with decent coverage. (Acitvates sorting by position)"));
 
     seqan::addUsageLine(parser,"readfile.1.fq readfile.2.fq [OPTIONS]");
     setShortDescription(parser, "Map barcodes to reference.");
