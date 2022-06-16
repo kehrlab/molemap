@@ -12,7 +12,7 @@ Maps barcodes to a reference genome and returns genomic windows from which the b
 # Data requirements
 - paired-end Linked-reads
 - Barcodes are stored in BX:Z: flag of read Ids
-- Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools)(only for 10x genomics linked-reads)or [samtools](https://github.com/samtools/samtools))
+- Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools) (only for 10x genomics linked-reads) or [samtools](https://github.com/samtools/samtools))
 
 To trimm, correct and sort barcodes with bcctools use the following command in the bcctools folder:
 
