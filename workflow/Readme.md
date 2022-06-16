@@ -1,5 +1,5 @@
 # A workflow to extract reads from a region of interest
-This snakemake workflow chains bcmap commands and unix commands to extract all reads from user defined regions of interest 
+This snakemake workflow chains bcmap commands and unix commands to extract all reads from user defined regions of interest. 
 
 ## Prerequisites
 Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
@@ -12,7 +12,7 @@ Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
 - A reference genome in fasta or fastq format
 
 ## Usage
-Update setup.yml to define your input files and name your output files.
+Update set_up.yml to define your input files and name your output files.
 
 Run the workflow specifying the available number of cpus:
-    - snakemake --cores {#cpus}
+    snakemake --cores {#cpus}
