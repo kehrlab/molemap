@@ -3,6 +3,7 @@ This snakemake workflow chains bcmap commands and unix commands to extract all r
 
 ## Prerequisites
 bcmap installed
+
 Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
 
 ## Data requirements
