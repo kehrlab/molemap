@@ -2,8 +2,7 @@
 This snakemake workflow chains bcmap commands and unix commands to extract all reads from user defined regions of interest. 
 
 ## Prerequisites
-bcmap installed
-
+bcmap installed\
 Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
 
 ## Data requirements
