@@ -25,6 +25,7 @@ rule index:
         index_name = directory(config["index_name"])
     params:
         index_name = config["index_name"]
+    threads: 16
     shell:
         "./bcmap index {input.reference} -o {params.index_name}"
 
