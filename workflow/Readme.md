@@ -15,4 +15,5 @@ Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
 Update set_up.yml to define your input files and name your output files.
 
 Run the workflow specifying the available number of cpus:
+
     snakemake --cores {#cpus}
