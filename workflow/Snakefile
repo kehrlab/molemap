@@ -1,0 +1,66 @@
+configfile: "./set_up.yml"
+
+def all_input():
+    return [config["output"]+".1.fq", config["output"]+".2.fq"]
+
+def index_output():
+    return [config["index_name"]+"/C.txt", config["index_name"]+"/dir.txt", config["index_name"]+"/fai.txt", config["index_name"]+"/pos.txt", config["index_name"]+"/ref.txt"]
+
+def getBarcodes():
+    conditions = ""
+    for region in config["regions"]:
+        r = config["regions"][region].split()
+        conditions += "($1 == \"" + r[0] + "\" && int($2)<= " + r[2] + " && int($3)>= " + r[1] +") || "
+    return conditions[:-3]
+
+rule all:
+    input:
+        all_input()
+
+rule index:
+    input:
+        reference = config["reference"]
+    output:
+        index_output(),
+        index_name = directory(config["index_name"])
+    params:
+        index_name = config["index_name"]
+    shell:
+        "./bcmap index {input.reference} -o {params.index_name}"
+
+rule map:
+    input:
+        readfile1 = config["readfile1"],
+        readfile2 = config["readfile2"],
+        index = config["index_name"],
+        index_files = index_output()
+    output:
+        barcode_index = config["barcode_index"],
+        readfile_index = config["readfile_index"]
+    threads: 32
+    shell:
+        "./bcmap map {input.readfile1} {input.readfile2} -i {input.index} -o {output.barcode_index} -r {output.readfile_index} -t {threads}"
+
+rule get_barcodes:
+    input:
+        barcode_index = config["barcode_index"]
+    output:
+        "barcodes.txt"
+    params:
+        conditions = getBarcodes()
+    shell:
+        """awk '{{if({params.conditions}) print($4)}}' {input.barcode_index} > {output}"""
+
+rule get:
+    input:
+        barcode_index = config["barcode_index"],
+        readfile_index = config["readfile_index"],
+        readfile1 = config["readfile1"],
+        readfile2 = config["readfile2"],
+        barcodes = "barcodes.txt"
+    output:
+        all_input()
+    params:
+        output_prefix = config["output"]
+    shell:
+        "./bcmap get {input.readfile1} {input.readfile2} {input.barcodes} -o {params.output_prefix} -r {input.readfile_index}"

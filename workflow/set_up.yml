@@ -1,0 +1,21 @@
+# bcmap index ##########################################
+# A new index is only constructed if the specified index (index_name) does not already exist.
+
+reference: /path/to/ref                     # path to the reference.fa file from which the index shall be constucted. If reference.fa.fai does not exist, writing priviliges to the specified folder are required to constuct it.
+index_name: /path/to/index_name             # path to the open-addressing kmer reference index.
+
+# bcmap map ############################################
+# the specified readfiles have to be barcode trimmed and sorted by barcode. The barcode has to be given in readfile1.fq via the BX:Z: tag.
+
+readfile1: /path/to/readfile1.fq
+readfile2: /path/to/readfile2.fq
+
+readfile_index: /path/to/readfile_index     # path to the readfile index which is required to extract reads from the given fastq files.
+barcode_index: /path/to/barcode_index       # path to the barcode_index which stores the mapping information for all Barcodes.
+
+#bcmap get #############################################
+
+output: path/to/output_prefix               # output prefix for the resulting regional fastq files.
+regions:                                    # list your regions of interest
+  1: chr1 12345 23456
+  2: chr2 34567 45678
