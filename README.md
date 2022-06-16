@@ -1,5 +1,5 @@
 # bcmap
-Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score representing the trustworthines of the mapping. A barcode index is constructed alongside the mapping and can be used to quickly retrieve all reads belonging to a barcode.
+Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score representing the trustworthines of the mapping. A barcode index is constructed alongside the mapping and can be used to quickly retrieve all reads belonging to a barcode. For ease of use we provide a snakemake [workflow](https://github.com/kehrlab/bcmap/tree/master/workflow) to extract all reads from user defined regions of interest.
 
 ## Prerequisites
 - gcc version 7.2.0
