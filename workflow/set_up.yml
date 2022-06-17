@@ -1,21 +1,22 @@
-# bcmap index ##########################################
-# A new index is only constructed if the specified index (index_name) does not already exist.
+# input ##########################################
 
 reference: /path/to/ref                     # path to the reference.fa file from which the index shall be constucted. If reference.fa.fai does not exist, writing priviliges to the specified folder are required to constuct it.
-index_name: index_name                      # path to the bcmap reference index that will be constucted or reused if it allready exists.
-
-# bcmap map ############################################
-# the specified readfiles have to be barcode trimmed and sorted by barcode. The barcode has to be given in readfile1.fq via the BX:Z: tag.
-
 readfile1: /path/to/readfile1.fq
 readfile2: /path/to/readfile2.fq
+# the specified readfiles have to be barcode trimmed and sorted by barcode. The barcode has to be given in readfile1.fq via the BX:Z: tag. 
 
-readfile_index: readfile_index              # path to the readfile index which is required to extract reads from the given fastq files.
-barcode_index: barcode_index                # path to the barcode_index which stores the mapping information for all Barcodes.
-
-#bcmap get #############################################
+# output ############################################
 
 output: output_prefix                       # output prefix for the resulting regional fastq files.
 regions:                                    # list your regions of interest
   1: chr1 12345 23456
   2: chr2 34567 45678
+
+# internal #############################################
+
+index_name: index_name                      # path to the bcmap reference index that will be constucted or reused if it allready exists.
+# A new index is only constructed if the specified index (index_name) does not already exist.
+readfile_index: readfile_index              # path to the readfile index which is required to extract reads from the given fastq files.
+barcode_index: barcode_index                # path to the barcode_index which stores the mapping information for all Barcodes.
+
+
