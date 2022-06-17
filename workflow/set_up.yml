@@ -7,7 +7,7 @@ readfile2: /path/to/readfile2.fq
 
 # output ############################################
 
-output: output_prefix                       # output prefix for the resulting regional fastq files.
+output: output_prefix                       # output prefix for the resulting regional fastq files. ( -> output_prefix.1.fq and outputprefix.2.fq)
 regions:                                    # list your regions of interest
   1: chr1 12345 23456
   2: chr2 34567 45678
@@ -18,5 +18,3 @@ index_name: index_name                      # path to the bcmap reference index 
 # A new index is only constructed if the specified index (index_name) does not already exist.
 readfile_index: readfile_index              # path to the readfile index which is required to extract reads from the given fastq files.
 barcode_index: barcode_index                # path to the barcode_index which stores the mapping information for all Barcodes.
-
-
