@@ -51,12 +51,12 @@ Output: [assembly_k121.unitigs.bifrost.fa] The unitigs of the simplified de Brui
 ## Assembly validation.
 
 ![plot](./766bp-NRS.png)
-Alignment of the unitigs from the local assembly to the HG38 reference using the UCSC web application of BLAT \cite{kent_blatblast-like_2002
+Alignment of the unitigs from the local assembly to the HG38 reference using the UCSC web application of [BLAT](https://genome.cshlp.org/content/12/4/656.full).
 
 ## Sequence validation of the non-reference sequence variant.
 Local sequence alignment of the continuous subsequence of unitig 264 that does not align to the reference genome and the insertion sequence at breakpoint chr17:17,831,079 reported in the GIAB callset.
 The two sequences, both of 766 bp length, align with 100\% identity and similarity. 
-The alignment was computed using the EMBOSS Water web application \thomas{https://academic.oup.com/nar/article/47/W1/W636/5446251} of the Smith-Waterman algorithm for local sequence alignment.
+The alignment was computed using the [EMBOSS Water web application](https://academic.oup.com/nar/article/47/W1/W636/5446251) of the Smith-Waterman algorithm for local sequence alignment.
 
     ########################################
     # Program: water
