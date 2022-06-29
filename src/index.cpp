@@ -100,12 +100,12 @@ int index(int argc, char const **argv){
 // reading the FastQ file
 
   StringSet<CharString> ids;
-  StringSet<Dna5String> seqs;
+  StringSet<IupacString> seqsIn;
   std::cerr << "Loading reference genome...";
   try {
     SeqFileIn file(toCString(options.reference_file));
 
-    readRecords(ids, seqs, file);
+    readRecords(ids, seqsIn, file);
 
     close(file);
   }
@@ -115,6 +115,10 @@ int index(int argc, char const **argv){
   catch (IOError const & e){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
+ 
+  StringSet<Dna5String> seqs;
+  seqs=seqsIn;
+  clear(seqsIn);
 
   std::cerr << "..done.\n";
 
