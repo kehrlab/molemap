@@ -49,7 +49,7 @@ bool NInKmer(Dna5String kmer, int64_t & position);
 
 class minimizer{
   public:
-    uint64_t value;
+    int64_t value;
     uint_fast8_t active_bases;
     int64_t position;
 };
@@ -81,7 +81,7 @@ class minimizedSequence{
       while(NInKmer(kmer,position)){
         kmer=infix(sequence,position,position+m);
       }
-      hash=hashkMer(infix(sequence,position,position+k),k);
+      // hash=hashkMer(infix(sequence,position,position+k),k);
       new_minimizer.position=position;
       new_minimizer.value=InitMini(kmer, k, hash, maxhash, random_seed, new_minimizer.position);
       new_minimizer.active_bases=1;

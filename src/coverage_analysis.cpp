@@ -238,7 +238,7 @@ int parseScoreThreshold(uint32_t trustworthyScore, std::vector<uint32_t> hist){
   }
 }
 
-void coverageAnalysis(std::vector<result_t> & barcodeMappings, std::vector<uint32_t> & histogram, bcmapOptions & options){
+void coverageAnalysis(std::vector<result_t> & barcodeMappings, std::vector<uint32_t> & histogram, mapOptions & options){
   uint32_t trustworthyScore = parseScoreThreshold(options.s, histogram);
   std::vector<uint16_t> scoreThresholds = getScoreThresholds(trustworthyScore);
 

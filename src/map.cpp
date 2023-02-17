@@ -19,15 +19,16 @@ bool SearchID(SeqFileIn & file, CharString id, std::streampos startpos, std::str
 std::string skipToNextBarcode(SeqFileIn & file, CharString & id1, uint_fast8_t barcode_length);
 void skipToNextBarcode2(SeqFileIn & file1, SeqFileIn & file2, std::string & barcode, uint_fast8_t barcode_length);
 void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate, std::vector<float> & lookQual);
+void writeLastReadFileIndexEntrys(std::streampos & readfile1_size, std::streampos & readfile2_size, mapOptions & options);
 
 int map(int argc, char const ** argv){
 
   // parsing command line arguments
-  bcmapOptions options;
-  seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
+  mapOptions options;
+  seqan::ArgumentParser::ParseResult res = parseCommandLine_map(options, argc, argv);
   if (res != seqan::ArgumentParser::PARSE_OK)
       return res;
-  printParseResults(options);
+  printParseResults_map(options);
 
   // define k
   uint_fast8_t k = options.k;
@@ -70,6 +71,11 @@ int map(int argc, char const ** argv){
     return 0;
   }
 
+  // create folder for readfile index
+  if (mkdir(toCString(options.read_index_name), 0777) == -1){
+    // std::cerr << "\n\nWarning for readfileIndex target:  " << strerror(errno) << ". \t The existing Index will be overwriten\n";
+    // return 1;
+  }
 
   // reading the Index
   std::cerr << "Reading in the k-mer index";
@@ -93,7 +99,7 @@ int map(int argc, char const ** argv){
 
 
   //reading Index files in parallel
-  auto tbegin = std::chrono::high_resolution_clock::now();
+  // auto tbegin = std::chrono::high_resolution_clock::now();
 
   #pragma omp parallel for
   for(int i=0;i<4;i++){
@@ -146,7 +152,7 @@ int map(int argc, char const ** argv){
 
   // std::cerr << " in: " << (float)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-tbegin).count()/1000 << "s\n";
 
-  int64_t maxhash;
+  int64_t maxhash=0;
   for (uint_fast8_t i=0;i<k;i++){
     maxhash= maxhash << 2 | 3;
   }
@@ -175,7 +181,6 @@ int map(int argc, char const ** argv){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
   }
 
-
   /*
   Searching for all kmers of reads with the same Barcode
   */
@@ -193,6 +198,7 @@ int map(int argc, char const ** argv){
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
+    // std::cerr << t << "\t" << __LINE__ << "\n";
     //declare variables
     std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
     StringSet<Dna5String> reads;
@@ -218,6 +224,8 @@ int map(int argc, char const ** argv){
     std::streampos startpos=readfile1_size/options.threads*t;
     std::streampos endpos=readfile1_size/options.threads*(t+1);
 
+    // std::cerr << t << "\t" << __LINE__ << "\n";
+
     //move file 1 to start position
     if (t!=0){
       std::string line;
@@ -239,6 +247,8 @@ int map(int argc, char const ** argv){
       barcode=getBarcode(toCString(id1),barcode_length);
       file1.stream.file.seekg(0);
     }
+
+    // std::cerr << t << "\t" << __LINE__ << "\n";
 
     //align file2 with file1
     if (t!=0){
@@ -270,6 +280,8 @@ int map(int argc, char const ** argv){
       }
     }
 
+    // std::cerr << t << "\t" << __LINE__ << "\n";
+
     // skip to first valid barcode
     while (barcode[0]=='*' && !atEnd(file1)) {
       skipToNextBarcode2(file1,file2,barcode,barcode_length);
@@ -282,6 +294,8 @@ int map(int argc, char const ** argv){
     if (file1.stream.file.tellg()>endpos){
       continue;
     }
+
+    // std::cerr << t << "\t" << __LINE__ << "\n";
 
     //proceed through readfile untill endpos
     while (!atEnd(file1)) { // proceeding through files
@@ -300,7 +314,7 @@ int map(int argc, char const ** argv){
           std::sort(kmer_list.begin(),kmer_list.end());
           MapKmerList(kmer_list,max_window_size,max_gap_size,window_count,toCString(options.output_file),barcode, options.s, options.l, results, lookChrom, histogram_local);
           kmer_list.clear();
-          if (options.Sort==0 && results.size()>1000) {
+          if (options.Sort==0 && results.size()>1000){
             if (omp_test_lock(&lock)){
               std::fstream output;
               output.open(options.output_file,std::ios::out | std::ios::app);
@@ -343,6 +357,9 @@ int map(int argc, char const ** argv){
       }
 
     }
+
+    // std::cerr << t << "\t" << __LINE__ << "\n";
+
     if (!kmer_list.empty()) { // only ever happens for the last thread on the last barcode
       // BCI_local.push_back(std::make_tuple(barcode, BCI_1s, readfile1_size, BCI_2s, readfile2_size));
       std::sort(kmer_list.begin(),kmer_list.end());
@@ -352,18 +369,29 @@ int map(int argc, char const ** argv){
     close(file1);
     close(file2);
 
-    // writing Barcode index to file and summing up local histograms
+    // writing readfile index to files and summing up local histograms
     #pragma omp ordered
     {
+      std::string readindex_file_id;
+      readindex_file_id = (std::get<0>(BCI_local[0])).substr(0,2); // the first 2 characters of a barcode determine in which readindex file it is saved
+
       std::ofstream file_bci;
-      file_bci.open(options.read_index_name , std::ios::app/*, std::ios::binary*/);
+      file_bci.open(options.read_index_name + "/" + readindex_file_id , std::ios::app);
+
       for (int i=0; i<BCI_local.size(); i++){
+        if(readindex_file_id != (std::get<0>(BCI_local[i])).substr(0,2)){
+          readindex_file_id = (std::get<0>(BCI_local[i])).substr(0,2); // the first 2 characters of a barcode determine in which readindex file it is saved
+          file_bci.close();
+          file_bci.open(options.read_index_name + "/" + readindex_file_id , std::ios::app);
+        }
         file_bci  << std::get<0>(BCI_local[i]) << "\t"
                   << std::get<1>(BCI_local[i]) << "\t"
                   << std::get<2>(BCI_local[i]) << "\n";
       }
       file_bci.close();
 
+
+      // summing up local histograms
       for (int i=0; i<histogram.size(); i++){
         histogram[i]+=histogram_local[i];
       }
@@ -408,11 +436,8 @@ int map(int argc, char const ** argv){
     omp_unset_lock(&lock);
   }
 
-  // write last entry of Barcode index
-  std::ofstream file_bci;
-  file_bci.open(options.read_index_name , std::ios::app/*, std::ios::binary*/);
-  file_bci << "ZZZZZZZZZZZZZZZZ\t" << readfile1_size << "\t" << readfile2_size;
-  file_bci.close();
+  // write last entrys of readfile index
+  writeLastReadFileIndexEntrys(readfile1_size, readfile2_size, options);
 
   // write histigram to file
   std::ofstream file_histogram;
@@ -684,5 +709,36 @@ void trimmWindow(std::vector<std::tuple<uint_fast8_t,uint32_t,uint32_t,uint32_t>
     counter++;
   }
   candidate=std::make_tuple(window_quality,REF(itrstart),POS(itrstart),POS(itrk));
+  return;
+}
+
+// extract first entrys of readfile index subfiles and append to previous readfile index subfile
+void writeLastReadFileIndexEntrys(std::streampos & readfile1_size, std::streampos & readfile2_size, mapOptions & options){
+  std::ifstream file_bci_in;
+  std::ofstream file_bci_out;
+  std::string line; // store first line of file to append to previous file
+  std::vector<std::string> files{"TG","TC","TA","GT","GG","GC","GA","CT","CG","CC","CA","AT","AG","AC"}; // TT and AA are handeled seperately
+
+  // last entry of last file
+  file_bci_out.open(options.read_index_name + "/TT" , std::ios::app);
+  file_bci_out << "ZZZZZZZZZZZZZZZZ\t" << readfile1_size << "\t" << readfile2_size; // write last line of file TT
+  file_bci_out.close();
+  file_bci_in.open(options.read_index_name + "/TT");
+  std::getline(file_bci_in, line); // extract first line of file TT
+  file_bci_in.close();
+
+  for(std::vector<std::string>::iterator file = files.begin(); file != files.end(); file++){ // iterating over files
+    file_bci_out.open(options.read_index_name + "/" + *file , std::ios::app);
+    file_bci_out << line;
+    file_bci_out.close();
+    file_bci_in.open(options.read_index_name + "/" + *file);
+    std::getline(file_bci_in, line);
+    file_bci_in.close();
+  }
+
+  file_bci_out.open(options.read_index_name + "/AA" , std::ios::app); // write last line of file AA
+  file_bci_out << line;
+  file_bci_out.close();
+
   return;
 }

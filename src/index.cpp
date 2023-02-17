@@ -6,98 +6,34 @@
 # include <time.h>
 # include <fstream>
 # include "functions.h"
+# include "parser.h"
 # include "index.h"
-
-using namespace seqan;
-
-/*
-g++ countKmers.cpp -o countK
-*/
-
-struct countKOptions{
-  std::string reference_file;
-  std::string kmer_index_name;
-  unsigned k;
-  unsigned m;//int64_t bucket_count;
-
-  countKOptions():
-  k(31), m(61)// bucket_count(3221225472)
-  {}
-};
-
-seqan::ArgumentParser::ParseResult parseCommandLine(countKOptions & options, int argc, char const ** argv){
-    // Setup ArgumentParser.
-    seqan::ArgumentParser parser("bcmap index");
-
-    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "reference(.fastq/.fasta)"));
-    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Index_name[OUT]"));
-
-    // Define Options
-    addOption(parser, seqan::ArgParseOption(
-        "o", "kmer_index_name", "Name of the folder in which the kmer index is stored.",
-        seqan::ArgParseArgument::STRING, "kmer_index_name[OUT]"));
-    setDefaultValue(parser, "o", "Index");
-    addOption(parser, seqan::ArgParseOption(
-        "k", "kmer_length", "Length of kmers in index.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "k", "31");
-    setMinValue(parser, "k", "8");
-    setMaxValue(parser, "k", "31");
-    addOption(parser, seqan::ArgParseOption(
-        "m", "minimizer_window", "Length of window a minimizer is chosen from.",
-        seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "m", "61");
-    // addOption(parser, seqan::ArgParseOption(
-    //     "b", "bucket_count", "Number of buckets in index.",
-    //     seqan::ArgParseArgument::INT64, "unsigned"));
-    // setDefaultValue(parser, "b", "3221225472");
-    seqan::addUsageLine(parser,"reference.fq [OPTIONS]");
-    setShortDescription(parser, "Build an index of a reference genome.");
-    setVersion(parser, VERSION);
-    setDate(parser, DATE);
-    addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
-
-    // Parse command line.
-    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
-
-    // Only extract  options if the program will continue after parseCommandLine()
-    if (res != seqan::ArgumentParser::PARSE_OK){
-        return res;}
-
-    // Extract option values.
-    getOptionValue(options.k, parser, "k");
-    getOptionValue(options.m, parser, "m");
-    // getOptionValue(options.bucket_count, parser, "b");
-    getOptionValue(options.kmer_index_name, parser, "o");
-
-    getArgumentValue(options.reference_file, parser, 0);
-
-    return seqan::ArgumentParser::PARSE_OK;
-}
 
 int index(int argc, char const **argv){
 
   // parsing command line arguments
-  countKOptions options;
-  seqan::ArgumentParser::ParseResult res = parseCommandLine(options, argc, argv);
+  indexOptions options;
+  seqan::ArgumentParser::ParseResult res = parseCommandLine_index(options, argc, argv);
 
   if (res != seqan::ArgumentParser::PARSE_OK)
       return res == seqan::ArgumentParser::PARSE_ERROR;
-  std::cout <<'\n'
-            << "reference        \t" << options.reference_file << '\n'
-            << "kmer_index_name  \t" << options.kmer_index_name << '\n'
-            << "k                \t" << options.k << '\n'
-            << "minimizer_window \t" << options.m << "\n\n";
-            // << "bucket_count     \t" << options.bucket_count << "\n\n";
+
+  printParseResults_index(options);
+
+  //define key parameters
 
   uint_fast8_t k = options.k;
-  int k_2 = k+1;
+  int k_2;
+  if (k>16){
+    k_2=(k-15)*2;
+  }else{
+    k_2=0;
+  }
+
   uint_fast8_t m = options.m;
-  // options.bucket_count; // should depend on k and the length of the indexed sequence
 
-  // auto begin = std::chrono::high_resolution_clock::now();
 
-// reading the FastQ file
+  // reading the FastQ file
 
   StringSet<CharString> ids;
   StringSet<IupacString> seqsIn;
@@ -111,14 +47,15 @@ int index(int argc, char const **argv){
   }
   catch (ParseError const & e){
     std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
+    return 0;
   }
   catch (IOError const & e){
     std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
+    return 0;
   }
- 
-  StringSet<Dna5String> seqs;
-  seqs=seqsIn;
-  clear(seqsIn);
+
+  StringSet<Dna5String> seqs=seqsIn; //convert Iupac to Dna5
+  clear(seqsIn); //delete Iupac version
 
   std::cerr << "..done.\n";
 
@@ -145,7 +82,7 @@ int index(int argc, char const **argv){
   }
 
   if (mkdir(toCString(options.kmer_index_name), 0777) == -1){
-    // std::cerr << "Error for index target:  " << strerror(errno) << "\n";
+    std::cerr << "Error for index target:  " << strerror(errno) << "\n";
   }
 
   std::fstream output;
@@ -160,7 +97,7 @@ int index(int argc, char const **argv){
   std::cerr << "...........done.\n";
   std::cerr << "Preparing index...";
 
-  int64_t maxhash;
+  int64_t maxhash=0;
   for (uint_fast8_t i=0;i<k;i++){
     maxhash= maxhash << 2 | 3;
   }
@@ -179,23 +116,19 @@ int index(int argc, char const **argv){
   String<int32_t> C;
   resize(dir,bucket_number+1,0);
   std::cerr << "....";
-  // resize(pos,length(concat(seqs)));
-  // resize(ref,length(concat(seqs)));
   resize(C,bucket_number,-1);
   std::cerr << "....";
 
 
   typedef Iterator<String<uint32_t>>::Type Titrs;
 
-  // uint32_t c;
-
   std::cerr << "...done.\nFilling index initially...";
   // iterating over the stringSet (Chromosomes)
+
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs);
-  // uint_fast8_t CHROM=0;
-  // int laenge=length(seqs);
   uint64_t sum=0;
+
   #pragma omp parallel
   {
     #pragma omp for schedule(dynamic)
@@ -226,7 +159,6 @@ int index(int argc, char const **argv){
 
   resize(pos,sum);
   resize(ref,sum);
-  // uint64_t sum=length(concat(seqs))-k+1;
 
   for (Titrs itrs=end(dir)-1;itrs!=begin(dir)-1;--itrs){
     if (*itrs!=0){   //tracking k-mer abundances
@@ -240,32 +172,25 @@ int index(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
   std::cerr << "Writing positions to index...";
   seqG = begin(seqs);
-  // #pragma omp parallel
-  // {
-    // #pragma omp for schedule(dynamic)
-    for (int j=0; j<(int)length(seqs); j++){
-      uint32_t c;
-      TStringSetIterator seq=seqG+j;
-      uint_fast8_t Chromosome=j;
-      // filling pos
-      minimizer mini;
-      minimizedSequence miniSeq(*seq,k,m,random_seed,maxhash);
-      while(!miniSeq.at_end){
-        mini=miniSeq.pop();
-        c=GetBkt(mini.value^random_seed,C,bucket_number,k_2);     // indexing the hashed k-mers
 
-        // #pragma omp critical
-        // {
-        pos[dir[c+1]]=mini.position;
-        ref[dir[c+1]]=Chromosome;
-        dir[c+1]++;
-        // }
-      }
+  for (int j=0; j<(int)length(seqs); j++){
+    uint32_t c;
+    TStringSetIterator seq=seqG+j;
+    uint_fast8_t Chromosome=j;
+    // filling pos
+    minimizer mini;
+    minimizedSequence miniSeq(*seq,k,m,random_seed,maxhash);
+    while(!miniSeq.at_end){
+      mini=miniSeq.pop();
+      c=GetBkt(mini.value^random_seed,C,bucket_number,k_2);     // indexing the hashed k-mers
+      pos[dir[c+1]]=mini.position;
+      ref[dir[c+1]]=Chromosome;
+      dir[c+1]++;
     }
-  // }
+  }
   std::cerr << "done. \n";
 
-  //write index to file
+  std::cerr << "Writing index to file...";
 
   std::string IndPos=options.kmer_index_name;
   IndPos.append("/pos.txt");
@@ -275,8 +200,6 @@ int index(int argc, char const **argv){
   IndDir.append("/dir.txt");
   std::string IndC=options.kmer_index_name;
   IndC.append("/C.txt");
-
-  std::cerr << "Writing index to file...";
 
   String<uint32_t, External<ExternalConfigLarge<>> > extpos;
   if (!open(extpos, IndPos.c_str(), OPEN_WRONLY | OPEN_CREATE)){

@@ -7,7 +7,60 @@
 # include "parser.h"
 using namespace seqan;
 
-seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int argc, char const ** argv){
+
+seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options, int argc, char const ** argv){
+    // Setup ArgumentParser.
+    seqan::ArgumentParser parser("bcmap index");
+
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "reference(.fastq/.fasta)"));
+
+    // Define Options
+    addOption(parser, seqan::ArgParseOption(
+        "o", "kmer_index_name", "Name of the folder in which the kmer index is stored.",
+        seqan::ArgParseArgument::STRING, "kmer_index_name[OUT]"));
+    setDefaultValue(parser, "o", "Index");
+    addOption(parser, seqan::ArgParseOption(
+        "k", "kmer_length", "Length of kmers in index.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "k", "31");
+    setMinValue(parser, "k", "8");
+    setMaxValue(parser, "k", "31");
+    addOption(parser, seqan::ArgParseOption(
+        "m", "minimizer_window", "Length of window a minimizer is chosen from.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "m", "61");
+    seqan::addUsageLine(parser,"reference.fq [OPTIONS]");
+    setShortDescription(parser, "Build an index of a reference genome.");
+    setVersion(parser, VERSION);
+    setDate(parser, DATE);
+    addDescription(parser,"Builds an open adressing k-mer index for the given reference genome(fastq/fasta).");
+
+    // Parse command line.
+    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
+
+    // Only extract  options if the program will continue after parseCommandLine_index()
+    if (res != seqan::ArgumentParser::PARSE_OK){
+        return res;}
+
+    // Extract option and argument values.
+    getOptionValue(options.k, parser, "k");
+    getOptionValue(options.m, parser, "m");
+    getOptionValue(options.kmer_index_name, parser, "o");
+    getArgumentValue(options.reference_file, parser, 0);
+
+    return seqan::ArgumentParser::PARSE_OK;
+}
+
+void printParseResults_index(indexOptions & options){
+    std::cout <<'\n'
+              << "reference        \t" << options.reference_file << '\n'
+              << "kmer_index_name  \t" << options.kmer_index_name << '\n'
+              << "k                \t" << options.k << '\n'
+              << "minimizer_window \t" << options.m << "\n\n";
+    return;
+}
+
+seqan::ArgumentParser::ParseResult parseCommandLine_map(mapOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("bcmap map");
 
@@ -23,7 +76,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
         seqan::ArgParseArgument::STRING, "kmer_index_name[IN]"));
     setDefaultValue(parser, "i", "Index");
     addOption(parser, seqan::ArgParseOption(
-        "r", "Read_index_name", "Name of the ReadIndex.",
+        "r", "Read_index_name", "Name of the folder in which the ReadIndex is stored.",
         seqan::ArgParseArgument::STRING, "Index_name[IN]"));
     setDefaultValue(parser, "r", "ReadIndex");
     addOption(parser, seqan::ArgParseOption(
@@ -108,7 +161,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine(bcmapOptions & options, int 
     return seqan::ArgumentParser::PARSE_OK;
 }
 
-void printParseResults(bcmapOptions options){
+void printParseResults_map(mapOptions & options){
     std::cout <<'\n'
               << "readfile1         \t" << options.readfile1 << '\n'
               << "readfile2         \t" << options.readfile2 << '\n'
@@ -125,4 +178,60 @@ void printParseResults(bcmapOptions options){
               << "Sort by position  \t" << (options.Sort ? "true" : "false") << '\n'
               << "Coverage Analysis \t" << (options.CoverageAnalysis ? "true" : "false") << '\n';
     return;
+}
+
+seqan::ArgumentParser::ParseResult parseCommandLine_get(getOptions & options, int argc, char const ** argv){
+    // Setup ArgumentParser.
+    seqan::ArgumentParser parser("bcmap get");
+
+    // Define arguments.
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1.fastq"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2.fastq"));
+    // addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcode_index"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::STRING, "Barcodes"));
+
+    addOption(parser, seqan::ArgParseOption(
+        "o", "output", "Prefix of the output files.",
+        seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
+    setDefaultValue(parser, "o", "bcmapGetOut");
+    addOption(parser, seqan::ArgParseOption(
+        "r", "read_index_name", "Name of the folder in which the ReadIndex is stored.",
+        seqan::ArgParseArgument::STRING, "read_index_name[IN]"));
+    setDefaultValue(parser, "r", "ReadIndex");
+
+    seqan::addUsageLine(parser, "readfile.1.fq readfile.2.fq barcodes [OPTIONS]");
+    setShortDescription(parser, "Retreive all reads of a list of barcodes.");
+    setVersion(parser, VERSION);
+    setDate(parser, DATE);
+    addDescription(parser,
+               "Retreives all reads belonging to the given set of barcodes. "
+               "The reads are quickly extracted from the readfiles using a barcode index. "
+               "Barcodes can be provided in a newline seperated textfile or ',' seperated as argument.");
+    // Parse command line.
+    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
+
+    // Only extract  options if the program will continue after parseCommandLine()
+    if (res != seqan::ArgumentParser::PARSE_OK){
+        return res;}
+
+    // Extract argument and option values.
+    getArgumentValue(options.readfile1, parser, 0);
+    getArgumentValue(options.readfile2, parser, 1);
+    // getArgumentValue(options.bci_name, parser, 2);
+    getArgumentValue(options.barcodes, parser, 2);
+
+    getOptionValue(options.read_index_name, parser, "r");
+    getOptionValue(options.output_file, parser, "o");
+
+    return seqan::ArgumentParser::PARSE_OK;
+}
+
+void printParseResults_get(getOptions & options){
+  std::cout <<'\n'
+            << "readfile1        \t" << options.readfile1 << '\n'
+            << "readfile2        \t" << options.readfile2 << '\n'
+            << "read_index_name  \t" << options.read_index_name << '\n'
+            << "barcodes         \t" << options.barcodes << '\n'
+            << "output prefix    \t" << options.output_file << "\n\n";
+  return;
 }

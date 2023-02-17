@@ -6,7 +6,7 @@
 # include "functions.h"
 # include "parser.h"
 
-void coverageAnalysis(std::vector<result_t> & barcodeMappings, std::vector<uint32_t> & histogram, bcmapOptions & options);
+void coverageAnalysis(std::vector<result_t> & barcodeMappings, std::vector<uint32_t> & histogram, mapOptions & options);
 std::map<std::string, std::pair<uint32_t, uint32_t> > getContigPositions(std::vector<result_t> & Barcode_Mappings);
 std::vector<std::vector<uint32_t>> getCoverageProfile(std::vector<result_t> & Barcode_Mappings, std::string contig, std::vector<uint16_t> & scoreThresholds, std::map<std::string, std::pair<uint32_t, uint32_t>> & contigPositions, uint32_t max_mapping_size);
 std::vector<uint16_t> getScoreProfile(std::vector<std::vector<uint32_t>> & coverageProfile, std::vector<uint16_t> & scoreThresholds, uint32_t median);
