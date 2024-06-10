@@ -39,16 +39,16 @@ For detailed information on Arguments and Options:
 ## index
 Builds a minimized open addressing k-mer index of the reference genome. Linked- and long-reads require indexes with different characteristics, use the --preset option to choose the desired data type
 
-    ./molemap index reference.fa --preset [linked/long] [options]
+    ./molemap index <reference.fa> --preset [linked/long] [options]
 
 ## mapLong
 
-    ./molemap maplong readfile.fq [options]
+    ./molemap maplong <readfile.fq> [options]
 
 ## mapLinked
 Maps the barcodes of the provided readfiles to the reference and creates a barcode index of the readfiles to quickly retrieve all reads of a given barcode.
 
-    ./molemap maplinked readfile1.fastq readfile2.fastq [options]
+    ./molemap maplinked <readfile1.fastq> <readfile2.fastq> [options]
 
 Content of output bed-file:
 * *chromosome  startposition  endposition  barcode  mapping_score*
@@ -60,7 +60,7 @@ Molemap returns a _output.hist_ file that can be ploted using _plot_score_histog
 ## get
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
-    ./molemap get readfile1.fastq readfile2.fastq Barcodes [options]
+    ./molemap get <readfile1.fastq> <readfile2.fastq> <Barcodes.txt> [options]
  
 # Example 
 This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below.  
