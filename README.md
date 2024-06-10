@@ -3,7 +3,7 @@ Molemap maps linked- and long-read sequences to a linear reference genome.
 
 Individual long-reads are swiftly mapped without providing base pair precision. The mapping is multiple times faster than established long read mappers like minimap2, blend or BWA-MEM. Molemap returns mapped long reads in the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. 
 
-Linked reads are mapped on the barcode level. Molemap maps all reads that share the same barcode in unity and returns mapping file in bed format. When working on uncompressed files, a barcode index is constructed alongside the mapping which can be used to quickly retrieve all reads belonging to any given barcode. For ease of use we provide a snakemake [workflow](https://github.com/kehrlab/molemap/tree/master/workflow) to extract all reads from user defined regions of interest.
+Linked reads are mapped on the barcode level. Molemap maps all reads that share the same barcode in unity and returns a mapping file in bed format. When working on uncompressed files, a barcode index is constructed alongside the mapping which can be used to quickly retrieve all reads belonging to any given barcode. For ease of use we provide a snakemake [workflow](https://github.com/kehrlab/molemap/tree/master/workflow) to extract all reads from user defined regions of interest.
 
 Molemap leverages minimizers and hash tables to achieve ultra fast, memory efficient and reliable mapping of long sequence molecules. The low computational requirements of molemap allow the analysis of whole genome sequencing data of the human genome on basic hardware like a laptop. 
 
