@@ -7,7 +7,6 @@
 # include "get.h"
 # include <time.h>
 # include "parser.h"
-// # include <omp.h>
 using namespace seqan;
 
 void returnReads(std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::streampos,std::streampos>> & BCI, std::set<std::string> & barcodes, std::ifstream & file1, std::ifstream & file2, getOptions & options, std::string & fileID);
@@ -134,7 +133,7 @@ void returnReads(std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::
     }
     std::vector<std::string>::iterator itrpos = std::lower_bound(BCI_BC.begin(), BCI_BC.end(), *itrbc);
     if (itrpos!=BCI_BC.end()){
-      uint_fast32_t pos = std::distance(BCI_BC.begin(), itrpos);
+      uint32_t pos = std::distance(BCI_BC.begin(), itrpos);
       file1.seekg(std::get<0>(BCI[pos]));
       file2.seekg(std::get<1>(BCI[pos]));
       std::streamoff size1=std::get<0>(BCI[pos+1])-std::get<0>(BCI[pos]);

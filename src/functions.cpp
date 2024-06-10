@@ -22,7 +22,7 @@ void sortResults(std::vector<result_t> & results){
 
 
 //retreive the barcode from 10x linked reads
-std::string getBarcode(std::string id1, uint_fast8_t barcode_length){
+std::string getBarcode(std::string id1, uint8_t barcode_length){
   std::size_t pos=id1.find(" ");
   std::string new_barcode;
   if(pos<1000){
@@ -85,7 +85,7 @@ std::vector<std::pair<Dna5String,Dna5String>> ReturnBarcodeReads(std::vector<std
   Dna5String read1;
   Dna5String read2;
   CharString id;
-  uint_fast32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
+  uint32_t pos = std::distance(BCI_barcodes.begin(), std::lower_bound(BCI_barcodes.begin(), BCI_barcodes.end(),barcode));
   file1.stream.file.seekg(std::get<0>(BCI_positions[pos]));
   file2.stream.file.seekg(std::get<1>(BCI_positions[pos]));
   std::streampos endpos=std::get<0>(BCI_positions[pos+1]);
@@ -99,8 +99,8 @@ std::vector<std::pair<Dna5String,Dna5String>> ReturnBarcodeReads(std::vector<std
 }
 
 // checks if candidate should be inserted into best_windows and inserts it at the correct palce
-void ReportWindow(std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>> & best_windows, std::tuple<double,uint_fast8_t,uint32_t,uint32_t> & candidate){
-  std::vector<std::tuple<double,uint_fast8_t,uint32_t,uint32_t>>::iterator itrbw;
+void ReportWindow(std::vector<std::tuple<double,uint8_t,uint32_t,uint32_t>> & best_windows, std::tuple<double,uint8_t,uint32_t,uint32_t> & candidate){
+  std::vector<std::tuple<double,uint8_t,uint32_t,uint32_t>>::iterator itrbw;
   if (std::get<0>(candidate)>std::get<0>(best_windows.front())) {  // if current window better than worst window:
     for (itrbw=best_windows.begin();itrbw!=best_windows.end();itrbw++){
       if(std::get<0>(candidate) < std::get<0>(*itrbw)){                            // if (as soon as) quality is worse than quality in best_windows
@@ -135,11 +135,11 @@ bool IsSmaller(const int64_t hash1,const int64_t hash2,const int64_t random_seed
 }
 
 // initializes the minimizer
-int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
+int64_t InitMini(const DnaString & string, const uint32_t k, std::pair <int64_t, int64_t> & hash, const int64_t & maxhash,const int64_t random_seed, int64_t & minimizer_position){
   hash=hashkMer(infix(string,0,k),k);
   int64_t minimizer=ReturnSmaller(hash.first,hash.second,random_seed);
   int64_t minimizer_pos=0;
-  for (uint_fast32_t i=1;i<length(string)-k+1;i++){
+  for (uint32_t i=1;i<length(string)-k+1;i++){
       rollinghashkMer(hash.first,hash.second,string[i+k-1],k,maxhash);
       if (IsSmaller(hash.first,minimizer,random_seed)){
         minimizer=hash.first;
@@ -154,56 +154,36 @@ int64_t InitMini(const DnaString & string, const uint_fast8_t k, std::pair <int6
   return minimizer;
 }
 
-//Insert k-mer positions into vector in sorted order
-void AppendPos(std::vector<std::tuple <uint_fast8_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, const String<int32_t> & C,const String<uint32_t> & dir, const String<uint_fast8_t> & ref, const String<uint32_t> & pos, const uint_fast32_t bucket_number,uint_fast8_t & minimizer_active_bases, const int k_2){
-      uint32_t c=GetBkt(hash,C,bucket_number,k_2);
-      uint32_t abundance=dir[c+1]-dir[c];
-      if (abundance<=20){
-        kmer_list.reserve(kmer_list.size()+abundance);
-        for (uint32_t i = dir[c];i!=dir[c+1];i++){
-          kmer_list.push_back(std::make_tuple(ref[i],pos[i],abundance,minimizer_active_bases));
-        }
-      }
-      return;
-}
-
 // Find correct Bucket
-uint_fast32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
-  uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
-  int64_t d=0;
-  while(C[i]!=(hash>>k_2) and C[i]!=-1){
-    i=(i^(hash>>((d*16)%31)));
-    i=(i+2*d+1)%(int64_t)bucket_number;
-    d++;
-  }
-  return i;
-}
-
-// Request a Bucket
-// uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
-//   uint_fast32_t i = GetBkt(hash,C,bucket_number,k_2);
-//   C[i]=hash>>k_2;
+// uint32_t GetBkt(const int64_t & hash, const String<int32_t> & C, const uint32_t bucket_number, const int k_2){
+//   uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
+//   int64_t d=0;
+//   while(C[i]!=(hash>>k_2) and C[i]!=-1){
+//     i=(i^(hash>>((d*16)%31)));
+//     i=(i+2*d+1)%(int64_t)bucket_number;
+//     d++;
+//   }
 //   return i;
 // }
 
 // Request a Bucket multithread style
-uint_fast32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint_fast32_t bucket_number, const int k_2){
-  uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
-  for(int d=0; d<1000; d++){
-    #pragma omp atomic
-    C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found --> occupies bucket*/;
-    if(C[i]==(hash>>k_2)){
-      return i;
-    } //return if correct bucket found
-    i=(i^(hash>>((d*16)%31)));
-    i=(i+2*d+1)%(int64_t)bucket_number;
-  }
-  std::cerr << "ERROR: no free bucket found after 1000 tries. Please increase bucket_number.\n";
-  return i;
-}
+// uint32_t ReqBkt(const int64_t & hash, String<int32_t> & C, const uint32_t bucket_number, const int k_2){
+//   uint64_t i=(uint64_t)hash%(uint64_t)bucket_number;
+//   for(int d=0; d<1000; d++){
+//     #pragma omp atomic
+//     C[i]+=((hash>>k_2)+1)*(C[i]==-1)/*true if empty bucket found --> occupies bucket*/;
+//     if(C[i]==(hash>>k_2)){
+//       return i;
+//     } //return if correct bucket found
+//     i=(i^(hash>>((d*16)%31)));
+//     i=(i+2*d+1)%(int64_t)bucket_number;
+//   }
+//   std::cerr << "ERROR: no free bucket found after 1000 tries. Please increase bucket_number.\n";
+//   return i;
+// }
 
 // turn hashvalue into kmer
-DnaString hash2kmer(const int64_t & hash,const uint_fast8_t k){
+DnaString hash2kmer(const int64_t & hash,const uint8_t k){
   DnaString kmer="";
   int64_t temp;
   for (size_t i = 0; i < k; i++) {
@@ -222,7 +202,7 @@ DnaString hash2kmer(const int64_t & hash,const uint_fast8_t k){
 }
 
 bool NInKmer(Dna5String kmer, int64_t & position){
-  for (uint_fast8_t i=0;i<length(kmer);i++){
+  for (uint8_t i=0;i<length(kmer);i++){
     if (kmer[i]=='N'){
       position+=i+1;
       return true;
@@ -232,10 +212,10 @@ bool NInKmer(Dna5String kmer, int64_t & position){
 }
 
 //  Hashfunction for k-mer
-std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const uint_fast8_t k){
+std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const uint32_t k){
   int64_t hash=0;
   int64_t hash2=0;
-  for (uint_fast8_t i=0;i<k;++i){
+  for (uint8_t i=0;i<k;++i){
     hash= hash << 2 | (int64_t)ordValue(kmer[i]);
     hash2= hash2 << 2 | (int64_t)(3-ordValue(kmer[k-1-i]));
   }
@@ -243,8 +223,25 @@ std::pair <int64_t, int64_t> hashkMer(const DnaString & kmer, const uint_fast8_t
 }
 
 // Rolling hashfunction for k-mer
-void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const uint_fast8_t k, const int64_t & maxhash){
+void rollinghashkMer(int64_t & oldHash, int64_t & oldHash2, const Dna5 & newnuc, const uint8_t k, const int64_t & maxhash){
   oldHash=((oldHash << 2) | (int64_t)ordValue(newnuc)) & maxhash;
   oldHash2=(oldHash2 >> 2) | (int64_t)(3-ordValue(newnuc)) << (k*2-2);
   return;
+}
+
+int64_t getMaxHash(uint32_t & k){
+  int64_t maxhash=0;
+  for (uint8_t i=0;i<k;i++){
+    maxhash= maxhash << 2 | 3;
+  }
+  return maxhash;
+}
+
+int64_t getRandSeed(uint32_t & k){
+  std::srand(0);
+  int64_t random_seed=0;
+  for (uint8_t i=0;i<k;++i){
+    random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
+  }
+  return random_seed;
 }
