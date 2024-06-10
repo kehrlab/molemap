@@ -37,9 +37,9 @@ For detailed information on Arguments and Options:
     ./molemap [command] --help
 
 ## index
-Builds a minimized open addressing k-mer index of the reference genome.
+Builds a minimized open addressing k-mer index of the reference genome. Linked- and long-reads require indexes with different characteristics, use the --preset option to choose the desired data type
 
-    ./molemap index reference.fa [options]
+    ./molemap index reference.fa --preset [linked/long] [options]
 
 ## mapLong
 
@@ -55,28 +55,28 @@ Content of output bed-file:
 
 ![plot](./example/Example_score_hist.png)
 
-Bcmap returns a _output.hist_ file that can be ploted using _plot_score_histogram.py_ resulting in a plot like the one above. To create a set of mappings with very high precision (at the cost of some recall), the local minimum inbetween the two peaks should be set as the score threshold. A lower theshold yields better recall at the cost of precision, a higher threshold is not recomended.
+Molemap returns a _output.hist_ file that can be ploted using _plot_score_histogram.py_ resulting in a plot like the one above. To create a set of mappings with very high precision (at the cost of some recall), the local minimum inbetween the two peaks should be set as the score threshold. A lower theshold yields better recall at the cost of precision, a higher threshold is not recomended.
 
 ## get
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
-    ./bcmap get readfile1.fastq readfile2.fastq Barcodes [options]
+    ./molemap get readfile1.fastq readfile2.fastq Barcodes [options]
  
 # Example 
 This small example demonstrates how to use bcmap and allows you to check if it is properly installed. Navigate to the bcmap folder and run the commands listed below.  
 
     # building the index for chr21.fa
-    ./bcmap index example/chr21.fa -o example/Index
+    ./molemap index example/chr21.fa -o example/Index
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
-    ./bcmap map example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
+    ./molemap map example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
     
     # extracting the first barcode from the results
     awk '{if(NR==1) print($4)}' example/results.bed > example/FirstBarcode.txt
     
     # extracting all reads belonging to the first barcode
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq example/FirstBarcode.txt -r example/ReadIndex -o example/readsOfFirstBarcode
+    ./molemap get example/readfile.1.fq example/readfile.2.fq example/FirstBarcode.txt -r example/ReadIndex -o example/readsOfFirstBarcode
     
     # extracting reads of barcode AACATCGCAAACAGTA
-    ./bcmap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -r example/ReadIndex -o example/readsOfAACATCGCAAACAGTA
+    ./molemap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -r example/ReadIndex -o example/readsOfAACATCGCAAACAGTA
 
