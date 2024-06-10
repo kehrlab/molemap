@@ -1,19 +1,32 @@
-# bcmap
-Maps barcodes to a reference genome and returns genomic windows from which the barcoded reads most likely originate. Each window is assessed with a quality score representing the trustworthines of the mapping. A barcode index is constructed alongside the mapping and can be used to quickly retrieve all reads belonging to a barcode. For ease of use we provide a snakemake [workflow](https://github.com/kehrlab/bcmap/tree/master/workflow) to extract all reads from user defined regions of interest.
+# molemap
+Molemap maps linked- and long-read sequences to a linear reference genome. 
+
+Individual long-reads are swiftly mapped without providing base pair precision. The mapping is multiple times faster than established long read mappers like minimap2, blend or BWA-MEM. Molemap returns mapped long reads in the [SAM](https://samtools.github.io/hts-specs/SAMv1.pdf) format. 
+
+Linked reads are mapped on the barcode level. Molemap maps all reads that share the same barcode in unity and returns mapping file in bed format. When working on uncompressed files, a barcode index is constructed alongside the mapping which can be used to quickly retrieve all reads belonging to any given barcode. For ease of use we provide a snakemake [workflow](https://github.com/kehrlab/molemap/tree/master/workflow) to extract all reads from user defined regions of interest.
+
+Molemap leverages minimizers and hash tables to achieve ultra fast, memory efficient and reliable mapping of long sequence molecules. The low computational requirements of molemap allow the analysis of whole genome sequencing data of the human genome on basic hardware like a laptop. 
 
 ## Prerequisites
 - gcc version 7.2.0
 
 # Installation
-    git clone https://github.com/kehrlab/bcmap.git
-    cd bcmap
+    git clone https://github.com/kehrlab/molemap.git
+    cd molemap
     make
 
 # Data requirements
-- Paired-end Linked-reads
+
+## Long-reads
+- Long-reads in fastq format (can be gzip compressed) 
+- Tested on long-reads and HiFi-reads by PacBio and Oxford Nanopore.
+
+## Linked-reads
+- Paired-end Linked-reads in fastq format (can be gzip compressed)
 - Barcodes are stored in BX:Z: flag of read Ids
 - Sorted by barcode (use i.e. [bcctools](https://github.com/kehrlab/bcctools) (only for 10x genomics linked-reads) or [samtools](https://github.com/samtools/samtools))
-
+- Tested on linked reads by 10x Genomics, STLfr and TellSeq
+  
 To trimm, correct and sort barcodes with bcctools use the following command in the bcctools folder:
 
     ./script/run_bcctools -f fastq first.fq.gz second.fq.gz
@@ -21,17 +34,21 @@ To trimm, correct and sort barcodes with bcctools use the following command in t
 # Commands
 For detailed information on Arguments and Options:
 
-    ./bcmap [command] --help
+    ./molemap [command] --help
 
 ## index
-Builds an minimized open addressing k-mer index of the reference genome. The index is required to run "map".
+Builds an minimized open addressing k-mer index of the reference genome.
 
-    ./bcmap index reference.fa [options]
+    ./molemap index reference.fa [options]
 
-## map
+## mapLong
+
+    ./molemap maplong readfile.fq [options]
+
+## mapLinked
 Maps the barcodes of the provided readfiles to the reference and creates a barcode index of the readfiles to quickly retrieve all reads of a given barcode.
 
-    ./bcmap map readfile1.fastq readfile2.fastq [options]
+    ./molemap maplinked readfile1.fastq readfile2.fastq [options]
 
 Content of output bed-file:
 * *chromosome  startposition  endposition  barcode  mapping_score*
