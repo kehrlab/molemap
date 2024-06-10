@@ -1,4 +1,4 @@
-TARGET = bcmap
+TARGET = molemap
 BUILD_DIR = ./build
 SRC_DIR = ./src
 
@@ -11,7 +11,7 @@ SEQAN_LIB =.
 CXX = g++ -std=c++14
 CC = $(CXX)
 
-CXXFLAGS += -O3 -I $(SEQAN_LIB) #-DSEQAN_HAS_ZLIB=1 -DSEQAN_DISABLE_VERSION_CHECK -std=c++14
+CXXFLAGS += -O3 -I $(SEQAN_LIB) -DSEQAN_HAS_ZLIB=1 #-DSEQAN_DISABLE_VERSION_CHECK -std=c++14
 
 # # Date and version number from git
 DATE := on $(shell git log --pretty=format:"%cd" --date=iso | cut -f 1,2 -d " " | head -n 1)
@@ -27,7 +27,7 @@ CXXFLAGS += -DDATE=\""$(DATE)"\" -DVERSION=\""$(VERSION)"\"
 # RELEASE build
 # CXXFLAGS += -O3 -DSEQAN_ENABLE_TESTING=0 -DSEQAN_ENABLE_DEBUG=0
 
-LDLIBS = -lrt -lpthread -fopenmp -fPIE
+LDLIBS = -lrt -lpthread -fopenmp -fPIE -lz
 
 all: $(TARGET)
 
