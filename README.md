@@ -29,7 +29,7 @@ Molemap leverages minimizers and hash tables to achieve ultra fast, memory effic
   
 To trimm, correct and sort barcodes with bcctools use the following command in the bcctools folder:
 
-    ./script/run_bcctools -f fastq first.fq.gz second.fq.gz
+    ./script/run_bcctools -f fastq <first.fq.gz> <second.fq.gz>
 
 # Commands
 For detailed information on Arguments and Options:
