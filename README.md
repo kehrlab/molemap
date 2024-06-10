@@ -37,7 +37,7 @@ For detailed information on Arguments and Options:
     ./molemap [command] --help
 
 ## index
-Builds an minimized open addressing k-mer index of the reference genome.
+Builds a minimized open addressing k-mer index of the reference genome.
 
     ./molemap index reference.fa [options]
 
