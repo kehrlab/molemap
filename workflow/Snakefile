@@ -27,7 +27,7 @@ rule index:
         index_name = config["index_name"]
     threads: 16
     shell:
-        "../bcmap index {input.reference} -o {params.index_name}"
+        "../molemap index {input.reference} -o {params.index_name}"
 
 rule map:
     input:
@@ -40,7 +40,7 @@ rule map:
         readfile_index = config["readfile_index"]
     threads: 32
     shell:
-        "../bcmap map {input.readfile1} {input.readfile2} -i {input.index} -o {output.barcode_index} -r {output.readfile_index} -t {threads}"
+        "../molemap maplinked {input.readfile1} {input.readfile2} -i {input.index} -o {output.barcode_index} -r {output.readfile_index} -t {threads}"
 
 rule get_barcodes:
     input:
@@ -64,4 +64,4 @@ rule get:
     params:
         output_prefix = config["output"]
     shell:
-        "../bcmap get {input.readfile1} {input.readfile2} {input.barcodes} -o {params.output_prefix} -r {input.readfile_index}"
+        "../molemap get {input.readfile1} {input.readfile2} {input.barcodes} -o {params.output_prefix} -r {input.readfile_index}"
