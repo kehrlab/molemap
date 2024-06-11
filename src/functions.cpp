@@ -241,7 +241,7 @@ int64_t getRandSeed(uint32_t & k){
   std::srand(0);
   int64_t random_seed=0;
   for (uint8_t i=0;i<k;++i){
-    random_seed= random_seed << 2 | (int64_t)(std::rand()%3);
+    random_seed = random_seed << 2 | (int64_t)(std::rand()%3);
   }
   return random_seed;
 }

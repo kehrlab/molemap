@@ -100,11 +100,13 @@ int maplinked(int argc, char const ** argv){
   std::vector<result_t> globalresults;
 
   omp_set_num_threads(options.threads);
+  uint64_t random_seed = getRandSeed(options.k);
+
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
     //declare variables
     std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases
-    minimizedSequence miniSeq(options.k,options.mini_window_size);
+    minimizedSequence miniSeq(options.k,options.mini_window_size,random_seed);
     StringSet<Dna5String> reads;
     resize(reads, 2, Exact());
     Dna5String read1;

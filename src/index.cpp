@@ -94,6 +94,7 @@ int index(int argc, char const **argv){
   std::cerr << "...........done.\nFilling index initially...";
   // iterating over the stringSet (Chromosomes)
 
+  uint64_t random_seed = getRandSeed(options.k);
   typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
   TStringSetIterator seqG = begin(seqs);
   uint64_t sum=0;
@@ -106,7 +107,7 @@ int index(int argc, char const **argv){
         uint64_t local_sum=0;
         TStringSetIterator seq=seqG+j;
         // counting k-mers
-        minimizedSequence miniSeq(options.k,options.m);
+        minimizedSequence miniSeq(options.k, options.m, random_seed);
         miniSeq.init(*seq);
         minimizer mini;
 
@@ -128,9 +129,10 @@ int index(int argc, char const **argv){
     if(loadFactor < 0.8){
       sum=0;
       seqG = begin(seqs);
-      uint32_t new_bucket_number=Index.bucket_number*loadFactor/0.9;
+      uint32_t new_bucket_number=round((double)Index.bucket_number*(double)loadFactor/0.85);
       Index.clear();
       Index.resize(new_bucket_number);
+      // std::cerr << "\nload_factor recalculated!\n";
     }else{
       break;
     }
@@ -167,7 +169,7 @@ int index(int argc, char const **argv){
     TStringSetIterator seq=seqG+j;
     uint8_t Chromosome=j;
     // filling pos
-    minimizedSequence miniSeq(options.k,options.m);
+    minimizedSequence miniSeq(options.k, options.m, random_seed);
     miniSeq.init(*seq);
     minimizer mini;
 

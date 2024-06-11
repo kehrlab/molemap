@@ -71,6 +71,7 @@ int mapLinkedZipped(openAddressingKmerHashtable & Index, mapOptions & options, i
   std::vector<uint32_t> histogram(200,0);
   std::vector<result_t> globalresults;
   uint8_t window_count=50;
+  uint64_t random_seed = getRandSeed(options.k);
 
   omp_set_num_threads(options.threads);
   if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
@@ -96,7 +97,7 @@ int mapLinkedZipped(openAddressingKmerHashtable & Index, mapOptions & options, i
         readPairedBatch(seq1, seq2, newBatch, batchSize, barcode_length);
       }else{ // analyse Batch
         // set scope for thread
-        minimizedSequence miniSeq(options.k,options.mini_window_size);
+        minimizedSequence miniSeq(options.k, options.mini_window_size, random_seed);
         int start=(t-1)*(oldBatch.size()/(options.threads-1));
         int end=(t)*(oldBatch.size()/(options.threads-1));
         if(t==options.threads-1){end=oldBatch.size();}
@@ -432,6 +433,7 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
 
   omp_lock_t lock; omp_lock_t reslock; omp_init_lock(&lock); omp_init_lock(&reslock);
   omp_set_num_threads(options.threads);
+  uint64_t random_seed = getRandSeed(options.k);
 
   #pragma omp parallel for ordered
   for (int t=0; t<options.threads; t++){
@@ -441,7 +443,7 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
     BamAlignmentRecord result;
     std::vector<BamAlignmentRecord> results = {};
     std::vector<uint32_t> histogram_local(200,0);
-    minimizedSequence miniSeq(options.k,options.mini_window_size);
+    minimizedSequence miniSeq(options.k, options.mini_window_size, random_seed);
 
     //open readfile and move to start position
     SeqFileIn file1(toCString(options.readfile1));
@@ -572,6 +574,7 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
 
   omp_set_num_threads(options.threads);
   if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
+  uint64_t random_seed = getRandSeed(options.k);
 
   while(oldBatch.size()){
     #pragma omp parallel for ordered
@@ -581,7 +584,7 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
         readBatch(seq1, newBatch, batchSize);
       }else{ // t!=0  // process threads part of last batch
         // set scope for thread
-        minimizedSequence miniSeq(options.k,options.mini_window_size);
+        minimizedSequence miniSeq(options.k, options.mini_window_size, random_seed);
         int start=(t-1)*(oldBatch.size()/(options.threads-1));
         int end=(t)*(oldBatch.size()/(options.threads-1));
         if(t==options.threads-1){end=oldBatch.size();}

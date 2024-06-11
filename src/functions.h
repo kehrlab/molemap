@@ -64,13 +64,13 @@ class minimizedSequence{
     minimizer old_minimizer;
     bool at_end;
 
-    minimizedSequence(uint32_t & kC, uint32_t & mC){ //constructor
+    minimizedSequence(uint32_t & kC, uint32_t & mC, uint64_t & random_seedC){ //constructor
       // sequence=sequenceC;
       // position=0;
       k=kC;
       m=mC;
       // last_position=length(sequence)-m;
-      random_seed=getRandSeed(k);
+      random_seed=random_seedC;
       maxhash=getMaxHash(k);
       // kmer=infix(sequence,position,position+m);
       // while(NInKmer(kmer,position)){
