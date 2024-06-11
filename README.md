@@ -11,7 +11,11 @@ Molemap leverages minimizers and hash tables to achieve ultra fast, memory effic
 - gcc version 7.2.0
 
 # Installation
+Execute the following command.
+
     git clone https://github.com/kehrlab/molemap.git && cd molemap && make
+
+The executable 'molemap' will be created locally in the cloned repository.
 
 # Data requirements
 
