@@ -1,8 +1,8 @@
 # A workflow to extract reads from a region of interest
-This snakemake workflow chains bcmap commands and unix commands to extract all reads from user defined regions of interest. 
+This snakemake workflow chains molemap commands and unix commands to extract all reads from user defined regions of interest. 
 
 ## Prerequisites
-bcmap installed\
+molemap installed\
 Snakemake ([available via conda](https://anaconda.org/bioconda/snakemake))
 
 ## Data requirements
