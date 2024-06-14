@@ -71,7 +71,7 @@ This small example demonstrates how to use molemap and allows you to check if it
     ./molemap index example/chr21.fa -o example/Index
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
-    ./molemap map example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
+    ./molemap maplinked example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
     
     # extracting the first barcode from the results
     awk '{if(NR==1) print($4)}' example/results.bed > example/FirstBarcode.txt
