@@ -8,7 +8,9 @@ Linked reads are mapped on the barcode level. Molemap maps all reads that share 
 Molemap leverages minimizers and hash tables to achieve ultra fast, memory efficient and reliable mapping of long sequence molecules. The low computational requirements of molemap allow the analysis of whole genome sequencing data of the human genome on basic hardware like a laptop. 
 
 ## Prerequisites
-- gcc version 7.2.0
+- g++ version 7.2.0 or higher
+- GNU make
+- zlib
 
 # Installation
 Execute the following command.
