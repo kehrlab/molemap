@@ -10,7 +10,8 @@ Molemap leverages minimizers and hash tables to achieve ultra fast, memory effic
 ## Prerequisites
 - g++ version 7.2.0 or higher
 - GNU make
-- zlib
+- zlib dev package
+    sudo apt install zlib1g-dev
 
 # Installation
 Execute the following command.
