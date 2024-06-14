@@ -12,8 +12,6 @@ Molemap leverages minimizers and hash tables to achieve ultra fast, memory effic
 - GNU make
 - zlib dev package
 
-    sudo apt install zlib1g-dev
-
 # Installation
 Execute the following command.
 
