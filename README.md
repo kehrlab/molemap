@@ -70,7 +70,7 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
 This small example demonstrates how to use molemap and allows you to check if it is properly installed. Navigate to the molemap folder and run the commands listed below.  
 
     # building the index for chr21.fa
-    ./molemap index example/chr21.fa -o example/Index
+    ./molemap index example/chr21.fa -o example/Index -p linked
     
     # mapping the reads of readfile 1 and 2 to chromosome 21
     ./molemap maplinked example/readfile.1.fq example/readfile.2.fq -i example/Index -r example/ReadIndex -o example/results.bed
