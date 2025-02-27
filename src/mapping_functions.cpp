@@ -83,7 +83,7 @@ int mapLinkedZipped(openAddressingKmerHashtable & Index, mapOptions & options, i
   kseq_t * seq2 = kseq_init(readFile2);
 
   int barcode_length = getBarcodeLengthGz(seq1, seq2); // determine barcode length and skip past '*' barcodes
-  int batchSize = (options.threads-1)*1000;
+  int batchSize = (options.threads-1)*options.batchSize;
 
   // read first batch
   std::vector<barcodeData> newBatch;
@@ -575,7 +575,7 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
   // read first batch
   omp_set_num_threads(options.threads);
   if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
-  int batchSize=(options.threads-1)*5000;
+  int batchSize=(options.threads-1)*options.batchSize;
   std::vector<ReadData> oldBatch;
   std::vector<ReadData> newBatch;
   readBatch(seq1, oldBatch, batchSize);

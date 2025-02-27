@@ -129,6 +129,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine_map(mapOptions & options, in
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
     addOption(parser, seqan::ArgParseOption(
+        "b", "batchSize", "Number of reads processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "b", "5000");
+    addOption(parser, seqan::ArgParseOption(
         "S", "sort", "Sort barcode mappings by position"));
     addOption(parser, seqan::ArgParseOption(
         "C", "coverage_analysis", "Perform coverage analysis to filter output. Only recommended for WGS data with decent coverage. (Acitvates sorting by position)"));
@@ -163,6 +167,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine_map(mapOptions & options, in
     getOptionValue(options.s, parser, "s");
     getOptionValue(options.l, parser, "l");
     getOptionValue(options.threads, parser, "t");
+    getOptionValue(options.batchSize, parser, "b");
     options.Sort = isSet(parser, "S") || isSet(parser, "C");
     options.CoverageAnalysis = isSet(parser, "C");
 
@@ -185,8 +190,11 @@ void printParseResults_map(mapOptions & options){
   if(options.readfile1.substr(options.readfile1.rfind('.')+1)!="gz"){
     std::cerr << "read_index_name   \t" << options.read_index_name << '\n';
   }
-  std::cerr << "threads           \t" << options.threads << '\n'
-  << "score threshold   \t" << options.s << '\n'
+  std::cerr << "threads           \t" << options.threads << '\n';
+  if(options.batchSize!=5000){
+    std::cerr << "batchSize         \t" << options.batchSize << '\n';
+  }
+  std::cerr << "score threshold   \t" << options.s << '\n'
   << "max kmer abundance\t" << options.max_abundance << '\n'
   << "max window size   \t" << options.max_window_size << '\n'
   << "max gap size      \t" << options.max_gap_size << '\n'
@@ -316,6 +324,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
     addOption(parser, seqan::ArgParseOption(
+        "b", "batchSize", "Number of reads processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
+        seqan::ArgParseArgument::INTEGER, "unsigned"));
+    setDefaultValue(parser, "b", "5000");
+    addOption(parser, seqan::ArgParseOption(
         "R", "Readgroup", "Read group header line.",
         seqan::ArgParseArgument::STRING, "string"));
     setDefaultValue(parser, "R", "");
@@ -351,6 +363,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
     getOptionValue(options.s, parser, "s");
     getOptionValue(options.l, parser, "l");
     getOptionValue(options.threads, parser, "t");
+    getOptionValue(options.batchSize, parser, "b");
     getOptionValue(options.readGroup, parser, "R");
     if(isSet(parser, "R")){
       if(getReadGroupId(options.readGroup, options.readGroupId)){
@@ -380,8 +393,11 @@ void printParseResults_long_map(longmapOptions & options){
               << "  w - " << options.mini_window_size << '\n'
               << "output file       \t" << options.output_file << '\n'
               << "output format     \t" << options.output_format << '\n'
-              << "threads           \t" << options.threads << '\n'
-              << "max kmer abundance\t" << options.max_abundance << '\n'
+              << "threads           \t" << options.threads << '\n';
+              if(options.batchSize!=5000){
+                std::cerr << "batchSize         \t" << options.batchSize << '\n';
+              }
+              std::cerr << "max kmer abundance\t" << options.max_abundance << '\n'
               << "score threshold   \t" << options.s << '\n'
               << "min read size     \t" << options.l << '\n'
               << "max gap size      \t" << options.max_gap_size << "\n\n";

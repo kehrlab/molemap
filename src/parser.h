@@ -33,9 +33,10 @@ struct mapOptions{
   unsigned threads;
   bool Sort;
   bool CoverageAnalysis;
+  uint32_t batchSize;
 
   mapOptions() :
-  kmer_index_name("Index"), read_index_name("ReadIndex"), k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000), max_abundance(20),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16), Sort(false), CoverageAnalysis(false)
+  kmer_index_name("Index"), read_index_name("ReadIndex"), k(31), mini_window_size(61), max_window_size(300000), max_gap_size(20000), max_abundance(20),output_file("barcode_windows.bed"),l(10000) , s(0), threads(16), Sort(false), CoverageAnalysis(false), batchSize(5000)
   {}
 };
 
@@ -62,9 +63,10 @@ struct longmapOptions{
   bool regionDefined;
   // std::vector<region> regions;
   std::map<std::string,seqan::IntervalTree<uint32_t, bool>> regions;
+  uint32_t batchSize;
 
   longmapOptions() :
-  kmer_index_name("Index"), k(31), mini_window_size(61), max_gap_size(20000), max_abundance(20), output_file("stdout"), output_format("sam"),l(500) , s(0), threads(16), readGroup(""), readGroupId(""), regionDefined(false)
+  kmer_index_name("Index"), k(31), mini_window_size(61), max_gap_size(20000), max_abundance(20), output_file("stdout"), output_format("sam"),l(500) , s(0), threads(16), readGroup(""), readGroupId(""), regionDefined(false), batchSize(5000)
   {}
 };
 
