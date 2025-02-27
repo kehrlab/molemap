@@ -573,13 +573,13 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
   kseq_t * seq1 = kseq_init(readFile);
 
   // read first batch
+  omp_set_num_threads(options.threads);
+  if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
   int batchSize=(options.threads-1)*5000;
   std::vector<ReadData> oldBatch;
   std::vector<ReadData> newBatch;
   readBatch(seq1, oldBatch, batchSize);
 
-  omp_set_num_threads(options.threads);
-  if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
   uint64_t random_seed = getRandSeed(options.k);
 
   while(oldBatch.size()){
