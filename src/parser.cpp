@@ -5,6 +5,8 @@
 # include <fstream>
 # include "functions.h"
 # include "parser.h"
+# include <seqan/misc/interval_tree.h>
+
 using namespace seqan;
 
 
@@ -222,6 +224,55 @@ int getReadGroupId(std::string & readGroup, std::string & readGroupId){
   return 0;
 }
 
+void getRegions(std::string regionString, longmapOptions & options){
+  // chr1:123-234,chr2:412-516...
+  if(regionString.substr(regionString.size()-4)==".bed"){
+    // open bed-file
+    std::ifstream bedFile(regionString);
+    // iterate trhough bed file and insert regions
+    std::string line;
+    std::string chrom;
+    uint32_t start;
+    uint32_t end;
+    std::string item;
+
+    while(std::getline(bedFile, line)){
+      std::stringstream lineS(line);
+      lineS >> chrom;
+      lineS >> start;
+      lineS >> end;
+      // if(!options.regions.count(chrom)){ // if no tree exists for this chrom: create one
+      //   IntervalTree<uint32_t, bool> newTree;
+      //   // options.regions[chrom]=newTree;
+      //   options.regions.insert(chrom,newTree);
+      // }
+      seqan::addInterval(options.regions[chrom], start, end, true);
+    }
+
+    return;
+  }
+
+  region regionBuff;
+  size_t pos;
+  while(regionString.find(':') != std::string::npos){
+    regionBuff.chrom = regionString.substr(0,regionString.find_first_of(':',0));
+    regionBuff.start = std::stoi(regionString.substr(regionString.find_first_of(':',0)+1,regionString.find_first_of('-',0)-regionString.find_first_of(':',0)-1));
+    regionBuff.end = std::stoi(regionString.substr(regionString.find_first_of('-',0)+1,regionString.find_first_of(',',0)-regionString.find_first_of('-',0)-1));
+    // if(!options.regions.count(regionBuff.chrom)){ // if no tree exists for this chrom: create one
+    //   IntervalTree<int, bool> newTree;
+    //   options.regions[regionBuff.chrom]=newTree;
+    // }
+    seqan::addInterval(options.regions[regionBuff.chrom], regionBuff.start, regionBuff.end, true);
+
+    if(regionString.find(',') != std::string::npos){
+      regionString = regionString.substr(regionString.find_first_of(',',0)+1,std::string::npos);
+    }else{
+      regionString="";
+    }
+  }
+  return;
+}
+
 seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & options, int argc, char const ** argv){
     // Setup ArgumentParser.
     seqan::ArgumentParser parser("molemap mapLong");
@@ -268,6 +319,10 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
         "R", "Readgroup", "Read group header line.",
         seqan::ArgParseArgument::STRING, "string"));
     setDefaultValue(parser, "R", "");
+    addOption(parser, seqan::ArgParseOption(
+        "r", "Regions", "Regions to map to. Path to bed file or comma seperated list of chr:start-end",
+        seqan::ArgParseArgument::STRING, "string"));
+    setDefaultValue(parser, "r", "");
 
     seqan::addUsageLine(parser,"readfile.fq [OPTIONS]");
     setShortDescription(parser, "Map long reads to reference.");
@@ -301,6 +356,12 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
       if(getReadGroupId(options.readGroup, options.readGroupId)){
         options.readGroup = "";
       }
+    }
+    std::string regionString;
+    getOptionValue(regionString, parser, "r");
+    if(isSet(parser, "r")){
+      options.regionDefined=true;
+      getRegions(regionString, options);
     }
 
     loadIndexParameters(options.k,options.mini_window_size,options.kmer_index_name);

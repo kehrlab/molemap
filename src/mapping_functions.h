@@ -43,7 +43,8 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
 void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, int & batchSize);
 int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options, int argc, char const ** argv);
 void moveFileToStart(SeqFileIn & file1, std::streampos & startpos, int & t);
-int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, BamAlignmentRecord & result, std::vector<uint32_t> & histogram, uint32_t readLength, longmapOptions & options);
+bool checkRegion(std::tuple<double,uint8_t,uint32_t,uint32_t,bool> & best_window,longmapOptions & options);
+int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::string> & lookChrom, BamAlignmentRecord & result, std::vector<uint32_t> & histogram, uint32_t readLength, longmapOptions & options);
 void trimmWindowLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrstart, std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>>::const_iterator itrk, std::tuple<double,uint8_t,uint32_t,uint32_t,bool> & candidate, std::vector<float> & lookQual);
 void AppendPosLong(std::vector<std::tuple <uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, const int64_t & hash, openAddressingKmerHashtable & Index, uint8_t & minimizer_active_bases, uint32_t order, longmapOptions & options);
 

@@ -25,6 +25,24 @@ int loadReference(StringSet<Dna5String> & seqs, indexOptions & options){
   return 0;
 }
 
+int loadRefContig(Dna5String & seq, SeqFileIn & file, indexOptions & options){
+  CharString id;
+  IupacString seqIn;
+  try {
+    readRecord(id, seqIn, file);
+  }
+  catch (ParseError const & e){
+    std::cerr << "ERROR: input record is badly formatted. " << e.what() << std::endl;
+    return 1;
+  }
+  catch (IOError const & e){
+    std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
+    return 1;
+  }
+  seq=seqIn;
+  return 0;
+}
+
 void readKmerIndex(openAddressingKmerHashtable & Index, std::string & kmer_index_name){
 
   // defining index file names

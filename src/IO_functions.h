@@ -8,6 +8,7 @@
 using namespace seqan;
 
 int loadReference(StringSet<Dna5String> & seqs, indexOptions & options);
+int loadRefContig(Dna5String & seq, SeqFileIn & file, indexOptions & options);
 void readKmerIndex(openAddressingKmerHashtable & Index, std::string & kmer_index_name);
 int checkReadfile(std::string & readfileName);
 // BamFileOut writeSamHeader(longmapOptions & options, openAddressingKmerHashtable & Index, std::fstream & output, int argc, char const ** argv);

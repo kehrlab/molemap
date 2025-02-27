@@ -1,6 +1,7 @@
 # include <seqan/seq_io.h>
 # include <seqan/sequence.h>
 # include <seqan/bam_io.h>
+# include <seqan/misc/interval_tree.h>
 # include <iostream>
 # include <fstream>
 # include "functions.h"
@@ -386,7 +387,15 @@ uint8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_siz
     file1.stream.file.ignore(10000,'\n');
     readRecord(id, read1, file1);
     id1=toCString(id);
-    barcode=id1.substr(id1.find("BX:Z:")+5,id1.find(' ',id1.find("BX:Z:")+5)-id1.find("BX:Z:")-5);              // determine BX:Z: entry
+    barcode=id1.substr(id1.find("BX:Z:")+5,id1.find(' ',id1.find("BX:Z:")+5)-id1.find("BX:Z:")-5);
+    // std::cerr << "Barcode: " << barcode << "\n";             // determine BX:Z: entry
+    if (barcode[0]=='A' || barcode[0]=='C' || barcode[0]=='T' || barcode[0]=='G'){
+      close(file1);
+      // std::cerr << "barcode length   \t" << barcode.size() << "\n\n";
+      return barcode.size();
+    }
+    barcode=id1.substr(id1.find("BX:Z:")+5,id1.find('\t',id1.find("BX:Z:")+5)-id1.find("BX:Z:")-5);
+    std::cerr << "Barcode: " << barcode << "\n";             // determine BX:Z: entry
     if (barcode[0]=='A' || barcode[0]=='C' || barcode[0]=='T' || barcode[0]=='G'){
       close(file1);
       // std::cerr << "barcode length   \t" << barcode.size() << "\n\n";
@@ -477,10 +486,7 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
       if (!kmer_list.empty()){
         std::sort(kmer_list.begin(),kmer_list.end());
 
-        if(MapKmerListLong(kmer_list, result, histogram_local, length(read), options)){
-          results.push_back(result);
-        }else{//if MapKmerListLong returns 0 read is unmapped
-          result.flag=4;
+        if(MapKmerListLong(kmer_list, Index.lookChrom, result, histogram_local, length(read), options)){
           results.push_back(result);
         }
         clear(result);
@@ -619,10 +625,7 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
           if (!kmer_list.empty()){
             std::sort(kmer_list.begin(),kmer_list.end());
 
-            if(MapKmerListLong(kmer_list, result, histogram_local, length(oldBatch[i].read), options)){
-              results.push_back(result);
-            }else{//if MapKmerList returns 0 read is unmapped
-              result.flag=4;
+            if(MapKmerListLong(kmer_list, Index.lookChrom, result, histogram_local, length(oldBatch[i].read), options)){
               results.push_back(result);
             }
             clear(result);
@@ -707,7 +710,38 @@ void moveFileToStart(SeqFileIn & file1, std::streampos & startpos, int & t){
   return;
 }
 
-int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, BamAlignmentRecord & result, std::vector<uint32_t> & histogram, uint32_t readLength, longmapOptions & options){
+bool checkRegion(std::tuple<double,uint8_t,uint32_t,uint32_t,bool> & best_window, std::vector<std::string> & lookChrom, longmapOptions & options){
+  // returns false if mapping is from desired regions
+  // returns true if mapping is not from regions of interest
+  if(!options.regionDefined){
+    return false;
+  }
+
+  if(options.regions.count(lookChrom[std::get<1>(best_window)])){
+    String<bool> buff;
+    seqan::findIntervals(buff,options.regions[lookChrom[std::get<1>(best_window)]],std::get<2>(best_window),std::get<3>(best_window));
+    if(seqan::length(buff)==0){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  return true;
+
+  // // check all defined regions
+  // for(int i = 0; i!=options.regions.size(); i++){
+  //   if(lookChrom[std::get<1>(best_window)]==options.regions[i].chrom){ // if mapping from correct ref contig
+  //     if(std::get<2>(best_window)<options.regions[i].end && std::get<3>(best_window)>options.regions[i].start){ // if mapping from correct position
+  //       return false;
+  //     }
+  //   }
+  // }
+  //
+  // return true;
+}
+
+int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> & kmer_list, std::vector<std::string> & lookChrom, BamAlignmentRecord & result, std::vector<uint32_t> & histogram, uint32_t readLength, longmapOptions & options){
   unsigned qualityThreshold=0;
   uint32_t max_window_size=readLength*5;
   uint32_t window_count=10;
@@ -800,20 +834,31 @@ int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,ui
     }
   }
 
+  // check if mapped to desired region
+  if(checkRegion(best_window, lookChrom, options)){ // if regions defined but window does not map to region
+    return 0;
+  }
+
   //filter low quality windows
   if (std::get<0>(best_window)<qualityThreshold || std::get<0>(best_window)==0) {
-    return 0;
+    result.flag=4;
+    return 1;
   }
 
   // filter short windows
   if ((std::get<3>(best_window)-std::get<2>(best_window))<options.l){
-    return 0;
+    result.flag=4;
+    return 1;
   }
 
+  int qual=roundf((float)(std::get<0>(best_window))); //
+  if(qual < options.s){ // options.s = scoreThreshold
+    result.flag=4;
+    return 1;
+  }
+
+
   // report best window
-  // float qual=roundf((float)(std::get<0>(best_window)/(std::get<3>(best_window)-std::get<2>(best_window)))*100); // quality/length_of_mapping--> QualityPerBase
-  int qual=roundf((float)(std::get<0>(best_window))*10); //
-  // float qual=roundf((float)(std::get<0>(best_window)/(readLength))*100); // quality/length_of_mapping--> QualityPerBase
   result.rID=std::get<1>(best_window);
   result.beginPos=std::get<2>(best_window);
   result.tLen=(int32_t)(std::get<3>(best_window)-std::get<2>(best_window));
@@ -823,12 +868,6 @@ int MapKmerListLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,ui
   appendTagValue(result.tags, "MS", std::abs(qual));
   if(options.readGroupId!=""){
     appendTagValue(result.tags, "RG", options.readGroupId);
-  }
-  // result.mapQ=(uint8_t)qual;
-  // MS TAG (MAPPING SCORE)
-
-  if(result.mapQ < options.s){ // options.s = scoreThreshold
-    return 0;
   }
 
   // add to quality histogram
@@ -901,6 +940,8 @@ void trimmWindowLong(std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,u
   if(orderCount<0){
     reverse=false;
   }
+
+  // window_quality=window_quality*100/(POS(itrk)-POS(itrstart));
 
   candidate=std::make_tuple(window_quality,REF(itrstart),POS(itrstart),POS(itrk),reverse);
   return;

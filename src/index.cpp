@@ -43,20 +43,29 @@ int index(int argc, char const **argv){
 
   //define key parameters
 
-  std::cerr << "Loading reference genome...";
-
-  StringSet<Dna5String> seqs;
-  if(loadReference(seqs, options)){return 1;}
-
-  std::cerr << "..done.\n";
-
-  uint32_t bucket_number=round((double)length(concat(seqs))/((double)(options.m-options.k+1)/2));
-  if (bucket_number>3221225472){
-    bucket_number=3221225472;
-  }
+  // std::cerr << "Loading reference genome...";
+  //
+  // StringSet<Dna5String> seqs;
+  // if(loadReference(seqs, options)){return 1;}
+  //
+  // std::cerr << "..done.\n";
+  //
+  // uint32_t bucket_number=round((double)length(concat(seqs))/((double)(options.m-options.k+1)/2));
+  // if (bucket_number>3221225472){
+  //   bucket_number=3221225472;
+  // }
   // std::cerr << "Bucket number set to: " << bucket_number << "\n";
 
   std::cerr << "Loading ref.fai...";
+
+  try {
+    SeqFileIn file(toCString(options.reference_file));
+    close(file);
+  }
+  catch (IOError const & e){
+    std::cerr << "ERROR: input file can not be opened. " << e.what() << std::endl;
+    return 1;
+  }
 
   FaiIndex faiIndex;
   if (!open(faiIndex, toCString(options.reference_file))){
@@ -71,8 +80,23 @@ int index(int argc, char const **argv){
       }
   }
 
+
+  // Get reference length and calculate Bucket Number
+  uint32_t ref_length=0;
+  std::ifstream fai;
+  std::string faiName=options.reference_file+".fai";
+  fai.open(toCString(faiName), std::ios::in);
+  std::string line;
+  while(getline(fai,line,'\t')){
+    getline(fai,line);
+    ref_length+=std::stoi(line);
+  }
+  fai.close();
+  uint32_t bucket_number=round((double)ref_length/((double)(options.m-options.k+1)/2));
+
+
   if (mkdir(toCString(options.kmer_index_name), 0777) == -1){
-    std::cerr << "\nError for index target:  " << strerror(errno) << "\n";
+    std::cerr << "\nWarning for index target:  " << strerror(errno) << "\n";
     std::cerr << "Old Index will be overwriten\n";
   }
 
@@ -95,40 +119,40 @@ int index(int argc, char const **argv){
   // iterating over the stringSet (Chromosomes)
 
   uint64_t random_seed = getRandSeed(options.k);
-  typedef Iterator<StringSet<Dna5String> >::Type TStringSetIterator;
-  TStringSetIterator seqG = begin(seqs);
   uint64_t sum=0;
-  while(true){
-    #pragma omp parallel
-    {
-      #pragma omp for schedule(dynamic)
-      for (int j=0; j<(int)length(seqs); j++){ // iterating over chromosomes/contigs
-        uint32_t c;
-        uint64_t local_sum=0;
-        TStringSetIterator seq=seqG+j;
-        // counting k-mers
-        minimizedSequence miniSeq(options.k, options.m, random_seed);
-        miniSeq.init(*seq);
-        minimizer mini;
 
-        while(!miniSeq.at_end){ // iterating through the sequence
-          mini=miniSeq.pop();
-          c=Index.ReqBkt(mini.value^miniSeq.random_seed);     // indexing the hashed k-mers
-          #pragma omp atomic
-          Index.dir[c+1]+=1;
-          local_sum++;
-        }
+  while(true){
+
+    SeqFileIn file(toCString(options.reference_file));
+
+    while(!atEnd(file)){
+      uint32_t c;
+      uint64_t local_sum=0;
+      Dna5String seq;
+      loadRefContig(seq, file, options);
+      // counting k-mers
+      minimizedSequence miniSeq(options.k, options.m, random_seed);
+      miniSeq.init(seq);
+      minimizer mini;
+
+      while(!miniSeq.at_end){ // iterating through the sequence
+        mini=miniSeq.pop();
+        c=Index.ReqBkt(mini.value^miniSeq.random_seed);     // indexing the hashed k-mers
         #pragma omp atomic
-        sum+=local_sum;
-      } // for
-    } // pragma omp parallel
+        Index.dir[c+1]+=1;
+        local_sum++;
+      }
+      #pragma omp atomic
+      sum+=local_sum;
+    } // while(!atEnd(file))
+
+    close(file);
 
     // check load factor
     float loadFactor=getLoadFactor(Index.C);
     // std::cerr << "\nLoadFactor: " << loadFactor << "\n";
     if(loadFactor < 0.8){
       sum=0;
-      seqG = begin(seqs);
       uint32_t new_bucket_number=round((double)Index.bucket_number*(double)loadFactor/0.85);
       Index.clear();
       Index.resize(new_bucket_number);
@@ -162,15 +186,18 @@ int index(int argc, char const **argv){
   std::cerr << ".done.\n";
   std::cerr << "Writing positions to index...";
 
-  seqG = begin(seqs);
+  int j = 0;
+  SeqFileIn file(toCString(options.reference_file));
 
-  for (int j=0; j<(int)length(seqs); j++){
+  while(!atEnd(file)){
     uint32_t c;
-    TStringSetIterator seq=seqG+j;
     uint8_t Chromosome=j;
+    j++;
     // filling pos
+    Dna5String seq;
+    loadRefContig(seq, file, options);
     minimizedSequence miniSeq(options.k, options.m, random_seed);
-    miniSeq.init(*seq);
+    miniSeq.init(seq);
     minimizer mini;
 
     while(!miniSeq.at_end){

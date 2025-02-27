@@ -35,8 +35,8 @@ int maplinked(int argc, char const ** argv){
   readKmerIndex(Index, options.kmer_index_name);
 
   std::cerr <<"..done.\n";
-
   // check for gzip compression
+
   std::string filenameExtension1 = options.readfile1.substr(options.readfile1.rfind('.')+1);
   std::string filenameExtension2 = options.readfile2.substr(options.readfile2.rfind('.')+1);
   if(filenameExtension1 == "gz" && filenameExtension2 == "gz"){
@@ -83,7 +83,6 @@ int maplinked(int argc, char const ** argv){
   if (mkdir(toCString(options.read_index_name), 0777) == -1){
     std::cerr << "Error for readfile index target:  " << strerror(errno) << "\n";
   }
-
 
   if(checkReadfile(options.readfile1)){return 1;};
   if(checkReadfile(options.readfile2)){return 1;};
@@ -194,13 +193,16 @@ int maplinked(int argc, char const ** argv){
     if (file1.stream.file.tellg()>endpos){
       continue;
     }
-
     //proceed through readfile untill endpos
+    int32_t readCount=0;
     while (!atEnd(file1)) { // proceeding through files
       pos_temp=file1.stream.file.tellg();
       readRecord(id1, read1, file1);
       new_barcode=getBarcode(toCString(id1),barcode_length);
+
       if (barcode!=new_barcode){ //If Barcode changes: map kmer_list and reinitialize kmer_list
+        readCount=0;
+        // std::cerr << "Mapping barcode: " << barcode << "\n";
         //append Barcode Index
         BCI_local.push_back(std::make_tuple(barcode, BCI_1s, BCI_2s));
         BCI_1s=pos_temp;
@@ -234,12 +236,14 @@ int maplinked(int argc, char const ** argv){
           readRecord(id1, read1, file1);
         }
         BCI_2s=file2.stream.file.tellg();
+        // std::cerr << "Barcode: " << barcode << " mapped!" << "\t collecting reads of barcode: "<< new_barcode << "\n";
       }
 
       //process next read
       readRecord(id2, read2, file2);
       assignValue(reads,0,read1);
       assignValue(reads,1,read2);
+
       barcode=new_barcode;
       for (TStringSetIterator it = begin(reads); it!=end(reads); ++it){  // Iterating over the two reads of the read pair
         // initialize minimizer class
@@ -250,6 +254,11 @@ int maplinked(int argc, char const ** argv){
           mini=miniSeq.pop();
           AppendPos(kmer_list, mini.value^miniSeq.random_seed, Index, mini.active_bases, options);
         }
+      }
+      readCount++;
+      if(readCount>=50000){
+        kmer_list.clear();
+        readCount=0;
       }
 
     }
