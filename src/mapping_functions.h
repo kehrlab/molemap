@@ -29,6 +29,12 @@ struct ReadData{
   Dna5String read;
   CharString id;
   CharString qual;
+
+  ReadData(Dna5String read_i, CharString id_i, CharString qual_i){
+    read=read_i;
+    id=id_i;
+    qual=qual_i;
+  }
 };
 
 int mapLinkedZipped(openAddressingKmerHashtable & Index, mapOptions & options, int argc, char const ** argv);
@@ -40,7 +46,7 @@ uint8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_siz
 // ################################################################################
 
 int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & options, int argc, char const ** argv);
-void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, int & batchSize);
+void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, uint64_t & batchSize);
 int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options, int argc, char const ** argv);
 void moveFileToStart(SeqFileIn & file1, std::streampos & startpos, int & t);
 bool checkRegion(std::tuple<double,uint8_t,uint32_t,uint32_t,bool> & best_window,longmapOptions & options);

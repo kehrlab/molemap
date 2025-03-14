@@ -129,9 +129,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_map(mapOptions & options, in
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
     addOption(parser, seqan::ArgParseOption(
-        "b", "batchSize", "Number of reads processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
+        "b", "batchSize", "Number of barcodes processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "b", "5000");
+    setDefaultValue(parser, "b", "500");
     addOption(parser, seqan::ArgParseOption(
         "S", "sort", "Sort barcode mappings by position"));
     addOption(parser, seqan::ArgParseOption(
@@ -191,7 +191,7 @@ void printParseResults_map(mapOptions & options){
     std::cerr << "read_index_name   \t" << options.read_index_name << '\n';
   }
   std::cerr << "threads           \t" << options.threads << '\n';
-  if(options.batchSize!=5000){
+  if(options.batchSize!=500){
     std::cerr << "batchSize         \t" << options.batchSize << '\n';
   }
   std::cerr << "score threshold   \t" << options.s << '\n'
@@ -324,9 +324,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
     addOption(parser, seqan::ArgParseOption(
-        "b", "batchSize", "Number of reads processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
+        "b", "batchSize", "Millions of bases processed per batch. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "b", "5000");
+    setDefaultValue(parser, "b", "500");
     addOption(parser, seqan::ArgParseOption(
         "R", "Readgroup", "Read group header line.",
         seqan::ArgParseArgument::STRING, "string"));
@@ -394,7 +394,7 @@ void printParseResults_long_map(longmapOptions & options){
               << "output file       \t" << options.output_file << '\n'
               << "output format     \t" << options.output_format << '\n'
               << "threads           \t" << options.threads << '\n';
-              if(options.batchSize!=5000){
+              if(options.batchSize!=500){
                 std::cerr << "batchSize         \t" << options.batchSize << '\n';
               }
               std::cerr << "max kmer abundance\t" << options.max_abundance << '\n'

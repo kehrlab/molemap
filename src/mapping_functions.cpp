@@ -33,7 +33,7 @@ std::string getBarcodeGz(std::string id, int barcode_length){
   return id.substr(id.find("BX:Z:")+5,barcode_length);
 }
 
-void readPairedBatch(kseq_t * seq1, kseq_t * seq2, std::vector<barcodeData> & Batch, int & batchSize, int & barcode_length){
+void readPairedBatch(kseq_t * seq1, kseq_t * seq2, std::vector<barcodeData> & Batch, uint64_t & batchSize, int & barcode_length){
   // extracts batches of Barcodes
   int barcodeCount = 0;
   barcodeData barcodeBuff; // barcode and set of reads of this barcode
@@ -41,6 +41,7 @@ void readPairedBatch(kseq_t * seq1, kseq_t * seq2, std::vector<barcodeData> & Ba
   barcodeBuff.append(seq1, seq2);
   std::string newBarcode;
   Batch.clear();
+  uint64_t bufferSize=0;
 
   while(Batch.size()<batchSize){
     if(kseq_read(seq1)<0){
@@ -83,7 +84,7 @@ int mapLinkedZipped(openAddressingKmerHashtable & Index, mapOptions & options, i
   kseq_t * seq2 = kseq_init(readFile2);
 
   int barcode_length = getBarcodeLengthGz(seq1, seq2); // determine barcode length and skip past '*' barcodes
-  int batchSize = (options.threads-1)*options.batchSize;
+  uint64_t batchSize = (options.threads-1)*options.batchSize;
 
   // read first batch
   std::vector<barcodeData> newBatch;
@@ -529,18 +530,27 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
   return 0;
 }
 
-void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, int & batchSize){
-  Batch.resize(batchSize);
-  for(int i=0; i!=batchSize; i++){
+void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, uint64_t & batchSize){
+  // int readCount=0;
+  uint64_t bufferSize=0;
+  Batch.clear();
+  // Batch.resize(batchSize);
+
+  while(bufferSize<=batchSize){
     if(kseq_read(seq1)>=0){
-      Batch[i].id=seq1->name.s;
-      Batch[i].read=seq1->seq.s;
-      Batch[i].qual=seq1->qual.s;
+      ReadData read_data(seq1->seq.s, seq1->name.s, seq1->qual.s);
+      Batch.push_back(read_data);
+      bufferSize+=length(read_data.read);
+      // Batch[readCount].id=seq1->name.s;
+      // Batch[readCount].read=seq1->seq.s;
+      // Batch[readCount].qual=seq1->qual.s;
+      // readCount++;
     }else{
-      Batch.resize(i);
+      // Batch.resize(readCount);
       break;
     }
   }
+
   return;
 }
 
@@ -575,7 +585,7 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
   // read first batch
   omp_set_num_threads(options.threads);
   if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
-  int batchSize=(options.threads-1)*options.batchSize;
+  uint64_t batchSize=(uint64_t)options.batchSize*1000000;
   std::vector<ReadData> oldBatch;
   std::vector<ReadData> newBatch;
   readBatch(seq1, oldBatch, batchSize);
