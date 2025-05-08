@@ -83,6 +83,21 @@ struct getOptions{
 };
 
 
+struct deconOptions{
+  std::string readfile1_name;
+  std::string readfile2_name;
+  std::string output_prefix;
+  uint32_t k;
+  uint32_t cutoff;
+  uint32_t cutoffPortion;
+  uint32_t iterations;
+
+  deconOptions():
+  k(31), cutoff(4), cutoffPortion(85), output_prefix("empty"), iterations(1)
+  {}
+};
+
+
 
 seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options, int argc, char const ** argv);
 void printParseResults_index(indexOptions & options);
@@ -93,5 +108,7 @@ void printParseResults_long_map(longmapOptions & options);
 seqan::ArgumentParser::ParseResult parseCommandLine_get(getOptions & options, int argc, char const ** argv);
 void printParseResults_get(getOptions & options);
 void loadIndexParameters(uint32_t & k, uint32_t & m, std::string & IndexName);
+seqan::ArgumentParser::ParseResult parseDeconCommandLine(deconOptions & options, int argc, char const ** argv);
+void printDeconParseResult(deconOptions & options, seqan::ArgumentParser::ParseResult res);
 
 #endif

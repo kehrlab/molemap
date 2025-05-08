@@ -300,7 +300,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
     addOption(parser, seqan::ArgParseOption(
         "g", "max_gap_size", "Maximum gap between minimizer hits of same genomic window.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "g", "20000");
+    setDefaultValue(parser, "g", "2000");
     addOption(parser, seqan::ArgParseOption(
         "o", "output", "Path to the output file.",
         seqan::ArgParseArgument::OUTPUT_FILE, "OUT"));
@@ -446,17 +446,16 @@ seqan::ArgumentParser::ParseResult parseCommandLine_get(getOptions & options, in
 
     getOptionValue(options.read_index_name, parser, "r");
     getOptionValue(options.output_file, parser, "o");
-
     return seqan::ArgumentParser::PARSE_OK;
 }
 
 void printParseResults_get(getOptions & options){
   std::cerr <<'\n'
+            << "output prefix    \t" << options.output_file << '\n'
             << "readfile1        \t" << options.readfile1 << '\n'
             << "readfile2        \t" << options.readfile2 << '\n'
             << "read_index_name  \t" << options.read_index_name << '\n'
-            << "barcodes         \t" << options.barcodes << '\n'
-            << "output prefix    \t" << options.output_file << "\n\n";
+            << "barcodes         \t" << options.barcodes << "\n\n";
   return;
 }
 
@@ -466,4 +465,76 @@ void loadIndexParameters(uint32_t & k, uint32_t & m, std::string & IndexName){
   IndexInfo >> k >> m;
   IndexInfo.close();
   return;
+}
+
+seqan::ArgumentParser::ParseResult parseDeconCommandLine(deconOptions & options, int argc, char const ** argv){
+    // Setup ArgumentParser.
+    seqan::ArgumentParser parser("molemap decon");
+
+    // Define arguments.
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile1"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "readfile2"));
+    addArgument(parser, seqan::ArgParseArgument(seqan::ArgParseArgument::INPUT_FILE, "output_prefix"));
+
+    // Define Options
+    addOption(parser, seqan::ArgParseOption(
+      "k", "k-mer_size", "k-mer size used for kmer coverage analysis.",
+      seqan::ArgParseArgument::INTEGER, "unsigned"));
+      setDefaultValue(parser, "k", "31");
+      setMinValue(parser, "k", "15");
+      setMaxValue(parser, "k", "31");
+    addOption(parser, seqan::ArgParseOption(
+      "c", "cutoff", "k-mer frequency cutoff for deconvolution. Reads with k-mer frequency lower than 'c' for 'p' percent of kmers will be discarded.",
+      seqan::ArgParseArgument::INTEGER, "unsigned"));
+      setDefaultValue(parser, "c", "4");
+    addOption(parser, seqan::ArgParseOption(
+      "p", "cutoffPortion", "Kmer portion for deconvolution. Reads with at least 'p' percent of kmers with coverage below 'c' will be discarded.",
+      seqan::ArgParseArgument::INTEGER, "unsigned"));
+      setDefaultValue(parser, "p", "85");
+      setMinValue(parser, "p", "50");
+      setMaxValue(parser, "p", "95");
+    addOption(parser, seqan::ArgParseOption(
+      "i", "iterations", "Number of iterations. Each iteration uses output of former iteration as input.",
+      seqan::ArgParseArgument::INTEGER, "unsigned"));
+      setDefaultValue(parser, "i", "1");
+      setMinValue(parser, "i", "1");
+
+    seqan::addUsageLine(parser,"readfile1 readfile2 output_prefix [OPTIONS]");
+    setShortDescription(parser, "Local barcode deconvolution for linked reads.");
+    // TODOTODO uncomment when connected to git repository
+    setVersion(parser, VERSION);
+    setDate(parser, DATE);
+    addDescription(parser,
+               "Takes reads from a region of interest. "
+               "Reads that consist mostly of rare kmers (rare within the set of reads) will be filtered out as the are likely artifacts and dont actually belong to the region. ");
+    // Parse command line.
+    seqan::ArgumentParser::ParseResult res = seqan::parse(parser, argc, argv);
+
+    // Only extract  options if the program will continue after parseCommandLine()
+    if (res != seqan::ArgumentParser::PARSE_OK){
+        return res;}
+
+    // Extract argument and option values.
+    getArgumentValue(options.readfile1_name, parser, 0);
+    getArgumentValue(options.readfile2_name, parser, 1);
+    getArgumentValue(options.output_prefix, parser, 2);
+
+    getOptionValue(options.k, parser, "k");
+    getOptionValue(options.cutoff, parser, "c");
+    getOptionValue(options.cutoffPortion, parser, "p");
+    getOptionValue(options.iterations, parser, "i");
+
+    return seqan::ArgumentParser::PARSE_OK;
+}
+
+void printDeconParseResult(deconOptions & options, seqan::ArgumentParser::ParseResult res){
+  std::cerr <<'\n'
+    << "readfile1               \t" << options.readfile1_name << '\n'
+    << "readfile2               \t" << options.readfile2_name << '\n'
+    << "output_prefix           \t" << options.output_prefix << '\n'
+    << "k                       \t" << options.k << '\n'
+    << "cutoff                  \t" << options.cutoff << '\n'
+    << "cutoffPortion           \t" << options.cutoffPortion << '\n'
+    << "iterations              \t" << options.iterations << '\n'
+    << '\n';
 }

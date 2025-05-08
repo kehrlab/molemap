@@ -7,13 +7,14 @@
 # include "get.h"
 # include "map_linked.h"
 # include "map_long.h"
+# include "deconvolution.h"
 # include <time.h>
 using namespace seqan;
 
 int main(int argc, char const ** argv){
 
   if (argc==1){
-    std::cerr << "\nNo command:\nCommands are: index, mapLong, mapLinked, get.\nUse './molemap [command] --help' for more information.\n";
+    std::cerr << "\nNo command:\nCommands are: index, mapLong, mapLinked, get, decon.\nUse './molemap [command] --help' for more information.\n";
     return 1;
   }
 
@@ -33,8 +34,11 @@ int main(int argc, char const ** argv){
   if(arg1=="get"){
     return get(argc, argv);
   }
+  if(arg1=="decon"){
+    return decon(argc, argv);
+  }
   else{
-    std::cerr << "\nInvalid command: " << arg1 << "\nCommands are: index, mapLong, mapLinked, get.\nUse './molemap [command] --help' for more information.\n";
+    std::cerr << "\nInvalid command: " << arg1 << "\nCommands are: index, mapLong, mapLinked, get, decon.\nUse './molemap [command] --help' for more information.\n";
     return 1;
   }
 

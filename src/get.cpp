@@ -52,8 +52,6 @@ int get(int argc, char const ** argv){
   std::set<std::string> barcodes;
   std::string barcode;
 
-  double start = omp_get_wtime();
-
   // get barcodes
   std::ifstream file_bc;
   file_bc.open(options.barcodes /*, std::ios::binary*/);
@@ -75,12 +73,8 @@ int get(int argc, char const ** argv){
     barcodes.insert(options.barcodes.substr(pos_s,pos-pos_s));
   }
 
-  double end = omp_get_wtime();
   std::cerr << "done.";
-  printf(" in %f seconds", end - start);
   std::cerr << "\nloading read index...........";
-
-  start = omp_get_wtime();
 
   // initializing the index in readfileIndex index
   std::vector<std::tuple<std::streampos,std::streampos>> BCI;
@@ -89,19 +83,13 @@ int get(int argc, char const ** argv){
   std::string fileID = barcodes.begin()->substr(0,2);
   loadReadfileIndex(BCI, BCI_BC, options, fileID);
 
-  end = omp_get_wtime();
   std::cerr << "done.";
-  printf(" in %f seconds", end - start);
-
 
   std::cerr << "\nextract reads for barcodes...";
-  start = omp_get_wtime();
 
   returnReads(BCI_BC, BCI, barcodes, file1, file2, options, fileID);
 
-  end = omp_get_wtime();
   std::cerr << "done.";
-  printf(" in %f seconds", end - start);
 
   file1.close();
   file2.close();
@@ -126,7 +114,7 @@ void returnReads(std::vector<std::string> & BCI_BC, std::vector<std::tuple<std::
   std::string results2 = "";
 
   for (std::set<std::string>::iterator itrbc = barcodes.begin(); itrbc!=barcodes.end(); itrbc++){ // for every barcode
-    std::cerr << *itrbc << "\n";
+    // std::cerr << *itrbc << "\n";
     if(itrbc->substr(0,2)!=fileID){ // check if the correct index is loaded
       fileID=itrbc->substr(0,2);
       loadReadfileIndex(BCI, BCI_BC, options, fileID); // load correct index

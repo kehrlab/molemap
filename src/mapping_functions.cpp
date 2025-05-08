@@ -396,7 +396,7 @@ uint8_t getBarcodeLength(std::string & readfile1, std::streampos & readfile1_siz
       return barcode.size();
     }
     barcode=id1.substr(id1.find("BX:Z:")+5,id1.find('\t',id1.find("BX:Z:")+5)-id1.find("BX:Z:")-5);
-    std::cerr << "Barcode: " << barcode << "\n";             // determine BX:Z: entry
+    // std::cerr << "Barcode: " << barcode << "\n";             // determine BX:Z: entry
     if (barcode[0]=='A' || barcode[0]=='C' || barcode[0]=='T' || barcode[0]=='G'){
       close(file1);
       // std::cerr << "barcode length   \t" << barcode.size() << "\n\n";
