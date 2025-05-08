@@ -69,7 +69,7 @@ Returns all reads of the given barcodes. Barcodes can be provided directly as ar
     ./molemap get <readfile1.fastq> <readfile2.fastq> <Barcodes.txt> [options]
 
 ## decon
-Filters out reads that do not overlap the remaining read-set and most likely artifacts caused barcode convolution. Recomended to use on the output of *molemap get* if barcodes from a small region of interest were extracted and the data has sufficient coverage (i.e. coverage >= 10). 
+Filters out reads that do not overlap the remaining read-set and most likely are artifacts caused by barcode convolution. Recomended to use on the output of *molemap get* if barcodes from a small region of interest were extracted and the data has sufficient coverage (i.e. coverage >= 10). 
 
     ./molemap decon <readfile1.fastq> <readfile2.fastq> <output_prefix> [options]
 
