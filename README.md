@@ -67,7 +67,12 @@ Molemap returns a _output.hist_ file that can be ploted using _plot_score_histog
 Returns all reads of the given barcodes. Barcodes can be provided directly as argument or in a file.
 
     ./molemap get <readfile1.fastq> <readfile2.fastq> <Barcodes.txt> [options]
- 
+
+## decon
+Filters out reads that do not overlap the remaining read-set and most likely artifacts caused barcode convolution. Recomended to use on the output of *molemap get* if barcodes from a small region of interest were extracted and the data has sufficient coverage (i.e. coverage >= 10). 
+
+    ./molemap decon <readfile1.fastq> <readfile2.fastq> <output_prefix> [options]
+
 # Example 
 This small example demonstrates how to use molemap and allows you to check if it is properly installed. Navigate to the molemap folder and run the commands listed below.  
 
