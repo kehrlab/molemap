@@ -34,9 +34,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options
     setMinValue(parser, "k", "15");
     setMaxValue(parser, "k", "31");
     addOption(parser, seqan::ArgParseOption(
-        "m", "minimizer_window", "Length of window a minimizer is chosen from.",
+        "m", "minimizer_window", "Number of kmers a minimizer is chosen from.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "m", "61");
+    setDefaultValue(parser, "m", "31");
 
     seqan::addUsageLine(parser,"reference.fq [OPTIONS]");
     setShortDescription(parser, "Build an index of a reference genome.");
@@ -53,7 +53,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options
 
     // Extract option and argument values.
     getOptionValue(options.k, parser, "k");
-    getOptionValue(options.m, parser, "m");
+    uint32_t w;
+    getOptionValue(w, parser, "m");
+    options.m=w+options.k-1;
     getOptionValue(options.preset, parser, "p");
     getOptionValue(options.kmer_index_name, parser, "o");
     getArgumentValue(options.reference_file, parser, 0);
@@ -71,12 +73,13 @@ seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options
 }
 
 void printParseResults_index(indexOptions & options){
+    uint32_t w=options.m-options.k+1;
     std::cerr <<'\n'
               << "reference        \t" << options.reference_file << '\n'
               << "kmer_index_name  \t" << options.kmer_index_name << '\n'
               << "preset           \t" << options.preset << '\n'
               << "k                \t" << options.k << '\n'
-              << "minimizer_window \t" << options.m << "\n\n";
+              << "minimizer_window \t" << w << "\n\n";
     return;
 }
 
@@ -428,7 +431,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine_get(getOptions & options, in
     setVersion(parser, VERSION);
     setDate(parser, DATE);
     addDescription(parser,
-               "Retreives all reads belonging to the given set of barcodes. "
+               "Retrieves all reads belonging to the given set of barcodes. "
                "The reads are quickly extracted from the readfiles using a barcode index. "
                "Barcodes can be provided in a newline seperated textfile or ',' seperated as argument.");
     // Parse command line.
