@@ -25,7 +25,7 @@ seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options
         "p", "preset", "Sets default parameters based on sequencing technology. Choose 'off' to manualy set parametes.",
         seqan::ArgParseArgument::STRING, "kmer_index_name[OUT]"));
     setDefaultValue(parser, "p", "off");
-    setValidValues(parser, "p", "linked long off");
+    setValidValues(parser, "p", "linked long hifi off");
 
     addOption(parser, seqan::ArgParseOption(
         "k", "kmer_length", "Length of kmers in index.",
@@ -67,6 +67,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_index(indexOptions & options
     }else if(options.preset=="long"){
       options.k=17;
       options.m=25;
+    }else if(options.preset=="hifi"){
+      options.k=19;
+      options.m=37;
     }
 
     return seqan::ArgumentParser::PARSE_OK;
