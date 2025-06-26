@@ -43,9 +43,9 @@ For detailed information on Arguments and Options:
     ./molemap [command] --help
 
 ## index
-Builds a minimized open addressing k-mer index of the reference genome. Linked- and long-reads require indexes with different characteristics, use the --preset option to choose the desired data type
+Builds a minimized open addressing k-mer index of the reference genome. Linked-, long- and hifi-reads require indexes with different characteristics, use the --preset option to choose the desired data type
 
-    ./molemap index <reference.fa> --preset [linked/long] [options]
+    ./molemap index <reference.fa> --preset [linked/long/hifi] [options]
 
 ## mapLong
 
