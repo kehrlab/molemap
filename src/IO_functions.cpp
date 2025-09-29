@@ -149,7 +149,7 @@ void writeTmpHeader(longmapOptions & options, openAddressingKmerHashtable & Inde
   }
 
   // PG Line
-  output << "@PG\tID:moleMap\tCL:moleMap";
+  output << "@PG\tID:moleMap\tCL:molemap";
   for(int i = 0; i < argc; ++i)
         output << ' ' << argv[i];
   output << "\n";
