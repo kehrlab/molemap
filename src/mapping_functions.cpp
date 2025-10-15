@@ -530,23 +530,16 @@ int mapLongUnzipped(openAddressingKmerHashtable & Index, longmapOptions & option
   return 0;
 }
 
-void readBatch(kseq_t * seq1, std::queue<ReadData> & Batch, uint64_t & batchSize){
-  // int readCount=0;
+void readBatch(kseq_t * seq1, std::vector<ReadData> & Batch, uint64_t & batchSize){
   uint64_t bufferSize=0;
-  // Batch.clear();
-  // Batch.resize(batchSize);
+  Batch.clear();
 
   while(bufferSize<=batchSize){
     if(kseq_read(seq1)>=0){
       ReadData read_data(seq1->seq.s, seq1->name.s, seq1->qual.s);
-      Batch.push(read_data);
+      Batch.push_back(read_data);
       bufferSize+=length(read_data.read);
-      // Batch[readCount].id=seq1->name.s;
-      // Batch[readCount].read=seq1->seq.s;
-      // Batch[readCount].qual=seq1->qual.s;
-      // readCount++;
     }else{
-      // Batch.resize(readCount);
       break;
     }
   }
@@ -587,97 +580,89 @@ int mapLongZipped(openAddressingKmerHashtable & Index, longmapOptions & options,
   omp_set_num_threads(options.threads);
   if(options.threads < 2){options.threads=2;} // make sure that the program works without parallelization
   uint64_t batchSize=(uint64_t)options.batchSize*1000000;
-  std::queue<ReadData> oldBatch;
-  std::queue<ReadData> newBatch;
-  readBatch(seq1, oldBatch, batchSize);
 
   uint64_t random_seed = getRandSeed(options.k);
 
-  while(oldBatch.size()){
-    #pragma omp parallel for ordered
-    for (int t=0; t<options.threads; t++){
-      if(t==0){
+  #pragma omp parallel for ordered
+  for (int t=0; t<options.threads; t++){
+    //declare variables
+    std::vector<ReadData> Batch;
+    BamAlignmentRecord result;
+    std::vector<BamAlignmentRecord> results = {};
+    std::vector<uint32_t> histogram_local(200,0);
+    std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a,o)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases, o=order_of_kmers_in_seq
+    minimizedSequence miniSeq(options.k, options.mini_window_size, random_seed);
+
+    while(true){
         // read new batch
-        readBatch(seq1, newBatch, batchSize);
-      }else{ // t!=0  // process threads part of last batch
 
-        //declare variables
-        std::vector<std::tuple<uint8_t,uint32_t,uint32_t,uint32_t,uint32_t>> kmer_list;   // (i,j,a,m_a,o)   i=reference (Chromosome), j=position of matching k-mer in reference, a=abundance of k-mer in reference, m_a=minimizer_active_bases, o=order_of_kmers_in_seq
-        BamAlignmentRecord result;
-        std::vector<BamAlignmentRecord> results = {};
-        std::vector<uint32_t> histogram_local(200,0);
-        minimizedSequence miniSeq(options.k, options.mini_window_size, random_seed);
+      omp_set_lock(&queuelock);
+      readBatch(seq1, Batch, batchSize);
+      omp_unset_lock(&queuelock);
+      if(Batch.size()==0){
+        break;
+      }
+      // else{ // t!=0  // process threads part of last batch
 
-        while(oldBatch.size()){
-          // get read from queue
-          omp_set_lock(&queuelock);
-          if(!oldBatch.size()){
-            omp_unset_lock(&queuelock);
-            continue;
-          }
-          ReadData readData = oldBatch.front();
-          oldBatch.pop();
-          omp_unset_lock(&queuelock);
+      uint32_t myBatchIndex;
+      for(myBatchIndex = 0; myBatchIndex!=Batch.size(); myBatchIndex++){
 
-          // Map read
-          minimizer mini;
-          miniSeq.init(readData.read);
-          //save all minimizers to kmer_list
-          uint32_t order=0;
-          while(!miniSeq.at_end){
-            mini=miniSeq.pop();
-            AppendPosLong(kmer_list, mini.value^miniSeq.random_seed, Index, mini.active_bases, order, options);
-            order++;
-          }
-
-          // map read and clear k_mer list
-          result.qName=readData.id;
-          result.seq=readData.read;
-          result.qual=readData.qual;
-          if(options.readGroupId!=""){
-            appendTagValue(result.tags, "RG", options.readGroupId);
-          }
-
-          if (!kmer_list.empty()){
-            std::sort(kmer_list.begin(),kmer_list.end());
-
-            if(MapKmerListLong(kmer_list, Index.lookChrom, result, histogram_local, length(readData.read), options)){
-              results.push_back(result);
-            }
-            clear(result);
-
-            kmer_list.clear();
-            if (results.size()>10) {
-              if (omp_test_lock(&lock)){
-                writeOutput(results, options);
-                omp_unset_lock(&lock);
-              }else if(results.size()>100){
-                omp_set_lock(&lock);
-                writeOutput(results, options);
-                omp_unset_lock(&lock);
-              }
-            }
-          }else{
-            result.flag=4;
-            results.push_back(result);
-            clear(result);
-          }
-        } // while batch not empty
-        // write final output and sum up local histograms
-        omp_set_lock(&lock);
-        writeOutput(results, options);
-        for (int i=0; i<histogram.size(); i++){
-          histogram[i]+=histogram_local[i];
+        // Map read
+        minimizer mini;
+        miniSeq.init(Batch[myBatchIndex].read);
+        //save all minimizers to kmer_list
+        uint32_t order=0;
+        while(!miniSeq.at_end){
+          mini=miniSeq.pop();
+          AppendPosLong(kmer_list, mini.value^miniSeq.random_seed, Index, mini.active_bases, order, options);
+          order++;
         }
-        omp_unset_lock(&lock);
-      } // if not thread 0
-    } // for thread in threads
-    if(oldBatch.empty()){
-      oldBatch.swap(newBatch);
-    }else{
-      std::cerr << "Error! oldBatch not empty!";
+
+        // map read and clear k_mer list
+        result.qName=Batch[myBatchIndex].id;
+        result.seq=Batch[myBatchIndex].read;
+        result.qual=Batch[myBatchIndex].qual;
+        if(options.readGroupId!=""){
+          appendTagValue(result.tags, "RG", options.readGroupId);
+        }
+
+        if (!kmer_list.empty()){
+          std::sort(kmer_list.begin(),kmer_list.end());
+
+          if(MapKmerListLong(kmer_list, Index.lookChrom, result, histogram_local, length(Batch[myBatchIndex].read), options)){
+            results.push_back(result);
+          }
+          clear(result);
+
+          kmer_list.clear();
+          if (results.size()>10) {
+            if (omp_test_lock(&lock)){
+              writeOutput(results, options);
+              omp_unset_lock(&lock);
+            }else if(results.size()>100){
+              omp_set_lock(&lock);
+              writeOutput(results, options);
+              omp_unset_lock(&lock);
+            }
+          }
+        }else{
+          result.flag=4;
+          results.push_back(result);
+          clear(result);
+        }
+      } // while batch not empty
+      // write final output and sum up local histograms
+      // std::cerr << "thread " << t << " processed " << Batch.size() << " reads\n";
+      Batch.clear();
+      // } // if not thread 0
+    } //while not at end of file
+    omp_set_lock(&lock);
+    writeOutput(results, options);
+    for (int i=0; i<histogram.size(); i++){
+      histogram[i]+=histogram_local[i];
     }
-  } //while not at end of file
+    omp_unset_lock(&lock);
+  } // for thread in threads
 
   // write histogram to file
   remove(toCString(options.output_file+".tmp.sam"));

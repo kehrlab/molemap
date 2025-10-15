@@ -330,9 +330,9 @@ seqan::ArgumentParser::ParseResult parseCommandLine_long_map(longmapOptions & op
         seqan::ArgParseArgument::INTEGER, "unsigned"));
     setDefaultValue(parser, "t", "16");
     addOption(parser, seqan::ArgParseOption(
-        "b", "batchSize", "Millions of bases processed per batch. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
+        "b", "batchSize", "Millions of bases processed per batch per thread. A lower batchSize decreases memory consumption at the cost of running time. Only applies to gzipped fastq inputs.",
         seqan::ArgParseArgument::INTEGER, "unsigned"));
-    setDefaultValue(parser, "b", "500");
+    setDefaultValue(parser, "b", "20");
     addOption(parser, seqan::ArgParseOption(
         "R", "Readgroup", "Read group header line.",
         seqan::ArgParseArgument::STRING, "string"));
