@@ -91,3 +91,5 @@ This small example demonstrates how to use molemap and allows you to check if it
     # extracting reads of barcode AACATCGCAAACAGTA
     ./molemap get example/readfile.1.fq example/readfile.2.fq AACATCGCAAACAGTA -r example/ReadIndex -o example/readsOfAACATCGCAAACAGTA
 
+## License
+MoleMap is distributed under the GPL-3.0. Consult the accompanying [LICENSE](https://github.com/kehrlab/molemap/blob/master/LICENSE) file for more details.
