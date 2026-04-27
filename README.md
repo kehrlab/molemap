@@ -7,13 +7,20 @@ Linked reads are mapped on the barcode level. Molemap maps all reads that share 
 
 Molemap leverages minimizers and hash tables to achieve ultra fast, memory efficient and reliable mapping of long sequence molecules. The low computational requirements of molemap allow the analysis of whole genome sequencing data of the human genome on basic hardware like a laptop. 
 
-## Prerequisites
+# Installation
+
+## Conda
+MoleMap can be installed with conda via the [bioconda](https://bioconda.github.io/) channel using the following command:
+
+    conda install bioconda::molemap
+
+## From source
+__Prerequisites:__
 - g++ version 7.2.0 or higher
 - GNU make
 - zlib dev package
 
-# Installation
-Execute the following command.
+Execute the following commands:
 
     git clone https://github.com/kehrlab/molemap.git
     cd molemap
